@@ -1,0 +1,2764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A0A12">
+<title>Fiskai — Ton comptable intelligent</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
+
+/* ─── TOKENS ─── */
+:root {
+  --bg:       #F6F5F1;
+  --surface:  #FFFFFF;
+  --dark:     #0A0A12;
+  --card-dark:#0F0F1E;
+  --green:    #00C897;
+  --green-l:  rgba(0,200,151,0.11);
+  --green-d:  #007D5E;
+  --red:      #FF4D6D;
+  --red-l:    rgba(255,77,109,0.10);
+  --amber:    #FF9A3C;
+  --amber-l:  rgba(255,154,60,0.10);
+  --blue:     #3D7FFF;
+  --blue-l:   rgba(61,127,255,0.10);
+  --muted:    #9898A8;
+  --border:   rgba(0,0,0,0.07);
+  --sh:       0 2px 16px rgba(0,0,0,0.07);
+  --sh-lg:    0 8px 32px rgba(0,0,0,0.13);
+  --r:        20px;
+  --r-sm:     14px;
+  --tab-h:    80px;
+  --safe-b:   env(safe-area-inset-bottom, 0px);
+  --safe-t:   env(safe-area-inset-top, 44px);
+}
+
+[data-theme="dark"] {
+  --bg:       #0A0A12;
+  --surface:  #14141E;
+  --dark:     #EEEEF5;
+  --card-dark:#1A1A2E;
+  --green:    #00D9A0;
+  --green-l:  rgba(0,217,160,0.12);
+  --green-d:  #00C897;
+  --red:      #FF6B7A;
+  --red-l:    rgba(255,107,122,0.12);
+  --amber:    #FFB05A;
+  --amber-l:  rgba(255,176,90,0.12);
+  --blue:     #6B9FFF;
+  --blue-l:   rgba(107,159,255,0.12);
+  --muted:    #5A5A6E;
+  --border:   rgba(255,255,255,0.07);
+  --sh:       0 2px 16px rgba(0,0,0,0.3);
+  --sh-lg:    0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* ─── RESET ─── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--dark);overscroll-behavior:none}
+
+/* ─── SHELL ─── */
+.app{height:100dvh;display:flex;flex-direction:column;max-width:430px;margin:0 auto;background:var(--bg);position:relative}
+.safe-top{height:var(--safe-t);background:var(--bg);flex-shrink:0}
+
+/* ─── HEADER ─── */
+.hdr{padding:8px 20px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0;background:var(--bg)}
+.hdr-left{flex:1}
+.hdr-greet{font-size:12px;color:var(--muted);font-weight:700}
+.hdr-title{font-size:21px;font-weight:900;letter-spacing:-.4px;line-height:1.1}
+.hdr-chip{display:inline-flex;align-items:center;gap:5px;background:var(--surface);border-radius:99px;padding:7px 12px;font-size:11px;font-weight:800;box-shadow:var(--sh);border:1.5px solid var(--border);cursor:pointer}
+.hdr-chip select{border:none;outline:none;background:transparent;font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;color:var(--dark);cursor:pointer;max-width:110px}
+.hdr-btn{width:38px;height:38px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .2s;background:var(--surface);box-shadow:var(--sh)}
+
+/* ─── SCROLL ─── */
+.scroll{flex:1;overflow-y:auto;padding-bottom:calc(var(--tab-h) + var(--safe-b) + 16px);-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ─── PAGES ─── */
+.pg{display:none;padding:0 16px}
+.pg.on{display:block;animation:pgIn .25s cubic-bezier(.4,0,.2,1)}
+@keyframes pgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── TAB BAR ─── */
+.tabs{height:var(--tab-h);padding-bottom:var(--safe-b);background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;flex-shrink:0}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .15s;position:relative}
+.tab:active{transform:scale(.9)}
+.ti{font-size:22px;line-height:1;transition:transform .2s}
+.tab.on .ti{transform:scale(1.08)}
+.tl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;color:var(--muted);transition:color .15s}
+.tab.on .tl{color:var(--green)}
+/* FAB */
+.tab.fab{margin-top:-18px}
+.fab-c{width:54px;height:54px;background:var(--green);border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:300;color:#000;box-shadow:0 6px 22px rgba(0,200,151,.45);border:3px solid var(--bg);transition:all .2s}
+.tab.fab:active .fab-c{transform:scale(.92)}
+
+/* ─── CARDS ─── */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.card-head{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:900}
+.card-action{font-size:12px;font-weight:800;color:var(--green);cursor:pointer}
+
+/* ─── HERO NET ─── */
+.hero{background:#0F0F1E;border-radius:24px;padding:24px 22px 20px;margin-bottom:12px;position:relative;overflow:hidden;color:white;flex-shrink:0}
+[data-theme="dark"] .hero{background:#1A1A2E}
+.hero::before{content:'';position:absolute;top:-70px;right:-70px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,200,151,.18) 0%,transparent 65%);border-radius:50%}
+.hero-lbl{font-size:11px;font-weight:800;opacity:.4;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;position:relative;z-index:1}
+.hero-amount{font-family:'DM Mono',monospace;font-size:44px;font-weight:500;letter-spacing:-2px;line-height:1;margin-bottom:4px;position:relative;z-index:1}
+.hero-sub{font-size:12px;opacity:.35;font-weight:700;margin-bottom:20px;position:relative;z-index:1}
+
+/* Score ring */
+.score-ring{position:absolute;top:20px;right:20px;width:56px;height:56px}
+.score-ring svg{transform:rotate(-90deg)}
+.score-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-n{font-size:15px;font-weight:900;color:var(--green);line-height:1}
+.score-t{font-size:7px;color:rgba(255,255,255,.3);font-weight:800;text-transform:uppercase}
+
+/* Hero chips */
+.hero-chips{display:flex;gap:8px;position:relative;z-index:1}
+.hchip{flex:1;background:rgba(255,255,255,.07);border-radius:11px;padding:9px 8px}
+.hchip-l{font-size:9px;opacity:.4;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.hchip-v{font-size:12px;font-weight:900;font-family:'DM Mono',monospace}
+
+/* ─── IA CARD (1 seul conseil) ─── */
+.ia-card{background:var(--surface);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:12px;border:1.5px solid var(--green-l);cursor:pointer;transition:all .2s}
+.ia-card:active{transform:scale(.98)}
+.ia-card:hover{border-color:rgba(0,200,151,.3)}
+.ia-inner{padding:16px}
+.ia-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.ia-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ia-body{flex:1}
+.ia-tag{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.ia-title{font-size:13px;font-weight:900;line-height:1.35;margin-bottom:3px}
+.ia-desc{font-size:12px;font-weight:600;color:var(--muted);line-height:1.5}
+.ia-saving{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:10px;margin-top:4px}
+.ia-saving-val{font-size:13px;font-weight:900;font-family:'DM Mono',monospace}
+.ia-saving-cta{font-size:11px;font-weight:800;opacity:.7}
+
+/* ─── TX ─── */
+.tx{display:flex;align-items:center;gap:11px;padding:12px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;-webkit-user-select:none}
+.tx:last-child{border:none}
+.tx:active{background:var(--bg)}
+.tx-ico{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.tx-info{flex:1;min-width:0}
+.tx-name{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-cat{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.tx-r{text-align:right;flex-shrink:0}
+.tx-amt{font-family:'DM Mono',monospace;font-size:13px;font-weight:700}
+.tx-amt.cr{color:var(--green)}
+.tx-date{font-size:10px;color:var(--muted);font-weight:700;margin-top:2px}
+
+/* ─── SECTION HEADER ─── */
+.sec{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 2px}
+.sec-t{font-size:17px;font-weight:900;letter-spacing:-.3px}
+.sec-a{font-size:13px;font-weight:800;color:var(--green);cursor:pointer}
+
+/* ─── PAGE TOUT — blocs empilés ─── */
+.bloc{margin-bottom:24px}
+.bloc-title{font-size:13px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;padding:0 2px}
+
+/* Stat row */
+.sr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border)}
+.sr:last-child{border:none}
+.sr-left{display:flex;align-items:center;gap:11px}
+.sr-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sr-n{font-size:13px;font-weight:800}
+.sr-s{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.sr-v{font-family:'DM Mono',monospace;font-size:13px;font-weight:700}
+.sr-v.cr{color:var(--green)}
+.sr-v.db{color:var(--red)}
+.sr-v.am{color:var(--amber)}
+
+/* Slider */
+.sl-field{margin-bottom:18px}
+.sl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.sl-lbl{font-size:13px;font-weight:800}
+.sl-val{font-size:14px;font-weight:900;font-family:'DM Mono',monospace;color:var(--blue);background:var(--blue-l);padding:4px 11px;border-radius:99px;min-width:80px;text-align:center}
+input[type=range]{width:100%;height:5px;-webkit-appearance:none;background:var(--border);border-radius:99px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 2px 8px rgba(61,127,255,.4);border:3px solid var(--surface)}
+
+/* Hero sim */
+.sim-hero{background:#0F0F1E;border-radius:22px;padding:20px;margin-bottom:10px;color:white}
+[data-theme="dark"] .sim-hero{background:#1A1A2E}
+.sh-lbl{font-size:10px;opacity:.4;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.sh-val{font-size:32px;font-weight:900;font-family:'DM Mono',monospace;letter-spacing:-1.5px;margin-bottom:3px}
+.sim-sub-lbl{font-size:11px;opacity:.6;font-weight:700;margin-bottom:14px;color:rgba(255,255,255,.5)}
+.sh-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.sh-item{background:rgba(255,255,255,.08);border-radius:10px;padding:9px}
+.sh-il{font-size:9px;opacity:.45;font-weight:800;text-transform:uppercase;margin-bottom:2px}
+.sh-iv{font-size:13px;font-weight:900;font-family:'DM Mono',monospace}
+
+/* TVA hero */
+.tva-hero{background:#0F0F1E;border-radius:22px;padding:20px;color:white;margin-bottom:10px;text-align:center}
+[data-theme="dark"] .tva-hero{background:#1A1A2E}
+.tva-lbl{font-size:10px;opacity:.4;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.tva-amt{font-size:40px;font-weight:900;font-family:'DM Mono',monospace;color:var(--amber);letter-spacing:-2px}
+.tva-dead{display:inline-flex;align-items:center;gap:5px;background:var(--amber-l);color:var(--amber);border-radius:99px;padding:5px 13px;font-size:11px;font-weight:800;margin-top:8px}
+
+/* Bilan */
+.bilan-hero{background:#0F0F1E;border-radius:22px;padding:20px;color:white;margin-bottom:10px}
+[data-theme="dark"] .bilan-hero{background:#1A1A2E}
+
+/* Facture item */
+.fi{display:flex;align-items:center;gap:11px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.fi:last-child{border:none}
+.fi:active{background:var(--bg)}
+.fi-ico{width:38px;height:38px;border-radius:11px;background:var(--green-l);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.fi-info{flex:1;min-width:0}
+.fi-num{font-size:10px;font-weight:800;color:var(--muted)}
+.fi-client{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fi-date{font-size:10px;color:var(--muted);font-weight:600;margin-top:1px}
+.fi-r{text-align:right;flex-shrink:0}
+.fi-amt{font-family:'DM Mono',monospace;font-size:13px;font-weight:800;color:var(--green)}
+.fi-st{font-size:9px;font-weight:800;padding:3px 8px;border-radius:99px;margin-top:3px;display:inline-block}
+.fi-st.wait{background:var(--amber-l);color:var(--amber)}
+.fi-st.paid{background:var(--green-l);color:var(--green-d)}
+
+/* Conseil card */
+.conseil-card{border-radius:16px;padding:16px;margin-bottom:10px;display:flex;gap:12px;cursor:pointer;transition:all .2s}
+.conseil-card:active{transform:scale(.98)}
+.cc-ico{font-size:26px;flex-shrink:0}
+.cc-body{flex:1}
+.cc-tag{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.cc-title{font-size:13px;font-weight:900;margin-bottom:3px;line-height:1.3}
+.cc-title-el{font-size:13px;font-weight:900;margin-bottom:3px;line-height:1.3}
+.cc-desc-el{font-size:11px;font-weight:600;line-height:1.55;margin-bottom:0}
+.cc-desc{font-size:11px;font-weight:600;line-height:1.55}
+.cc-save{font-size:12px;font-weight:900;margin-top:6px;font-family:'DM Mono',monospace}
+
+/* Statuts grid */
+.st-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+.st-card{background:var(--bg);border-radius:14px;padding:14px;text-align:center;cursor:pointer;border:1.5px solid transparent;transition:all .2s;position:relative}
+.st-card:active{transform:scale(.96)}
+.st-card.best{border-color:var(--green);background:var(--green-l)}
+.st-badge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;font-size:8px;font-weight:900;padding:2px 9px;border-radius:99px;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px}
+.st-emoji{font-size:22px;margin-bottom:6px}
+.st-name{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px}
+.st-net{font-size:16px;font-weight:900;font-family:'DM Mono',monospace}
+.st-imp{font-size:9px;color:var(--muted);font-weight:700;margin-top:2px}
+
+/* Alerte pill */
+.alerte{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.alerte:active{transform:scale(.98)}
+.al-ico{font-size:18px;flex-shrink:0}
+.al-body{flex:1}
+.al-title{font-size:12px;font-weight:900}
+.al-sub{font-size:11px;font-weight:600;margin-top:1px}
+.al-tag{font-size:9px;font-weight:900;text-transform:uppercase;padding:3px 8px;border-radius:99px;color:white;flex-shrink:0}
+
+/* Setting row */
+.set-row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}
+.set-row:last-child{border:none}
+.set-row:active{background:var(--bg)}
+.set-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.set-text{flex:1}
+.set-name{font-size:13px;font-weight:800}
+.set-desc{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:99px;transition:all .3s;cursor:pointer}
+.toggle-track::before{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:white;top:3px;left:3px;transition:all .3s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked+.toggle-track{background:var(--green)}
+.toggle input:checked+.toggle-track::before{transform:translateX(18px)}
+
+/* ─── MODALS (bottom sheet) ─── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.on{display:flex}
+.sheet{background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-width:430px;padding:12px 20px calc(20px + var(--safe-b));animation:shUp .32s cubic-bezier(.4,0,.2,1);max-height:93vh;overflow-y:auto}
+@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sh-handle{width:34px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 18px}
+.sh-title{font-size:19px;font-weight:900;margin-bottom:3px}
+.sh-sub{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:18px}
+
+/* Type toggle */
+.type-tog{display:flex;gap:10px;margin-bottom:18px}
+.tt{flex:1;padding:14px 10px;border-radius:var(--r-sm);border:2px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all .2s;font-family:'Nunito',sans-serif}
+.tt:active{transform:scale(.96)}
+.tt-ico{font-size:24px;display:block;margin-bottom:4px}
+.tt-lbl{font-size:12px;font-weight:800;color:var(--muted)}
+.tt.on.g{border-color:var(--green);background:var(--green-l)}
+.tt.on.g .tt-lbl{color:var(--green-d)}
+.tt.on.r{border-color:var(--red);background:var(--red-l)}
+.tt.on.r .tt-lbl{color:var(--red)}
+
+/* Amount */
+.amount-inp{width:100%;font-size:42px;font-weight:900;font-family:'DM Mono',monospace;text-align:center;padding:18px;background:var(--bg);border-radius:var(--r-sm);border:2px solid transparent;outline:none;color:var(--dark);margin-bottom:14px;transition:all .2s}
+.amount-inp:focus{border-color:var(--green);background:var(--green-l)}
+
+/* Field */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.field input,.field select{width:100%;background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);padding:12px 13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--dark);outline:none;transition:border-color .2s;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--green)}
+
+/* Cat grid */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+.cat-btn{padding:9px 5px;border-radius:12px;border:2px solid var(--border);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s;font-family:'Nunito',sans-serif}
+.cat-btn:active{transform:scale(.94)}
+.cat-btn .ci{font-size:19px;display:block;margin-bottom:2px}
+.cat-btn .cl{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase}
+.cat-btn.on{border-color:var(--green);background:var(--green-l)}
+.cat-btn.on .cl{color:var(--green-d)}
+
+/* Buttons */
+.btn-p{width:100%;padding:15px;background:var(--green);color:#000;border:none;border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 5px 18px rgba(0,200,151,.35);transition:all .2s}
+.btn-p:active{transform:scale(.97);opacity:.9}
+.btn-s{width:100%;padding:13px;background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--muted);cursor:pointer;margin-top:8px}
+.btn-row{display:flex;gap:10px}
+.btn-row .btn-s{flex:1;margin-top:0}
+.btn-row .btn-p{flex:2}
+
+/* ─── ONBOARDING ─── */
+.ob{position:fixed;inset:0;background:#0A0A12;z-index:200;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ob-wrap{width:100%;max-width:390px;padding:28px 22px;position:relative;max-height:100vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ob-wrap::-webkit-scrollbar{display:none}
+.ob-deco{position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:radial-gradient(circle,rgba(0,200,151,.1) 0%,transparent 65%);border-radius:50%;pointer-events:none}
+.ob-dots{display:flex;gap:7px;justify-content:center;margin-bottom:32px}
+.ob-dot{width:7px;height:7px;border-radius:99px;background:rgba(255,255,255,.15);transition:all .3s}
+.ob-dot.on{background:var(--green);width:22px}
+.ob-step{display:none;animation:obIn .38s cubic-bezier(.34,1.56,.64,1)}
+.ob-step.on{display:block}
+@keyframes obIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ob-emoji{font-size:52px;text-align:center;display:block;margin-bottom:16px}
+.ob-title{font-size:26px;font-weight:900;color:white;text-align:center;letter-spacing:-.5px;line-height:1.15;margin-bottom:9px}
+.ob-title .g{color:var(--green)}
+.ob-sub{font-size:13px;color:rgba(255,255,255,.38);text-align:center;font-weight:700;line-height:1.6;margin-bottom:28px}
+.ob-choices{display:grid;gap:9px;margin-bottom:22px}
+.ob-choices.c2{grid-template-columns:1fr 1fr}
+.ob-choice{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:15px;padding:15px 9px;cursor:pointer;text-align:center;transition:all .18s;color:white;font-family:'Nunito',sans-serif}
+.ob-choice:active{transform:scale(.95)}
+.ob-choice.on{background:rgba(0,200,151,.13);border-color:var(--green)}
+.oc-ico{font-size:26px;display:block;margin-bottom:7px}
+.oc-lbl{font-size:12px;font-weight:900}
+.oc-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;font-weight:600}
+.ob-choice.on .oc-sub{color:rgba(0,200,151,.6)}
+.ob-country{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);border-radius:15px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:13px;transition:all .18s;color:white;margin-bottom:9px;font-family:'Nunito',sans-serif}
+.ob-country:active{transform:scale(.98)}
+.ob-country.on{background:rgba(0,200,151,.11);border-color:var(--green)}
+.oc-flag{font-size:30px;flex-shrink:0}
+.oc-name{font-size:15px;font-weight:900}
+.oc-desc{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;font-weight:600}
+.ob-country.on .oc-desc{color:rgba(0,200,151,.6)}
+.oc-chk{width:22px;height:22px;border-radius:50%;background:var(--green);display:none;align-items:center;justify-content:center;font-size:12px;margin-left:auto;flex-shrink:0}
+.ob-country.on .oc-chk{display:flex}
+.ob-btn{width:100%;padding:15px;background:var(--green);color:#000;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;box-shadow:0 5px 22px rgba(0,200,151,.35);transition:all .2s}
+.ob-btn:disabled{opacity:.28;cursor:not-allowed;box-shadow:none;transform:none}
+.ob-btn:not(:disabled):active{transform:scale(.97)}
+.ob-skip{text-align:center;margin-top:12px;font-size:11px;color:rgba(255,255,255,.22);cursor:pointer;font-weight:700}
+.ob-sum{background:rgba(255,255,255,.06);border-radius:13px;padding:16px;margin-bottom:20px;display:flex;flex-direction:column;gap:11px}
+.ob-sum-row{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;color:rgba(255,255,255,.8);font-family:'Nunito',sans-serif}
+.ob-sum-val{color:var(--green);font-weight:900}
+
+/* ─── TUTO ─── */
+.tuto-spot{position:fixed;z-index:301;border-radius:16px;box-shadow:0 0 0 9999px rgba(0,0,0,.73);pointer-events:none;transition:all .38s cubic-bezier(.4,0,.2,1);border:2px solid var(--green)}
+.tuto-bub{position:fixed;z-index:302;pointer-events:all}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + 14px);left:50%;transform:translateX(-50%);background:#0A0A12;color:white;border-radius:99px;padding:11px 20px;font-size:13px;font-weight:800;z-index:300;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:toastIn .3s ease;border:1px solid rgba(255,255,255,.1)}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ─── FILTER PILLS ─── */
+.filters{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:3px}
+.filters::-webkit-scrollbar{display:none}
+.fp{padding:7px 15px;border-radius:99px;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;transition:all .15s;background:var(--surface);box-shadow:var(--sh);border:1.5px solid transparent}
+.fp.on{background:#0A0A12;color:white;border-color:#0A0A12}
+[data-theme="dark"] .fp.on{background:var(--green);color:#000;border-color:var(--green)}
+.fp:active{transform:scale(.95)}
+
+/* utils */
+.empty{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty-e{font-size:40px;margin-bottom:10px}
+.empty-t{font-size:14px;font-weight:900;color:var(--dark);margin-bottom:5px}
+.empty-s{font-size:12px;font-weight:700;line-height:1.6}
+.mt8{margin-top:8px}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:800}
+.pill.g{background:var(--green-l);color:var(--green-d)}
+.pill.a{background:var(--amber-l);color:var(--amber)}
+.pill.r{background:var(--red-l);color:var(--red)}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .28s ease}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Facture preview box */
+.f-preview{background:var(--bg);border-radius:12px;padding:14px;margin-bottom:13px;display:none}
+.f-prow{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:6px}
+.f-prow.total{font-size:15px;font-weight:900;border-top:2px solid var(--border);padding-top:10px;margin-top:4px}
+.f-prow.total .f-pval{color:var(--green)}
+.f-plbl{color:var(--muted)}
+.f-pval{font-family:'DM Mono',monospace}
+
+/* ─── EDIT / DELETE BUTTONS ─── */
+.tx-actions{display:flex;gap:5px;margin-left:6px;flex-shrink:0}
+.tx-btn{width:28px;height:28px;border-radius:8px;border:none;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all .15s;flex-shrink:0}
+.tx-btn:active{transform:scale(.9)}
+.tx-btn.edit{background:var(--blue-l);color:var(--blue)}
+.tx-btn.del{background:var(--red-l);color:var(--red)}
+.tx-btn.pay{background:var(--green-l);color:var(--green-d)}
+.f-plbl{color:var(--muted)}
+.f-pval{font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+
+<!-- ══ ONBOARDING ══ -->
+<div class="ob" id="ob">
+  <div class="ob-deco"></div>
+  <div class="ob-wrap">
+    <div class="ob-dots">
+      <div class="ob-dot on" id="od0"></div>
+      <div class="ob-dot" id="od1"></div>
+      <div class="ob-dot" id="od2"></div>
+      <div class="ob-dot" id="od3"></div>
+    </div>
+
+    <!-- 0 — Bienvenue -->
+    <div class="ob-step on" id="ob0">
+      <span class="ob-emoji">
+        <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto 16px">
+          <rect width="72" height="72" rx="18" fill="#00C897"/>
+          <rect x="20" y="18" width="9" height="36" rx="3" fill="#0A0A0F"/>
+          <rect x="20" y="18" width="30" height="9" rx="3" fill="#0A0A0F"/>
+          <rect x="20" y="36" width="21" height="8" rx="3" fill="#0A0A0F"/>
+          <circle cx="58" cy="18" r="9" fill="#007D5E"/>
+          <circle cx="58" cy="18" r="4.5" fill="#004D3A"/>
+        </svg>
+      </span>
+      <h1 class="ob-title">Bienvenue sur<br><span class="g">Fiskai</span></h1>
+      <p class="ob-sub">Ton comptable intelligent.<br>3 questions · 45 secondes · C'est tout.</p>
+      <button class="ob-btn" onclick="obGo(1)">C'est parti →</button>
+      <div class="ob-skip" onclick="obSkip()">Passer</div>
+    </div>
+
+    <!-- 1 — Pays -->
+    <div class="ob-step" id="ob1">
+      <span class="ob-emoji">🌍</span>
+      <h1 class="ob-title">Tu travailles<br><span class="g">où ?</span></h1>
+      <p class="ob-sub">On configure la bonne fiscalité.</p>
+      <div id="ob-pays">
+        <div class="ob-country" onclick="obSelPays('fr',this)">
+          <span class="oc-flag">🇫🇷</span>
+          <div><div class="oc-name">France</div><div class="oc-desc">IS · IR · TVA · URSSAF · SCI</div></div>
+          <div class="oc-chk">✓</div>
+        </div>
+        <div class="ob-country" onclick="obSelPays('ch',this)">
+          <span class="oc-flag">🇨🇭</span>
+          <div><div class="oc-name">Suisse</div><div class="oc-desc">IS cantonal · AVS · TVA AFC · Sàrl immo</div></div>
+          <div class="oc-chk">✓</div>
+        </div>
+      </div>
+      <button class="ob-btn" id="ob-btn1" onclick="obGo(2)" disabled>Continuer →</button>
+    </div>
+
+    <!-- 2 — Secteur -->
+    <div class="ob-step" id="ob2">
+      <span class="ob-emoji">🎯</span>
+      <h1 class="ob-title">Tu travailles<br><span class="g">dans quoi ?</span></h1>
+      <p class="ob-sub">On adapte les conseils à ton métier.</p>
+      <div class="ob-choices c2" id="ob-secteurs" style="margin-bottom:16px;max-height:42vh;overflow-y:auto;padding-right:4px">
+        <div class="ob-choice" onclick="obSelSect('btp',this)"><span class="oc-ico">🔧</span><div class="oc-lbl">BTP & Artisan</div><div class="oc-sub">Plombier, électricien…</div></div>
+        <div class="ob-choice" onclick="obSelSect('tech',this)"><span class="oc-ico">💻</span><div class="oc-lbl">Tech & Freelance</div><div class="oc-sub">Dev, consultant…</div></div>
+        <div class="ob-choice" onclick="obSelSect('commerce',this)"><span class="oc-ico">🛒</span><div class="oc-lbl">Commerce</div><div class="oc-sub">Boutique, e-commerce…</div></div>
+        <div class="ob-choice" onclick="obSelSect('resto',this)"><span class="oc-ico">🍽️</span><div class="oc-lbl">Restauration</div><div class="oc-sub">Restaurant, traiteur…</div></div>
+        <div class="ob-choice" onclick="obSelSect('sante',this)"><span class="oc-ico">⚕️</span><div class="oc-lbl">Santé & Libéral</div><div class="oc-sub">Médecin, kiné…</div></div>
+        <div class="ob-choice" onclick="obSelSect('immo',this)"><span class="oc-ico">🏠</span><div class="oc-lbl">Immobilier / SCI</div><div class="oc-sub">Location, SCI…</div></div>
+        <div class="ob-choice" onclick="obSelSect('transport',this)"><span class="oc-ico">🚗</span><div class="oc-lbl">Transport & VTC</div><div class="oc-sub">Chauffeur, livreur…</div></div>
+        <div class="ob-choice" onclick="obSelSect('creatif',this)"><span class="oc-ico">🎨</span><div class="oc-lbl">Créatif & Culture</div><div class="oc-sub">Photo, art, musique…</div></div>
+        <div class="ob-choice" onclick="obSelSect('juridique',this)"><span class="oc-ico">⚖️</span><div class="oc-lbl">Juridique</div><div class="oc-sub">Avocat, notaire…</div></div>
+        <div class="ob-choice" onclick="obSelSect('autre',this)"><span class="oc-ico">✨</span><div class="oc-lbl">Autre</div><div class="oc-sub">Une autre activité</div></div>
+      </div>
+      <button class="ob-btn" id="ob-btn2" onclick="obGo(3)" disabled>Continuer →</button>
+    </div>
+
+    <!-- 3 — Statut -->
+    <div class="ob-step" id="ob3">
+      <span class="ob-emoji">📋</span>
+      <h1 class="ob-title">Ton statut<br><span class="g">juridique ?</span></h1>
+      <p class="ob-sub">Les impôts seront calculés avec les bons taux.</p>
+      <div class="ob-choices c2" id="ob-statuts" style="margin-bottom:22px"></div>
+      <button class="ob-btn" id="ob-btn3" onclick="obFinish()" disabled>Lancer Fiskai 🚀</button>
+    </div>
+
+    <!-- 4 — Done -->
+    <div class="ob-step" id="ob4">
+      <span class="ob-emoji">🎉</span>
+      <h1 class="ob-title">Tout est<br><span class="g">configuré !</span></h1>
+      <p class="ob-sub">Fiskai connaît ton secteur et ta fiscalité.<br>Les conseils sont adaptés à toi.</p>
+      <div class="ob-sum" id="ob-sum"></div>
+      <button class="ob-btn" onclick="obLaunch()">Voir mon dashboard →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAISIE SHEET -->
+<div class="overlay" id="ov-saisie">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="sh-title" style="margin:0">Nouvelle opération</div>
+      <button onclick="openScan('charge')" style="display:flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:none;border-radius:99px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;cursor:pointer">📸 Scanner</button>
+    </div>
+    <div class="sh-sub">Saisie manuelle ou scan d'un ticket/facture</div>
+    <div class="type-tog">
+      <button class="tt on g" onclick="setType('rev',this)" id="btn-rev"><span class="tt-ico">💰</span><span class="tt-lbl">J'ai encaissé</span></button>
+      <button class="tt r" onclick="setType('ch',this)" id="btn-ch"><span class="tt-ico">💸</span><span class="tt-lbl">J'ai dépensé</span></button>
+    </div>
+    <input class="amount-inp" id="s-amount" type="number" inputmode="decimal" placeholder="0 €">
+    <div class="field"><label>C'est pour quoi ?</label><input id="s-desc" placeholder="Facture Dupont, Achat outillage…"></div>
+    <div class="cat-grid" id="s-cats"></div>
+    <div class="btn-row">
+      <button class="btn-s" onclick="closeOv('ov-saisie')">Annuler</button>
+      <button class="btn-p" onclick="confirmSaisie()">✓ Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCAN SHEET -->
+<div class="overlay" id="ov-scan">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title">📸 Scanner un document</div>
+    <div class="sh-sub">Photo ou PDF — l'IA extrait tout automatiquement</div>
+
+    <!-- Zone de drop / upload -->
+    <div id="scan-drop" style="border:2px dashed var(--border);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px;background:var(--bg)" onclick="document.getElementById('scan-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--green)'" ondragleave="this.style.borderColor='var(--border)'" ondrop="handleDrop(event)">
+      <div style="font-size:40px;margin-bottom:10px">📄</div>
+      <div style="font-size:14px;font-weight:900;margin-bottom:4px">Appuie pour prendre une photo</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:600">ou glisse un fichier ici · JPG, PNG, PDF</div>
+      <input type="file" id="scan-input" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="handleScanFile(this)">
+    </div>
+
+    <!-- Preview image -->
+    <div id="scan-preview" style="display:none;margin-bottom:14px;position:relative">
+      <img id="scan-img" style="width:100%;border-radius:var(--r-sm);max-height:180px;object-fit:cover">
+      <div id="scan-pdf-preview" style="display:none;background:var(--bg);border-radius:var(--r-sm);padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:6px">📄</div>
+        <div id="scan-pdf-name" style="font-size:13px;font-weight:800"></div>
+      </div>
+      <button onclick="resetScan()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px">×</button>
+    </div>
+
+    <!-- Résultat IA -->
+    <div id="scan-result" style="display:none;background:var(--green-l);border:1.5px solid rgba(0,200,151,.25);border-radius:var(--r-sm);padding:14px;margin-bottom:14px">
+      <div style="font-size:11px;font-weight:900;color:var(--green-d);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px">✓ Fiskai a lu le document</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="scan-fields"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="scan-loading" style="display:none;text-align:center;padding:20px 0">
+      <div style="font-size:28px;margin-bottom:8px;animation:spin 1s linear infinite">⚙️</div>
+      <div style="font-size:13px;font-weight:800;color:var(--muted)">Fiskai analyse le document…</div>
+    </div>
+
+    <!-- Error -->
+    <div id="scan-error" style="display:none;background:var(--red-l);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--red)"></div>
+
+    <div class="btn-row" id="scan-btns">
+      <button class="btn-s" onclick="closeOv('ov-scan')">Annuler</button>
+      <button class="btn-p" id="scan-confirm-btn" onclick="confirmScan()" style="display:none">✓ Importer</button>
+    </div>
+  </div>
+</div>
+
+<!-- FACTURE SHEET -->
+<div class="overlay" id="ov-facture">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="sh-title" style="margin:0">📄 Nouvelle facture</div>
+      <button onclick="openScan('facture')" style="display:flex;align-items:center;gap:5px;background:var(--blue-l);color:var(--blue);border:none;border-radius:99px;padding:7px 12px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;cursor:pointer">📸 Scanner</button>
+    </div>
+    <div class="sh-sub">Saisie manuelle ou scan automatique</div>
+    <div class="field"><label>Client *</label><input id="f-client" placeholder="M. Dupont / SAS Alpha…"></div>
+    <div class="field"><label>Ton nom / société</label><input id="f-emetteur" placeholder="Jean Dupont, SASU MonEntreprise…"></div>
+    <div class="field"><label>Description</label><input id="f-desc" placeholder="Travaux salle de bain, Mission conseil…"></div>
+    <div style="display:flex;gap:10px">
+      <div class="field" style="flex:1"><label>Montant HT *</label><input id="f-ht" type="number" inputmode="decimal" placeholder="0.00" oninput="calcF()"></div>
+      <div class="field" style="flex:1"><label>TVA</label>
+        <select id="f-tva" onchange="calcF()" style="background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);padding:12px 13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--dark);width:100%;outline:none">
+          <option value="0.20">20% (normal)</option>
+          <option value="0.10">10% (réduit)</option>
+          <option value="0.055">5.5% (alimentaire)</option>
+          <option value="0.021">2.1% (presse)</option>
+          <option value="0.081">8.1% 🇨🇭</option>
+          <option value="0.026">2.6% 🇨🇭 réduit</option>
+          <option value="0">0% (exonéré)</option>
+        </select>
+      </div>
+    </div>
+    <div class="f-preview" id="f-prev">
+      <div class="f-prow"><span class="f-plbl">Total HT</span><span class="f-pval" id="fp-ht">—</span></div>
+      <div class="f-prow"><span class="f-plbl">TVA</span><span class="f-pval" id="fp-tva" style="color:var(--muted)">—</span></div>
+      <div class="f-prow total"><span class="f-plbl">Total TTC</span><span class="f-pval" id="fp-ttc">—</span></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-s" onclick="closeOv('ov-facture')">Annuler</button>
+      <button class="btn-p" onclick="genFacture()">✓ Générer</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT OPÉRATION SHEET -->
+<div class="overlay" id="ov-edit">
+  <div class="sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-title">✏️ Modifier l'opération</div>
+    <div class="sh-sub">Corrige les informations ci-dessous</div>
+    <input type="hidden" id="edit-id">
+    <div class="type-tog">
+      <button class="tt on g" onclick="setEditType('rev',this)" id="edit-btn-rev"><span class="tt-ico">💰</span><span class="tt-lbl">J'ai encaissé</span></button>
+      <button class="tt r" onclick="setEditType('ch',this)" id="edit-btn-ch"><span class="tt-ico">💸</span><span class="tt-lbl">J'ai dépensé</span></button>
+    </div>
+    <input class="amount-inp" id="edit-amount" type="number" inputmode="decimal" placeholder="0 €">
+    <div class="field"><label>Description</label><input id="edit-desc" placeholder="Description de l'opération…"></div>
+    <div class="cat-grid" id="edit-cats"></div>
+    <div class="btn-row">
+      <button class="btn-s" onclick="closeOv('ov-edit')">Annuler</button>
+      <button class="btn-p" onclick="confirmEdit()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT SHEET -->
+<div class="overlay" id="ov-chat">
+  <div class="sheet" style="height:88vh;display:flex;flex-direction:column;padding-bottom:calc(12px + var(--safe-b))">
+    <div class="sh-handle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-shrink:0">
+      <div style="width:36px;height:36px;background:#0F0F1E;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px">🤖</div>
+      <div>
+        <div style="font-size:14px;font-weight:900">Fiskai</div>
+        <div style="font-size:11px;color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite"></span>En ligne · Expert FR & CH</div>
+      </div>
+      <button onclick="closeOv('ov-chat')" style="margin-left:auto;background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px;color:var(--muted)">×</button>
+    </div>
+    <div id="chat-msgs" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding-bottom:12px;margin-bottom:8px"></div>
+    <div id="chat-sugg" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0">
+      <div class="fp" onclick="useS(this)" style="font-size:11px;padding:6px 12px">Quel statut me convient ?</div>
+      <div class="fp" onclick="useS(this)" style="font-size:11px;padding:6px 12px">Comment payer moins d'impôts ?</div>
+      <div class="fp" onclick="useS(this)" style="font-size:11px;padding:6px 12px">Qu'est-ce que la SCI ?</div>
+      <div class="fp" onclick="useS(this)" style="font-size:11px;padding:6px 12px">TVA : comment ça marche ?</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <input id="chat-in" style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:99px;padding:11px 16px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--dark);outline:none" placeholder="Pose ta question…" onkeydown="if(event.key==='Enter')sendChat()">
+      <button onclick="sendChat()" style="width:42px;height:42px;background:var(--green);border:none;border-radius:50%;cursor:pointer;font-size:17px;color:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,200,151,.4);flex-shrink:0">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="auth-screen" style="position:fixed;inset:0;background:#0A0A0F;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px">
+  <svg width="56" height="56" viewBox="0 0 34 34" fill="none" style="margin-bottom:16px">
+    <rect width="34" height="34" rx="9" fill="#00C897"/>
+    <rect x="10" y="9" width="4" height="16" rx="1.5" fill="#0A0A0F"/>
+    <rect x="10" y="9" width="13" height="4" rx="1.5" fill="#0A0A0F"/>
+    <rect x="10" y="17" width="9" height="3.5" rx="1.5" fill="#0A0A0F"/>
+    <circle cx="26" cy="9" r="4" fill="#007D5E"/>
+    <circle cx="26" cy="9" r="2" fill="#004D3A"/>
+  </svg>
+  <div style="font-size:24px;font-weight:900;color:white;letter-spacing:-.5px;margin-bottom:6px">fiskai</div>
+  <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:40px">Ton comptable intelligent</div>
+  <div style="display:flex;background:rgba(255,255,255,.06);border-radius:12px;padding:4px;margin-bottom:24px;width:100%;max-width:340px">
+    <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:10px;border:none;border-radius:9px;background:#00C897;color:#000;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">Connexion</button>
+    <button id="tab-signup" onclick="switchAuthTab('signup')" style="flex:1;padding:10px;border:none;border-radius:9px;background:transparent;color:rgba(255,255,255,.5);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">Créer un compte</button>
+  </div>
+  <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px">
+    <input id="auth-email" type="email" placeholder="Email" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    <input id="auth-password" type="password" placeholder="Mot de passe (min. 6 caractères)" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    <div id="auth-error" style="font-size:12px;color:#FF6060;font-weight:700;display:none;padding:0 4px"></div>
+    <button id="auth-btn" onclick="handleAuth()" style="background:#00C897;color:#000;border:none;border-radius:12px;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;width:100%">Se connecter →</button>
+    <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.3);cursor:pointer" onclick="resetPassword()">Mot de passe oublié ?</div>
+  </div>
+  <div style="margin-top:24px;font-size:11px;color:rgba(255,255,255,.2);text-align:center;max-width:280px">
+    En continuant tu acceptes nos <a href="cgu.html" style="color:rgba(255,255,255,.35)">CGU</a> et notre <a href="confidentialite.html" style="color:rgba(255,255,255,.35)">politique de confidentialité</a>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <div class="safe-top"></div>
+
+  <!-- HEADER -->
+  <div class="hdr" id="hdr">
+    <div class="hdr-left">
+      <div style="display:flex;align-items:center;gap:10px">
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="34" height="34" rx="9" fill="#00C897"/>
+          <rect x="10" y="9" width="4" height="16" rx="1.5" fill="#0A0A0F"/>
+          <rect x="10" y="9" width="13" height="4" rx="1.5" fill="#0A0A0F"/>
+          <rect x="10" y="17" width="9" height="3.5" rx="1.5" fill="#0A0A0F"/>
+          <circle cx="26" cy="9" r="4" fill="#007D5E"/>
+          <circle cx="26" cy="9" r="2" fill="#004D3A"/>
+        </svg>
+        <div>
+          <div style="font-size:15px;font-weight:900;letter-spacing:-.5px;line-height:1.1;color:var(--dark)">fiskai</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.3px" id="greet">Bonjour 👋</div>
+            <div id="country-badge" style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.3px;display:flex;align-items:center;gap:2px">· <span id="country-flag">🇫🇷</span> <span id="country-name">France</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hdr-chip">
+      <span>📋</span>
+      <select id="sel-statut" onchange="setStatut(this.value)">
+        <optgroup label="🇫🇷 France">
+          <option value="ae">Auto-ent.</option>
+          <option value="sasu" selected>SASU</option>
+          <option value="eurl">EURL</option>
+          <option value="sa">SA</option>
+          <option value="sci_ir">SCI à l'IR</option>
+          <option value="sci_is">SCI à l'IS</option>
+          <option value="sel">SEL/SELARL</option>
+        </optgroup>
+        <optgroup label="🇨🇭 Suisse">
+          <option value="sarl_ch">Sàrl</option>
+          <option value="sa_ch">SA</option>
+          <option value="ind_ch">Indépendant</option>
+          <option value="sarl_immo_ch">Sàrl immo</option>
+        </optgroup>
+      </select>
+    </div>
+    <button class="hdr-btn" onclick="toggleTheme()" id="theme-btn">☀️</button>
+  </div>
+
+  <!-- SCROLL -->
+  <div class="scroll" id="scroll">
+
+    <!-- ══ ACCUEIL ══ -->
+    <div class="pg on" id="pg-home">
+      <div style="height:8px"></div>
+
+      <!-- Hero net du mois -->
+      <div class="hero">
+        <div class="hero-lbl">Revenu net estimé · Cette année</div>
+        <div class="hero-amount" id="h-net">—</div>
+        <div class="hero-sub" id="h-sub">Chargement…</div>
+        <div class="hero-chips">
+          <div class="hchip"><div class="hchip-l">💚 Revenus</div><div class="hchip-v" id="h-ca">—</div></div>
+          <div class="hchip"><div class="hchip-l">💙 Charges</div><div class="hchip-v" id="h-ch">—</div></div>
+          <div class="hchip"><div class="hchip-l">❤️ Impôts</div><div class="hchip-v" id="h-imp">—</div></div>
+        </div>
+        <div class="score-ring">
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="5"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="#00C897" stroke-width="5" stroke-dasharray="138.2" id="ring-dash" stroke-dashoffset="42" stroke-linecap="round"/>
+          </svg>
+          <div class="score-center"><div class="score-n" id="score-n">72</div><div class="score-t">Score</div></div>
+        </div>
+      </div>
+
+      <!-- 1 SEUL conseil IA (le meilleur du moment) -->
+      <div id="ia-card-wrap"></div>
+
+      <!-- Alertes -->
+      <div id="alertes-wrap"></div>
+
+      <!-- Dernières 3 opérations -->
+      <div class="sec mt8"><div class="sec-t">Dernières opérations</div><div class="sec-a" onclick="goTab('tout')">Voir tout</div></div>
+      <div class="card"><div id="tx-home"></div></div>
+    </div>
+
+    <!-- ══ TOUT ══ -->
+    <div class="pg" id="pg-tout">
+      <div style="height:8px"></div>
+
+      <!-- Opérations -->
+      <div class="bloc">
+        <div class="bloc-title">📝 Mes opérations</div>
+        <div class="filters">
+          <div class="fp on" onclick="filterTx('all',this)">Tout</div>
+          <div class="fp" onclick="filterTx('rev',this)">💰 Revenus</div>
+          <div class="fp" onclick="filterTx('ch',this)">💸 Dépenses</div>
+        </div>
+        <div class="card"><div id="tx-full"></div></div>
+      </div>
+
+      <!-- Simulateur -->
+      <div class="bloc">
+        <div class="bloc-title">📊 Simulateur d'impôts</div>
+        <div class="sim-hero">
+          <div class="sh-lbl">Impôts & charges estimés</div>
+          <div class="sh-val" id="sim-tot">—</div>
+          <div class="sim-sub-lbl" id="sim-sub">sur ton CA annuel</div>
+          <div class="sh-row">
+            <div class="sh-item"><div class="sh-il">Net</div><div class="sh-iv" id="sim-net">—</div></div>
+            <div class="sh-item"><div class="sh-il">Taux</div><div class="sh-iv" id="sim-taux">—</div></div>
+            <div class="sh-item"><div class="sh-il">/mois</div><div class="sh-iv" id="sim-mois">—</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="padding:16px 16px 4px">
+            <div class="sl-field"><div class="sl-top"><span class="sl-lbl">💼 CA annuel</span><span class="sl-val" id="sl-ca-v">100k €</span></div><input type="range" min="10000" max="500000" step="5000" value="100000" id="sl-ca" oninput="onSlider()"></div>
+            <div class="sl-field"><div class="sl-top"><span class="sl-lbl">💸 Charges</span><span class="sl-val" id="sl-ch-v">30k €</span></div><input type="range" min="0" max="200000" step="2000" value="30000" id="sl-ch" oninput="onSlider()"></div>
+            <div class="sl-field" id="sl-rem-wrap"><div class="sl-top"><span class="sl-lbl">👤 Rémunération</span><span class="sl-val" id="sl-rem-v">40k €</span></div><input type="range" min="0" max="150000" step="2000" value="40000" id="sl-rem" oninput="onSlider()"></div>
+          </div>
+          <div id="sim-detail"></div>
+        </div>
+      </div>
+
+      <!-- TVA -->
+      <div class="bloc">
+        <div class="bloc-title">🧾 Ma TVA</div>
+        <div class="tva-hero">
+          <div class="tva-lbl">À reverser ce mois</div>
+          <div class="tva-amt" id="tva-amt">—</div>
+          <div class="tva-dead">⏰ Échéance <span id="tva-dead">le 15 du mois</span></div>
+        </div>
+        <div class="card"><div id="tva-detail"></div></div>
+      </div>
+
+      <!-- Bilan -->
+      <div class="bloc">
+        <div class="bloc-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>📒 Bilan</span>
+          <span style="font-size:11px;font-weight:800;color:var(--green);cursor:pointer" onclick="window.print()">Export PDF</span>
+        </div>
+        <div class="bilan-hero">
+          <div class="sh-lbl">Résultat net</div>
+          <div class="sh-val" id="bl-net">—</div>
+          <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(0,200,151,.15);color:var(--green);border-radius:99px;padding:4px 12px;font-size:12px;font-weight:900;margin-top:8px" id="bl-marge">—</div>
+        </div>
+        <div class="card"><div id="pl-detail"></div></div>
+      </div>
+
+      <!-- Factures -->
+      <div class="bloc">
+        <div class="bloc-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>🧾 Mes factures</span>
+          <span style="font-size:11px;font-weight:800;color:var(--green);cursor:pointer" onclick="openOv('ov-facture')">+ Nouvelle</span>
+        </div>
+        <div class="card"><div id="factures-list"><div class="empty"><div class="empty-e">🧾</div><div class="empty-t">Aucune facture</div><div class="empty-s">Tape "+ Nouvelle" pour créer ta première facture pro</div></div></div></div>
+      </div>
+
+      <!-- Conseils par secteur -->
+      <div class="bloc">
+        <div class="bloc-title">💡 Mes conseils fiscaux</div>
+        <div id="conseils-list"></div>
+      </div>
+
+      <!-- Comparer statuts -->
+      <div class="bloc">
+        <div class="bloc-title">⚖️ Comparer les statuts</div>
+        <div class="card">
+          <div class="st-grid" id="st-grid"></div>
+        </div>
+      </div>
+
+      <!-- Cantons (Suisse) -->
+      <div class="bloc" id="canton-bloc" style="display:none">
+        <div class="bloc-title">🏔️ Choisir le canton</div>
+        <div class="card">
+          <div style="padding:14px 18px">
+            <div class="sl-top" style="margin-bottom:10px"><span class="sl-lbl">Canton</span><span class="sl-val" id="canton-val" style="min-width:120px">Zoug · 11.5%</span></div>
+            <select id="sel-canton" onchange="setCanton(this.value)" style="width:100%;background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);padding:12px 13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--dark);outline:none;-webkit-appearance:none"></select>
+          </div>
+          <div id="canton-detail"></div>
+        </div>
+      </div>
+
+      <!-- Paramètres -->
+      <div class="bloc">
+        <div class="bloc-title">⚙️ Paramètres</div>
+        <div class="card">
+          <div class="set-row" style="cursor:default">
+            <div class="set-ico" style="background:var(--blue-l)" id="country-flag-set">🇫🇷</div>
+            <div class="set-text">
+              <div class="set-name" id="country-lbl">Pays : France 🇫🇷</div>
+              <div class="set-desc">Défini à l'inscription · Non modifiable</div>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-ico" style="background:var(--amber-l)">🌙</div>
+            <div class="set-text"><div class="set-name">Mode sombre</div><div class="set-desc">Adapté le soir</div></div>
+            <label class="toggle"><input type="checkbox" id="dark-chk" onchange="setTheme(this.checked)"><div class="toggle-track"></div></label>
+          </div>
+          <div class="set-row" onclick="startTuto()">
+            <div class="set-ico" style="background:var(--green-l)">❓</div>
+            <div class="set-text"><div class="set-name">Revoir le guide</div><div class="set-desc">Relancer le didacticiel</div></div>
+            <span style="color:var(--muted);font-size:14px">→</span>
+          </div>
+          <div class="set-row" onclick="signOut()" style="cursor:pointer">
+            <div class="set-ico" style="background:var(--red-l)">🚪</div>
+            <div class="set-text"><div class="set-name" style="color:var(--red)">Se déconnecter</div><div class="set-desc">Retour à l'écran de connexion</div></div>
+            <span style="color:var(--muted);font-size:14px">→</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── UPGRADE ── -->
+      <div class="card" style="background:linear-gradient(135deg,#0F1A15,#0A1510);border:1px solid rgba(0,200,151,.2)">
+        <div class="card-title" style="color:var(--green)">⚡ Passer à un forfait</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+          <button onclick="window.open('https://buy.stripe.com/cNi28r6Qi94n84IcvIcAo00','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,151,.08);border:1px solid rgba(0,200,151,.2);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
+            <div>
+              <div style="font-size:13px;font-weight:900;color:var(--dark)">Starter</div>
+              <div style="font-size:10px;color:var(--muted)">AE · Indépendant · FR + CH</div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">49€/mois →</div>
+          </button>
+          <button onclick="window.open('https://buy.stripe.com/bJefZhfmO1BVdp29jwcAo01','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:#0A0A0F;border:1px solid rgba(0,200,151,.3);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
+            <div>
+              <div style="font-size:13px;font-weight:900;color:white">Pro ⭐</div>
+              <div style="font-size:10px;color:rgba(255,255,255,.4)">SASU · EURL · SCI · SEL · Sàrl CH</div>
+            </div>
+            <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">99€/mois →</div>
+          </button>
+        </div>
+      </div>
+
+      <div style="height:8px"></div>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <!-- TAB BAR (3 onglets) -->
+  <div class="tabs">
+    <div class="tab on" onclick="goTab('home')" id="tab-home">
+      <span class="ti">🏠</span><span class="tl">Accueil</span>
+    </div>
+    <div class="tab fab" onclick="openOv('ov-saisie')" id="tab-fab">
+      <div class="fab-c">+</div>
+    </div>
+    <div class="tab" onclick="goTab('tout')" id="tab-tout">
+      <span class="ti">📊</span><span class="tl">Tout</span>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ══ STATE ══
+let country='fr', statut='sasu', canton='zg', secteur='autre';
+let eType='rev', selCat='Prestations', filterMode='all';
+const chatHist=[], factures=[];
+let factNum=1, tutoSpot=null, tutoBub=null;
+
+let entries=[];  // Vide au démarrage — l'utilisateur saisit ses propres données
+
+// ══ CANTONS ══
+const CANTONS={
+  zg:{name:'Zoug',is:0.115,ir:0.62},nw:{name:'Nidwald',is:0.122,ir:0.68},
+  sz:{name:'Schwytz',is:0.140,ir:0.72},lu:{name:'Lucerne',is:0.146,ir:0.75},
+  bs:{name:'Bâle-Ville',is:0.130,ir:0.71},ag:{name:'Argovie',is:0.163,ir:0.81},
+  zh:{name:'Zurich',is:0.197,ir:0.90},be:{name:'Berne',is:0.208,ir:0.93},
+  vd:{name:'Vaud',is:0.214,ir:0.94},ge:{name:'Genève',is:0.242,ir:0.98},
+  vs:{name:'Valais',is:0.175,ir:0.85},gr:{name:'Grisons',is:0.160,ir:0.80},
+  ti:{name:'Tessin',is:0.190,ir:0.87},fr:{name:'Fribourg',is:0.193,ir:0.88},
+  ne:{name:'Neuchâtel',is:0.155,ir:0.78},so:{name:'Soleure',is:0.168,ir:0.83},
+};
+
+// ══ CATÉGORIES ══
+const CATS={
+  rev:[{id:'Prestations',ico:'💼',lbl:'Prestation'},{id:'Vente',ico:'📦',lbl:'Vente'},{id:'Loyer perçu',ico:'🏠',lbl:'Loyer'},{id:'Autre',ico:'💵',lbl:'Autre'}],
+  ch:[{id:'Matériel',ico:'🔧',lbl:'Matériel'},{id:'Loyer',ico:'🏢',lbl:'Loyer'},{id:'Déplacement',ico:'🚗',lbl:'Transport'},{id:'Repas',ico:'🍽️',lbl:'Repas'},{id:'Téléphone',ico:'📱',lbl:'Téléphone'},{id:'Formation',ico:'📚',lbl:'Formation'},{id:'Assurance',ico:'🛡️',lbl:'Assurance'},{id:'Autre',ico:'💸',lbl:'Autre'}]
+};
+
+// ══ SECTEUR → TVA PAR DÉFAUT ══
+const SECT_TVA={btp:0.20,tech:0.20,commerce:0.20,resto:0.10,sante:0.10,immo:0.20,transport:0.10,creatif:0.20,juridique:0.20,autre:0.20};
+
+// ══ MOTEUR FISCAL PRÉCIS ══
+
+// IR France — barème 2024 (parts 1)
+// IR France — Barème 2025 (revenus 2024, déclaration 2025)
+// Seuils revalorisés de +1.8% vs 2024
+function irFR(r){
+  if(r<=0)return 0;
+  // Tranches 2025 : 0% / 11% / 30% / 41% / 45%
+  const t=[[11497,0],[29315,.11],[83823,.30],[180294,.41],[Infinity,.45]];
+  let ir=0,p=0;
+  for(const[pl,tx]of t){if(r<=p)break;ir+=(Math.min(r,pl)-p)*tx;p=pl;}
+  return Math.max(0,Math.floor(ir));
+}
+
+// Abattements Micro-entreprise France
+const MICRO_ABATTEMENTS = {
+  'bic_vente':    0.71,  // Micro-BIC commerce/vente/hébergement
+  'bic_service':  0.50,  // Micro-BIC prestation de services commerciale
+  'bnc':          0.34,  // Micro-BNC professions libérales
+  'ae_service':   0.34,  // Auto-entrepreneur services (BNC)
+  'ae_commerce':  0.71,  // Auto-entrepreneur commerce
+  'ae_artisan':   0.50,  // Auto-entrepreneur artisan
+};
+
+function abattementMicro(type) {
+  return MICRO_ABATTEMENTS[type] || 0.34;
+}
+
+// IFD Suisse — barème fédéral 2024 (AFC)
+// Source : Administration fédérale des contributions
+// Revenus en CHF, impôt en CHF
+function ifdCH(r){
+  if(r<=17800) return 0;
+  // Barème officiel AFC 2024 — tranches cumulatives
+  let t=0;
+  if(r>17800)  t+=(Math.min(r,31600)-17800)*0.0077;
+  if(r>31600)  t+=(Math.min(r,41400)-31600)*0.0088;
+  if(r>41400)  t+=(Math.min(r,55200)-41400)*0.0264;
+  if(r>55200)  t+=(Math.min(r,72500)-55200)*0.0297;
+  if(r>72500)  t+=(Math.min(r,78100)-72500)*0.0594;
+  if(r>78100)  t+=(Math.min(r,103600)-78100)*0.0616;
+  if(r>103600) t+=(Math.min(r,134600)-103600)*0.0825;
+  if(r>134600) t+=(Math.min(r,176000)-134600)*0.0880;
+  if(r>176000) t+=(r-176000)*0.1132;
+  return Math.floor(t);
+}
+
+// IS France — avec taux réduit PME conditionnel
+// Taux 15% : CA < 10M€ ET capital entièrement libéré ET détenu à 75%+ par personnes physiques
+function isFR(ben, ca, eligibleTauxReduit=true){
+  if(ben<=0)return 0;
+  if(eligibleTauxReduit && ca<10000000){
+    // Taux réduit 15% jusqu'à 42 500€ puis 25%
+    // Math.floor pour éviter non-monotonie au seuil exact
+    if(ben<=42500) return Math.floor(ben*0.15);
+    return Math.floor(42500*0.15+(ben-42500)*0.25);
+  }
+  return Math.floor(ben*0.25); // taux plein
+}
+
+// CVAE France — supprimée en 2024, mais CFE reste
+// CFE : variable selon commune, on met une estimation moyenne
+function cfeFR(ca){
+  if(ca<5000)return 0;
+  // Base minimum selon CA, taux moyen ~1.5% de la valeur locative
+  // Estimation forfaitaire prudente
+  if(ca<100000)return 500;
+  if(ca<500000)return 1500;
+  if(ca<2000000)return 4000;
+  return 8000; // estimation haute pour grandes structures
+}
+
+// Cotisations TNS France (gérant EURL/associé unique)
+// Taux réel 2024 selon tranches URSSAF
+function cotisTNS(rem){
+  if(rem<=0)return 0;
+  // Maladie : 7.2% jusqu'au plafond SS (46 368€) + 6.5% au-delà
+  const plafSS=46368;
+  const maladie=rem<=plafSS ? rem*.072 : plafSS*.072+(rem-plafSS)*.065;
+  // Retraite base : 17.75% jusqu'à 1 plafond SS
+  const retraiteBase=Math.min(rem,plafSS)*.1775;
+  // Retraite complémentaire : 7% jusqu'à 4 plafonds
+  const retraiteCompl=Math.min(rem,plafSS*4)*.07;
+  // Invalidité-décès : 1.3%
+  const prevoyance=Math.min(rem,plafSS)*.013;
+  // Allocations familiales : 0% si rem < 110% plafond SS, sinon 3.1%
+  const af=rem>plafSS*1.1 ? (rem-plafSS*1.1)*.031 : 0;
+  // Formation : 0.25%
+  const formation=rem*.0025;
+  // CSG/CRDS : 9.7% sur 98.25% du revenu
+  const csg=(rem*.9825)*.097;
+  return maladie+retraiteBase+retraiteCompl+prevoyance+af+formation+csg;
+}
+
+// Cotisations dirigeant assimilé salarié (SASU/SA)
+function cotisSalarie(rem){
+  if(rem<=0)return 0;
+  const plafSS=46368;
+  // Charges patronales ~42-47% selon tranche
+  const patron=rem<=plafSS ? rem*.42 : plafSS*.42+(rem-plafSS)*.25;
+  return patron;
+}
+
+// Vérif conditions taux IS réduit
+function eligibleTauxReduit(ca){ return ca < 10000000; }
+
+const CFGS={
+  ae:{n:'Auto-ent.',e:'🛠️',c:'€',calc(ca,ch,rem){
+    // Abattement selon activité : 71% vente, 50% services BNC, 34% libéral
+    // On prend 34% (services) comme défaut conservateur
+    const ab=secteur==='commerce'?ca*.71:secteur==='btp'?ca*.50:ca*.34;
+    const cot=secteur==='commerce'?ca*.128:secteur==='btp'?ca*.221:ca*.221;
+    const ri=Math.max(0,ca-ab);
+    const ir=irFR(ri);
+    const tot=cot+ir;
+    const net=ca-tot;
+    const txEff=ca>0?Math.round(tot/ca*100):0;
+    return{net,tot,cot,is:0,ir,txEff,lines:[
+      {l:'Chiffre d\'affaires',v:ca},
+      {l:`Abattement forfaitaire (${secteur==='commerce'?'71':'34'}%)`,v:-ab,cls:'cr'},
+      {l:'Revenu net imposable',v:ri},
+      {l:`Cotisations sociales (${secteur==='commerce'?'12.8':'22.1'}%)`,v:-cot,cls:'db'},
+      {l:'Impôt sur le revenu (IR)',v:-ir,cls:'db'},
+      {l:'Revenu net',v:net,cls:'cr'},
+      {l:'Taux effectif',v:txEff,pct:true},
+    ]};
+  }},
+
+  sasu:{n:'SASU',e:'🏢',c:'€',calc(ca,ch,rem){
+    const ben=Math.max(0,ca-ch-rem);
+    const cot=cotisSalarie(rem); // charges patronales réelles
+    const cotSal=rem*.23; // charges salariales
+    const remNet=rem-cotSal; // salaire net
+    const is=isFR(ben,ca,eligibleTauxReduit(ca));
+    const div=Math.max(0,ben-is);
+    const ft=div*.30; // flat tax 30%
+    const ir=irFR(remNet*.9); // abattement 10% frais pro
+    const tot=cot+cotSal+is+ft+ir;
+    const net=remNet-ir+div-ft;
+    const txEff=ca>0?Math.round(tot/ca*100):0;
+    // CVAE supprimée 2024 — CFE en addition
+    const cfe=cfeFR(ca);
+    return{net,tot:tot+cfe,cot,is,ir,txEff,lines:[
+      {l:'Chiffre d\'affaires',v:ca},
+      {l:'Charges déductibles',v:-ch},
+      {l:'Rémunération brute dirigeant',v:-rem},
+      {l:'Charges patronales (~42%)',v:-cot,cls:'db'},
+      {l:'Charges salariales (~23%)',v:-cotSal,cls:'db'},
+      {l:'Résultat avant IS',v:ben},
+      {l:ca<10000000?'IS (15% ≤42 500€ puis 25%)':'IS (25% — CA > 10M€)',v:-is,cls:'db'},
+      {l:'Dividendes disponibles',v:div},
+      {l:'Flat tax dividendes (30%)',v:-ft,cls:'db'},
+      {l:'IR sur salaire net',v:-ir,cls:'db'},
+      {l:`CFE (estimation commune)`,v:-cfe,cls:'db'},
+      {l:'Revenu net dirigeant',v:net,cls:'cr'},
+      {l:'Taux de prélèvement global',v:txEff,pct:true},
+    ]};
+  }},
+
+  eurl:{n:'EURL',e:'👤',c:'€',calc(ca,ch,rem){
+    const cot=cotisTNS(rem); // cotisations TNS réelles
+    const ben=Math.max(0,ca-ch-rem-cot);
+    const is=isFR(ben,ca,eligibleTauxReduit(ca));
+    const div=Math.max(0,ben-is);
+    // En EURL, dividendes > 10% capital soumis aux cotisations sociales
+    const divSocial=div*.10; // partie soumise cotisations
+    const cotDiv=divSocial*.45;
+    const ft=(div-divSocial)*.30;
+    const ir=irFR(rem);
+    const tot=is+cot+cotDiv+ft+ir;
+    const net=rem-ir-cot+div-cotDiv-ft;
+    const txEff=ca>0?Math.round(tot/ca*100):0;
+    const cfe=cfeFR(ca);
+    return{net,tot:tot+cfe,cot,is,ir,txEff,lines:[
+      {l:'Chiffre d\'affaires',v:ca},
+      {l:'Charges déductibles',v:-ch},
+      {l:'Rémunération gérant',v:-rem},
+      {l:'Cotisations TNS (détail ci-dessous)',v:-cot,cls:'db'},
+      {l:'  · Maladie + Retraite + Prévoyance',v:null,sub:true},
+      {l:'  · CSG/CRDS (9.7%)',v:null,sub:true},
+      {l:'Résultat avant IS',v:ben},
+      {l:ca<10000000?'IS (15% ≤42 500€ puis 25%)':'IS (25%)',v:-is,cls:'db'},
+      {l:'Dividendes disponibles',v:div},
+      {l:'Flat tax (30%) + Cot. sociales div.',v:-(ft+cotDiv),cls:'db'},
+      {l:'IR sur rémunération',v:-ir,cls:'db'},
+      {l:'CFE (estimation)',v:-cfe,cls:'db'},
+      {l:'Revenu net',v:net,cls:'cr'},
+      {l:'Taux effectif',v:txEff,pct:true},
+    ]};
+  }},
+
+  sa:{n:'SA',e:'🏛️',c:'€',calc(ca,ch,rem){
+    const cot=cotisSalarie(rem);
+    const cotSal=rem*.23;
+    const remNet=rem-cotSal;
+    const ben=Math.max(0,ca-ch-rem-cot);
+    const is=isFR(ben,ca,eligibleTauxReduit(ca));
+    const div=Math.max(0,ben-is);
+    const ft=div*.30;
+    const ir=irFR(remNet*.9);
+    const tot=cot+cotSal+is+ft+ir;
+    const net=remNet-ir+div-ft;
+    const txEff=ca>0?Math.round(tot/ca*100):0;
+    const cfe=cfeFR(ca);
+    return{net,tot:tot+cfe,cot,is,ir,txEff,lines:[
+      {l:'Chiffre d\'affaires',v:ca},
+      {l:'Charges déductibles',v:-ch},
+      {l:'Rémunération brute dirigeant',v:-rem},
+      {l:'Charges patronales (~42-47%)',v:-cot,cls:'db'},
+      {l:'Charges salariales (~23%)',v:-cotSal,cls:'db'},
+      {l:'Résultat avant IS',v:ben},
+      {l:'IS (25% — taux plein SA)',v:-is,cls:'db'},
+      {l:'Flat tax dividendes (30%)',v:-ft,cls:'db'},
+      {l:'IR sur salaire',v:-ir,cls:'db'},
+      {l:'CFE (estimation)',v:-cfe,cls:'db'},
+      {l:'Revenu net',v:net,cls:'cr'},
+      {l:'Taux effectif',v:txEff,pct:true},
+    ]};
+  }},
+
+  sci_ir:{n:'SCI à l\'IR',e:'🏠',c:'€',calc(ca,ch,rem){
+    const revFoncier=Math.max(0,ca-ch);
+    // Déficit foncier : déductible jusqu'à 10 700€/an sur revenu global
+    // La partie travaux (au-delà) est reportable sur 10 ans
+    const defFoncierBrut=Math.max(0,ch-ca);
+    const defFoncierImputable=Math.min(10700,defFoncierBrut);
+    const defFoncierReporte=Math.max(0,defFoncierBrut-defFoncierImputable);
+    const baseIR=Math.max(0,revFoncier-defFoncierImputable);
+    const ir=irFR(baseIR);
+    // Prélèvements sociaux 17.2% sur revenus fonciers
+    const ps=Math.max(0,revFoncier)*.172;
+    const tot=ir+ps;
+    const net=Math.max(0,revFoncier)-tot;
+    return{net,tot,cot:0,is:0,ir,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'Revenus fonciers bruts',v:ca},
+      {l:'Charges déductibles (intérêts, taxe foncière, travaux...)',v:-ch},
+      {l:'Revenus fonciers nets',v:revFoncier},
+      {l:'Déficit foncier imputable (max 10 700€/an)',v:-defFoncierImputable,cls:'cr'},
+      ...(defFoncierReporte>0?[{l:`Déficit reportable sur 10 ans`,v:-defFoncierReporte,cls:'cr'}]:[]),
+      {l:'Base imposable IR',v:baseIR},
+      {l:'Impôt sur le revenu (IR)',v:-ir,cls:'db'},
+      {l:'Prélèvements sociaux (17.2%)',v:-ps,cls:'db'},
+      {l:'Revenu net après impôts',v:net,cls:'cr'},
+    ]};
+  }},
+
+  sci_is:{n:'SCI à l\'IS',e:'🏠',c:'€',calc(ca,ch,rem){
+    // Amortissement du bien : terrain non amortissable (~20% de la valeur)
+    // Bâtiment : 2-3% selon type. On prend 2.5% sur 80% du bien
+    // On estime la valeur du bien à 15x les loyers annuels (yield ~6.7%)
+    const valeurBien=ca*15;
+    const amort=valeurBien*0.80*0.025; // amortissement bâtiment
+    const ben=Math.max(0,ca-ch-amort);
+    const is=isFR(ben,ca,eligibleTauxReduit(ca));
+    const div=Math.max(0,ben-is);
+    const ft=div*.30; // flat tax 30%
+    const tot=is+ft;
+    const net=ca-ch-is-ft;
+    return{net,tot,cot:0,is,ir:ft,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'Revenus locatifs',v:ca},
+      {l:'Charges & intérêts d\'emprunt',v:-ch},
+      {l:`Amortissement bien (~2.5% de ${fmt(valeurBien,'€')})`,v:-amort,cls:'cr'},
+      {l:'Résultat imposable IS',v:ben},
+      {l:ca<10000000?'IS (15% ≤42 500€ puis 25%)':'IS (25%)',v:-is,cls:'db'},
+      {l:'Bénéfice distribuable',v:div},
+      {l:'Flat tax dividendes (30%)',v:-ft,cls:'db'},
+      {l:'Cash flow net',v:net,cls:'cr'},
+    ]};
+  }},
+
+  sel:{n:'SEL/SELARL',e:'⚕️',c:'€',calc(ca,ch,rem){
+    // SEL = société d'exercice libéral
+    // Cotisations ordinales variables selon profession :
+    // CARMF (médecins) ~43% | CARPIMKO (paramédicaux) ~42% | CAVEC (experts-comptables) ~25%
+    // CNBF (avocats) ~14% | CIPAV (autres libéraux) ~25%
+    // On utilise 43% comme estimation moyenne prudente
+    // ⚠️ L'utilisateur doit vérifier avec sa caisse spécifique
+    const cotTaux = 0.43;
+    const cot = Math.floor(rem * cotTaux);
+    const ben = Math.max(0, ca-ch-rem-cot);
+    const is = isFR(ben, ca, eligibleTauxReduit(ca));
+    const div = Math.max(0, ben-is);
+    const ft = Math.floor(div*0.30);
+    const ir = irFR(rem);
+    const tot = is+cot+ft+ir;
+    const net = rem-ir-cot+div-ft;
+    return{net,tot,cot,is,ir,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'Honoraires HT',v:ca},
+      {l:'Charges cabinet',v:-ch},
+      {l:'Rémunération',v:-rem},
+      {l:'Cotisations ordinales (~43% estimé)',v:-cot,cls:'db'},
+      {l:'Résultat avant IS',v:ben},
+      {l:'IS (15/25%)',v:-is,cls:'db'},
+      {l:'Flat tax dividendes (30%)',v:-ft,cls:'db'},
+      {l:'IR sur rémunération',v:-ir,cls:'db'},
+      {l:'Revenu net estimé',v:net,cls:'cr'},
+    ]};
+  }},
+
+  sarl_ch:{n:'Sàrl CH',e:'🇨🇭',c:'CHF',calc(ca,ch,rem){
+    const c=CANTONS[canton]||CANTONS.zg;
+    const ben=Math.max(0,ca-ch-rem);
+    // IS : taux combiné fédéral (8.5% sur bénéfice net) + cantonal/communal
+    const is=ben*c.is;
+    // AVS/AI/APG : 10.6% employé + 10.6% employeur = 21.2% total
+    const avsEmploye=rem*.106;
+    const avsEmployeur=rem*.106;
+    // LPP (prévoyance) : variable, ~7-10% selon plan
+    const lpp=rem>25725?(rem-25725)*.075:0;
+    // LAA (accident) : ~1.5% employé
+    const laa=rem*.015;
+    // IFD + impôt cantonal/communal sur revenu
+    const ifd=ifdCH(rem*(c.ir||0.75));
+    const div=Math.max(0,ben-is);
+    // Impôt anticipé 35% sur dividendes — récupérable si résident CH
+    const impDiv=div*.35*.35; // net après récupération partielle
+    const tot=is+avsEmploye+avsEmployeur+lpp+laa+ifd+impDiv;
+    const net=rem-avsEmploye-laa-lpp-ifd+div-impDiv;
+    return{net,tot,cot:avsEmploye+avsEmployeur+lpp+laa,is,ir:ifd,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'Chiffre d\'affaires (CHF)',v:ca},
+      {l:'Charges déductibles',v:-ch},
+      {l:'Salaire dirigeant',v:-rem},
+      {l:`IS combiné ${Math.round(c.is*1000)/10}% (fédéral + ${c.name})`,v:-is,cls:'db'},
+      {l:'AVS/AI/APG employeur (10.6%)',v:-avsEmployeur,cls:'db'},
+      {l:'AVS/AI/APG employé (10.6%)',v:-avsEmploye,cls:'db'},
+      {l:'LPP prévoyance professionnelle',v:-lpp,cls:'db'},
+      {l:'LAA assurance accident (1.5%)',v:-laa,cls:'db'},
+      {l:'IFD + impôt cantonal/communal',v:-ifd,cls:'db'},
+      {l:'Impôt anticipé dividendes (net)',v:-impDiv,cls:'db'},
+      {l:'Revenu net (CHF)',v:net,cls:'cr'},
+      {l:'Taux effectif global',v:ca>0?Math.round(tot/ca*100):0,pct:true},
+    ]};
+  }},
+
+  sa_ch:{n:'SA CH',e:'🇨🇭',c:'CHF',calc(ca,ch,rem){
+    const c=CANTONS[canton]||CANTONS.zg;
+    const ben=Math.max(0,ca-ch-rem);
+    const is=ben*(c.is+.005); // SA légèrement plus élevé que Sàrl
+    const avsE=rem*.106, avsEr=rem*.106;
+    const lpp=rem>25725?(rem-25725)*.08:0;
+    const laa=rem*.015;
+    const ifd=ifdCH(rem*(c.ir||0.75));
+    const div=Math.max(0,ben-is);
+    const impDiv=div*.35*.4;
+    const tot=is+avsE+avsEr+lpp+laa+ifd+impDiv;
+    const net=rem-avsE-laa-lpp-ifd+div-impDiv;
+    return{net,tot,cot:avsE+avsEr+lpp+laa,is,ir:ifd,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'CA (CHF)',v:ca},{l:'Charges',v:-ch},{l:'Salaire',v:-rem},
+      {l:`IS ${Math.round((c.is+.005)*1000)/10}% (SA)`,v:-is,cls:'db'},
+      {l:'AVS/AI/APG (total)',v:-(avsE+avsEr),cls:'db'},
+      {l:'LPP + LAA',v:-(lpp+laa),cls:'db'},
+      {l:'IFD + cantonal',v:-ifd,cls:'db'},
+      {l:'Impôt anticipé div.',v:-impDiv,cls:'db'},
+      {l:'Revenu net (CHF)',v:net,cls:'cr'},
+    ]};
+  }},
+
+  ind_ch:{n:'Indép. CH',e:'🇨🇭',c:'CHF',calc(ca,ch,rem){
+    const c=CANTONS[canton]||CANTONS.zg;
+    const rv=Math.max(0,ca-ch);
+    // AVS indépendant : 10% sur revenu (dégressif sous 58 800 CHF)
+    const avs=rv>58800?rv*.10:rv*.071+(rv<9300?0:(rv-9300)*.029);
+    const lpp=rv>25725?(rv-25725)*.05:0; // LPP volontaire
+    // Pilier 3a : déductible, max 7 056 CHF (2024)
+    const p3a=Math.min(7056,rv*.10);
+    const baseIFD=Math.max(0,rv-avs-p3a);
+    const ifd=ifdCH(baseIFD*(c.ir||0.75));
+    const tot=avs+lpp+p3a+ifd;
+    const net=rv-avs-lpp-ifd; // p3a reste en épargne
+    return{net,tot,cot:avs+lpp,is:0,ir:ifd,txEff:rv>0?Math.round(tot/rv*100):0,lines:[
+      {l:'CA (CHF)',v:ca},
+      {l:'Charges professionnelles',v:-ch},
+      {l:'Revenu net activité',v:rv},
+      {l:'AVS indépendant (~10%)',v:-avs,cls:'db'},
+      {l:'LPP volontaire',v:-lpp,cls:'db'},
+      {l:'Pilier 3a (épargne déductible, max 7 056 CHF)',v:-p3a,cls:'cr'},
+      {l:'IFD + impôt cantonal/communal',v:-ifd,cls:'db'},
+      {l:'Revenu net (CHF)',v:net,cls:'cr'},
+      {l:'Note : Pilier 3a = épargne retraite récupérable',v:null,note:true},
+    ]};
+  }},
+
+  sarl_immo_ch:{n:'Sàrl immo CH',e:'🏠',c:'CHF',calc(ca,ch,rem){
+    const c=CANTONS[canton]||CANTONS.zg;
+    // Amortissement : 4% par an sur valeur fiscale bâtiment (max 70% de la valeur totale)
+    const valeurBien=ca*15;
+    const amort=valeurBien*0.70*0.04;
+    const ben=Math.max(0,ca-ch-amort);
+    const is=ben*c.is;
+    // Impôt sur le capital : ~0.1-0.3% selon canton sur capital propre
+    const impCapital=(ca*0.2)*0.002; // estimation
+    const div=Math.max(0,ben-is);
+    const impDiv=div*.35*.35;
+    const tot=is+impCapital+impDiv;
+    const net=ca-ch-is-impCapital-impDiv;
+    return{net,tot,cot:0,is,ir:impDiv,txEff:ca>0?Math.round(tot/ca*100):0,lines:[
+      {l:'Revenus locatifs (CHF)',v:ca},
+      {l:'Charges & intérêts hypothécaires',v:-ch},
+      {l:`Amortissement fiscal (4% × ${Math.round(valeurBien*0.7/1000)}k CHF)`,v:-amort,cls:'cr'},
+      {l:'Résultat imposable',v:ben},
+      {l:`IS ${Math.round(c.is*1000)/10}% — ${c.name}`,v:-is,cls:'db'},
+      {l:'Impôt sur le capital (~0.2%)',v:-impCapital,cls:'db'},
+      {l:'Impôt anticipé dividendes (net)',v:-impDiv,cls:'db'},
+      {l:'Cash flow net (CHF)',v:net,cls:'cr'},
+    ]};
+  }},
+};
+
+function getCfg(k){return CFGS[k]||CFGS.sasu;}
+function getCA(){return entries.filter(e=>e.type==='rev').reduce((s,e)=>s+e.amount,0);}
+function getCH(){return entries.filter(e=>e.type==='ch').reduce((s,e)=>s+e.amount,0);}
+function fmt(n,c){
+  // Priorité : devise explicite → pays → statut
+  const cur=c||(country==='ch'?'CHF':(statut.endsWith('_ch')?'CHF':'€'));
+  return Math.round(Math.abs(n)).toLocaleString('fr-FR')+'\u202f'+cur;
+}
+function fmtK(n,cur){const c=cur||(country==='ch'?'CHF':(statut.endsWith('_ch')?'CHF':'€'));return n>=1000?(n/1000).toFixed(0)+'k\u202f'+c:n+'\u202f'+c;}
+function pct(n){return Math.round(n)+'%';}
+
+// ══ DONNÉES EXEMPLES PAR SECTEUR (pour pré-remplir le simulateur) ══
+const SECT_DATA={
+  btp:     {ca:85000,  ch:28000,  rem:36000,  label:'Plombier EURL · 85k€ CA'},
+  tech:    {ca:120000, ch:18000,  rem:48000,  label:'Dev SASU · 120k€ CA'},
+  commerce:{ca:350000, ch:280000, rem:42000,  label:'Boutique SARL · 350k€ CA'},
+  resto:   {ca:480000, ch:380000, rem:36000,  label:'Restaurant SARL · 480k€ CA'},
+  sante:   {ca:180000, ch:32000,  rem:72000,  label:'Médecin SEL · 180k€ CA'},
+  immo:    {ca:48000,  ch:18000,  rem:0,      label:'SCI · 4 apparts · 48k€ loyers'},
+  transport:{ca:65000, ch:22000,  rem:30000,  label:'VTC Auto-ent. · 65k€ CA'},
+  creatif: {ca:55000,  ch:8000,   rem:32000,  label:'Photographe SASU · 55k€ CA'},
+  juridique:{ca:220000,ch:45000,  rem:90000,  label:'Avocat SEL · 220k€ CA'},
+  autre:   {ca:100000, ch:30000,  rem:40000,  label:'Entreprise · 100k€ CA'},
+};
+
+// ══ DÉTECTION SECTEUR AUTOMATIQUE ══
+function detectSecteur(){
+  const cats=entries.map(e=>e.cat);
+  const descs=entries.map(e=>e.desc.toLowerCase()).join(' ');
+  if(cats.filter(c=>['Matériel','Déplacement','Assurance'].includes(c)).length>=2||/plomb|électr|maçon|carrel|peintur|toiture|chantier|artisan|btp/.test(descs)) return 'btp';
+  if(cats.includes('Loyer perçu')||/sci|loyer|location|locatif|bail|foncier|immobi/.test(descs)) return 'immo';
+  if(/resto|restaurant|cuisine|traiteur|café|brasserie/.test(descs)) return 'resto';
+  if(/médec|kiné|ostéo|dentist|infirmier|pharmacie|soin/.test(descs)) return 'sante';
+  if(/avocat|notaire|huissier|juridique|judiciaire/.test(descs)) return 'juridique';
+  if(/vtc|uber|livr|chauffeur|transport/.test(descs)) return 'transport';
+  if(/photo|artiste|musique|créatif|design|vidéo/.test(descs)) return 'creatif';
+  if(cats.filter(c=>c==='Vente').length>=3) return 'commerce';
+  return secteur;
+}
+
+// ══ CONSEILS PAR SECTEUR ══
+function getConseils(r,ca,ch,cur){
+  // Priorité au secteur choisi à l'onboarding
+  // La détection auto n'intervient qu'avec 5+ saisies ET si pas de secteur onboarding
+  const s = secteur !== 'autre'
+    ? secteur
+    : (entries.length >= 5 ? detectSecteur() : 'autre');
+
+  const ben=Math.max(0,ca-ch-r.tot);
+  const now=new Date();
+  const daysLeft=Math.round((new Date(now.getFullYear(),11,31)-now)/(864e5));
+  const isCH=statut.endsWith('_ch');
+  const isImmo=['sci_ir','sci_is','sarl_immo_ch'].includes(statut)||s==='immo';
+  const all=[];
+
+  // ── Conseils spécifiques IMMO/SCI (pas de véhicule, pas de SaaS ici !)
+  if(isImmo){
+    if(statut==='sci_ir'){
+      all.push({ico:'🏗️',bg:var_('green'),tag:`⏱ ${daysLeft} jours · SCI IR`,title:'Travaux = déficit foncier',desc:`Des travaux avant le 31/12 créent un déficit foncier déductible jusqu'à 10 700€/an sur tes autres revenus.`,save:'Jusqu\'à '+fmt(10700*.41,cur)+' d\'IR en moins',pri:1});
+      all.push({ico:'⚖️',bg:var_('blue'),tag:'SCI · Stratégie',title:'Passer la SCI à l\'IS ?',desc:`En SCI à l'IS tu peux amortir le bien (~3%/an) et déduire davantage. Utile si tes revenus fonciers sont élevés.`,save:'Simulation recommandée',pri:2});
+      all.push({ico:'💶',bg:var_('green'),tag:'SCI · Base',title:'Intérêts d\'emprunt déductibles',desc:'Les intérêts de ton crédit immobilier sont intégralement déductibles des revenus fonciers de la SCI.',save:'Déduction totale des intérêts',pri:3});
+      all.push({ico:'🏦',bg:var_('amber'),tag:'SCI · Transmission',title:'Démembrement usufruit/nue-propriété',desc:'Donner la nue-propriété des parts à tes enfants réduit les droits de succession tout en gardant les revenus.',save:'Optimisation patrimoniale',pri:4});
+    }
+    if(statut==='sci_is'){
+      all.push({ico:'📉',bg:var_('green'),tag:`⏱ ${daysLeft} jours · SCI IS`,title:'Amortissement du bien déductible',desc:`En SCI à l'IS, tu amortis ~3% du bien par an. Sur 300 000€ = 9 000€ de charges déductibles chaque année.`,save:fmt(9000*.25,cur)+' d\'IS économisés/an',pri:1});
+      all.push({ico:'🏗️',bg:var_('blue'),tag:'SCI IS · Optimisation',title:'Travaux capitalisables ou déductibles',desc:'Selon leur nature, les travaux s\'amortissent (amélioration) ou se déduisent directement (entretien/réparation).',save:'Double levier fiscal',pri:2});
+      all.push({ico:'💸',bg:var_('amber'),tag:'SCI IS · Attention',title:'Flat tax 30% sur dividendes',desc:'En SCI IS, les dividendes que tu te verses sont soumis à la flat tax 30%. Optimiser la distribution selon ton IR.',save:'Comparer avec versement en salaire',pri:3});
+    }
+    if(statut==='sarl_immo_ch'){
+      all.push({ico:'🏔️',bg:var_('blue'),tag:`Suisse · ${(CANTONS[canton]||CANTONS.zg).name}`,title:'Amortissement 4%/an déductible',desc:'En Sàrl immobilière, tu amortis 4% de la valeur du bâtiment par an — charge déductible de l\'IS cantonal.',save:'4% du bien chaque année',pri:1});
+      all.push({ico:'💶',bg:var_('green'),tag:'Suisse · Immo',title:'Intérêts hypothécaires déductibles',desc:'Les intérêts de ton prêt hypothécaire sont déductibles du revenu imposable cantonal et fédéral.',save:'Déduction directe sur l\'IFD',pri:2});
+      const c=CANTONS[canton]||CANTONS.zg;
+      all.push({ico:'🗺️',bg:var_('amber'),tag:'Suisse · Canton',title:`IS à ${Math.round(c.is*1000)/10}% à ${c.name}`,desc:`Zoug offre 11.5% vs ${Math.round(c.is*1000)/10}% à ${c.name}. Pour une Sàrl immo, choisir le bon canton est crucial.`,save:'Jusqu\'à '+fmt(ben*(c.is-0.115),cur)+'/an',pri:3});
+    }
+    // Conseils immo généraux
+    const perMax=isCH?Math.min(7056,ca*.10):Math.min(35194,ca*.10);
+    if(perMax>500&&!isCH) all.push({ico:'🏖️',bg:var_('blue'),tag:'Retraite · Déductible',title:'PER pour réduire l\'IR foncier',desc:`Tes revenus fonciers gonflent ton IR. Verser jusqu'à ${fmt(perMax,cur)} sur un PER réduit directement la note.`,save:'+'+fmt(perMax*.3,cur)+'/an en moins d\'IR',pri:5});
+    return all.sort((a,b)=>a.pri-b.pri);
+  }
+
+  // ── Conseils communs (hors immo) ──
+  const perMax=isCH?Math.min(7056,ca*.10):Math.min(35194,ca*.10);
+  if(perMax>500) all.push({ico:'🏖️',bg:var_('blue'),tag:'Retraite · Déductible',title:isCH?'Verser sur ton Pilier 3a':'Alimenter ton PER',desc:`Jusqu'à ${fmt(perMax,cur)} déductibles de tes revenus. Moins d'impôts aujourd'hui + retraite demain.`,save:'+'+fmt(Math.max(0,irFR(ca)*.15),cur)+'/an',pri:4});
+  if(ben>3000&&s!=='immo') all.push({ico:'📚',bg:var_('amber'),tag:'100% déductible',title:'Formation professionnelle',desc:'Toute formation liée à ton activité est déductible immédiatement, sans limite de montant.',save:fmt(Math.min(3000,ben*.2)*.25,cur)+' économisés',pri:5});
+
+  // ── BTP ──
+  if(s==='btp'){
+    if(ben>8000) all.push({ico:'🚐',bg:var_('green'),tag:`⏱ ${daysLeft} jours · BTP`,title:'Acheter un véhicule utilitaire',desc:`Ton bénéfice de ${fmt(ben,cur)} permet d'acquérir un van ou fourgon. Amortissable sur 5 ans.`,save:'Économie IS : '+fmt(ben*.15*.25,cur),pri:1});
+    all.push({ico:'🔧',bg:var_('blue'),tag:'BTP · Immédiat',title:'Outillage < 500€ → déductible immédiat',desc:'Tout achat d\'outillage sous 500€ est déductible à 100% l\'année d\'achat. Au-dessus, amortissable 3-5 ans.',save:'Économise sur chaque achat',pri:2});
+    all.push({ico:'🛡️',bg:var_('amber'),tag:'BTP · Obligatoire',title:'Assurance décennale déductible',desc:'Ta garantie décennale, RC pro et assurance chantier sont intégralement déductibles de ton bénéfice.',save:'Charge 100% déductible',pri:3});
+  }
+
+  // ── TECH / FREELANCE ──
+  if(s==='tech'){
+    if(ben>5000) all.push({ico:'💻',bg:var_('green'),tag:`⏱ ${daysLeft} jours`,title:'Matériel informatique haut de gamme',desc:`Ordinateur, écran, tablette — amortissables sur 3 ans. MacBook Pro 2 499€ = ${fmt(2499*.25,cur)} d'économie IS.`,save:fmt(2499*.25,cur)+' économisés',pri:1});
+    all.push({ico:'🏠',bg:var_('blue'),tag:'Freelance · Quotidien',title:'Bureau à domicile déductible',desc:'Si tu travailles chez toi, une part de ton loyer et charges est déductible. Généralement 10 à 30% selon la surface.',save:'~'+fmt(1200,cur)+'/an',pri:2});
+    all.push({ico:'📱',bg:var_('amber'),tag:'Quotidien · Simple',title:'Abonnements SaaS pro déductibles',desc:'Adobe, Figma, Notion, GitHub — tous déductibles à 100%. Vérifie que tu les passes sur ton compte pro.',save:'Déduction sur chaque abonnement',pri:3});
+  }
+
+  // ── RESTAURATION ──
+  if(s==='resto'){
+    all.push({ico:'🍽️',bg:var_('amber'),tag:'Resto · TVA spéciale',title:'TVA à 10% sur place, 5.5% à emporter',desc:'Les ventes sur place = 10%, à emporter = 5.5%. Bien séparer les deux pour ne pas surpayer la TVA.',save:'Taux réduit = moins de TVA',pri:1});
+    all.push({ico:'📦',bg:var_('blue'),tag:'Fin d\'année',title:'Gérer ton stock avant la clôture',desc:'Réduire ton stock fin d\'année diminue ton bénéfice imposable. Un inventaire précis est essentiel.',save:'Économie IS directe',pri:2});
+    all.push({ico:'👥',bg:var_('green'),tag:'Emploi · Aide',title:'Aide à la première embauche',desc:'Embaucher ton premier salarié ouvre droit à des exonérations de charges pendant 1 an.',save:'Exonération charges 1 an',pri:3});
+  }
+
+  // ── SANTÉ / LIBÉRAL ──
+  if(s==='sante'){
+    if(statut==='sel'||statut==='eurl') all.push({ico:'💊',bg:var_('green'),tag:'SEL · Loi Madelin',title:'Mutuelle et prévoyance Madelin',desc:'En SEL ou EURL, les contrats Madelin (mutuelle, prévoyance, retraite) sont déductibles du revenu imposable.',save:'Jusqu\'à 3% du CA + 7% du bénéfice',pri:1});
+    all.push({ico:'🛡️',bg:var_('amber'),tag:'Libéral · Obligatoire',title:'RCP et cotisations ordinales déductibles',desc:'Ta responsabilité civile professionnelle et cotisations à l\'ordre sont déductibles à 100% de tes bénéfices.',save:'Charges 100% déductibles',pri:2});
+    all.push({ico:'📚',bg:var_('blue'),tag:'Libéral · DPC',title:'Formation continue DPC déductible',desc:'Le développement professionnel continu (DPC) et les congrès médicaux sont intégralement déductibles.',save:fmt(2000*.45,cur)+' économisés sur 2 000'+cur+' de formation',pri:3});
+  }
+
+  // ── TRANSPORT ──
+  if(s==='transport'){
+    all.push({ico:'🚗',bg:var_('green'),tag:'Transport · Principal',title:'Véhicule = ta charge principale',desc:'Achat, crédit-bail, leasing — amortissable. Carburant + entretien + assurance = 100% déductibles.',save:'Charge principale optimisée',pri:1});
+    all.push({ico:'📱',bg:var_('amber'),tag:'Transport · Application',title:'Commissions app déductibles',desc:'Les commissions Uber, Deliveroo, etc. (souvent 25%) sont des charges déductibles à 100%.',save:'Déduction automatique',pri:2});
+  }
+
+  // ── COMMERCE ──
+  if(s==='commerce'){
+    all.push({ico:'📦',bg:var_('blue'),tag:'Commerce · Stock',title:'Valorisation du stock fin d\'année',desc:'La méthode de valorisation de ton stock (FIFO, coût moyen) impacte directement ton bénéfice imposable.',save:'Optimiser = moins d\'IS',pri:1});
+    all.push({ico:'📢',bg:var_('green'),tag:'Commerce · Marketing',title:'Publicité 100% déductible',desc:'Google Ads, Meta Ads, influenceurs — tous tes frais marketing sont déductibles à 100% du bénéfice.',save:'Déduction totale',pri:2});
+  }
+
+  // ── CRÉATIF ──
+  if(s==='creatif'){
+    all.push({ico:'📷',bg:var_('blue'),tag:'Créatif · Matériel',title:'Matériel pro = charge déductible',desc:'Appareil photo, objectifs, studio, logiciels créatifs — amortissables selon durée d\'usage.',save:'Amorti sur 3-5 ans',pri:1});
+    all.push({ico:'©️',bg:var_('green'),tag:'Créatif · Droits',title:'Droits d\'auteur AGESSA/MDA',desc:'Tes revenus artistiques bénéficient d\'un abattement forfaitaire de 34% (micro-BNC) ou de déductions réelles.',save:'Abattement 34% en micro-BNC',pri:2});
+  }
+
+  // ── JURIDIQUE ──
+  if(s==='juridique'){
+    all.push({ico:'⚖️',bg:var_('blue'),tag:'Juridique · Obligatoire',title:'Cotisation ordinale et RCP',desc:'Cotisation au barreau/ordre et assurance RCP sont déductibles à 100% de tes bénéfices.',save:'Charges 100% déductibles',pri:1});
+    all.push({ico:'📚',bg:var_('amber'),tag:'Juridique · Documentation',title:'Abonnements juridiques déductibles',desc:'Dalloz, LexisNexis, Francis Lefebvre, Doctrinal — tous tes abonnements pro sont déductibles.',save:'Déduction totale',pri:2});
+  }
+
+  // ── Suisse généraux (hors immo) ──
+  if(isCH){
+    const c=CANTONS[canton]||CANTONS.zg;
+    const allRates=Object.values(CANTONS).map(x=>x.is).sort((a,b)=>a-b);
+    const rank=allRates.indexOf(c.is)+1;
+    if(rank>5) all.push({ico:'🗺️',bg:var_('blue'),tag:'Suisse · Canton',title:`IS à ${Math.round(c.is*1000)/10}% à ${c.name}`,desc:`Tu es au rang ${rank}/16. Zoug offre 11.5%. Changer de canton peut valoir le coup à partir de 50 000 CHF de bénéfice.`,save:'Jusqu\'à '+fmt(ben*(c.is-0.115),cur)+'/an',pri:2});
+  }
+
+  return all.sort((a,b)=>a.pri-b.pri);
+}
+
+function var_(name){
+  const map={green:'rgba(0,200,151,0.08)',blue:'rgba(61,127,255,0.08)',amber:'rgba(255,154,60,0.08)',red:'rgba(255,77,109,0.08)'};
+  return map[name]||map.green;
+}
+function varColor(name){
+  const map={green:'var(--green-d)',blue:'var(--blue)',amber:'var(--amber)',red:'var(--red)'};
+  return map[name]||map.green;
+}
+
+// ══ REFRESH ══
+function refresh(){
+  const ca=getCA()*12, ch=getCH()*12;
+  const cfg=getCfg(statut);
+  const rem=Math.min(ch*.45,ca*.28);
+  const r=cfg.calc(ca,ch,rem);
+  const cur=cfg.c;
+
+  // Auto-detect secteur uniquement si l'utilisateur n'a pas choisi de secteur à l'onboarding
+  if(secteur==='autre'&&entries.length>=5) secteur=detectSecteur();
+
+  // Hero
+  document.getElementById('h-net').textContent=fmt(r.net,cur);
+  document.getElementById('h-ca').textContent=fmt(ca,cur);
+  document.getElementById('h-ch').textContent=fmt(ch,cur);
+  document.getElementById('h-imp').textContent=fmt(r.tot,cur);
+  document.getElementById('h-sub').textContent=`${cfg.n} · ${country==='ch'?'🇨🇭 Suisse':'🇫🇷 France'}`;
+
+  // Score
+  const score=Math.min(100,Math.max(20,Math.round(50+(r.net/Math.max(ca,1))*60-(r.tot/Math.max(ca,1))*20)));
+  document.getElementById('score-n').textContent=score;
+  const circ=138.2;
+  document.getElementById('ring-dash').setAttribute('stroke-dashoffset',circ-(circ*score/100));
+
+  // 1 seul conseil IA (le meilleur)
+  const conseils=getConseils(r,ca,ch,cur);
+  const best=conseils[0];
+  if(best){
+    const iaWrap=document.getElementById('ia-card-wrap');
+    iaWrap.innerHTML=`
+      <div class="ia-card" id="ia-card-main">
+        <div class="ia-inner">
+          <div class="ia-top">
+            <div class="ia-icon" style="background:${best.bg}">${best.ico}</div>
+            <div class="ia-body">
+              <div class="ia-tag" style="color:${varColor(best.bg.includes('0,200')?'green':best.bg.includes('61')?'blue':best.bg.includes('255,154')?'amber':'red')}">${best.tag}</div>
+              <div class="ia-title"></div>
+              <div class="ia-desc"></div>
+            </div>
+          </div>
+          <div class="ia-saving" style="background:${best.bg}">
+            <div class="ia-saving-val" style="color:${varColor(best.bg.includes('0,200')?'green':best.bg.includes('61')?'blue':best.bg.includes('255,154')?'amber':'red')}">💚 <span class="ia-save-txt"></span></div>
+            <div class="ia-saving-cta">En savoir plus →</div>
+          </div>
+        </div>
+      </div>`;
+    // Texte via textContent pour éviter XSS / parsing HTML
+    iaWrap.querySelector('.ia-title').textContent=best.title;
+    iaWrap.querySelector('.ia-desc').textContent=best.desc;
+    iaWrap.querySelector('.ia-save-txt').textContent=best.save;
+    document.getElementById('ia-card-main').addEventListener('click',()=>openChat(best.title));
+  } else {
+    document.getElementById('ia-card-wrap').innerHTML='';
+  }
+
+  // Alertes
+  const alerts=[];
+  const tvaRate=SECT_TVA[secteur]||0.20;
+  const tvaMois=Math.max(0,(getCA()-getCH())*tvaRate);
+  // FIX — Alerte franchise TVA CH sous 100 000 CHF
+  if(country==='ch' && ca < 100000){
+    alerts.push({cls:'green',ico:'✅',title:'Franchise TVA suisse active',sub:`CA ${fmt(ca,'CHF')} < 100 000 CHF — pas de TVA due`,tag:'Info',tagBg:'var(--green)'});
+  } else if(country==='ch' && ca >= 100000 && ca < 110000){
+    alerts.push({cls:'amber',ico:'⚠️',title:'Seuil TVA CH bientôt atteint',sub:'Dès 100 000 CHF de CA → assujettissement obligatoire',tag:'Attention',tagBg:'var(--amber)'});
+  } else if(tvaMois>0){
+    alerts.push({cls:'amber',ico:'📅',title:`TVA à reverser : ${fmt(tvaMois,cur)}`,sub:'Échéance le '+(country==='ch'?'30 du mois suivant':'15 du mois'),tag:'Ce mois',tagBg:'var(--amber)'});
+  }
+  if(statut==='ae'&&ca>72000) alerts.push({cls:'red',ico:'⚡',title:'Seuil micro-entreprise dépassé',sub:'Passe en société pour optimiser',tag:'Urgent',tagBg:'var(--red)'});
+  if(r.tot/Math.max(ca,1)>0.45) alerts.push({cls:'red',ico:'🚨',title:`Taux de prélèvement élevé (${pct(r.tot/Math.max(ca,1)*100)})`,sub:'Voir mes conseils pour optimiser',tag:'Attention',tagBg:'var(--red)'});
+  document.getElementById('alertes-wrap').innerHTML=alerts.map(a=>`
+    <div class="alerte" style="background:var(--${a.cls}-l)" onclick="goTab('tout')">
+      <span class="al-ico">${a.ico}</span>
+      <div class="al-body"><div class="al-title">${a.title}</div><div class="al-sub" style="color:var(--muted)">${a.sub}</div></div>
+      <span class="al-tag" style="background:${a.tagBg}">${a.tag}</span>
+    </div>`).join('');
+
+  // TX home (3 dernières)
+  renderTx('tx-home',entries.slice(0,3));
+  renderTx('tx-full',getFiltered());
+
+  // Bilan
+  const resultat=Math.max(0,ca-ch-r.tot);
+  const marge=ca>0?Math.round(resultat/ca*100):0;
+  document.getElementById('bl-net').textContent=fmt(resultat,cur);
+  document.getElementById('bl-marge').textContent=marge+'% de marge';
+  document.getElementById('pl-detail').innerHTML=[
+    {l:'Chiffre d\'affaires',v:ca,g:true},{l:'Charges ext.',v:-ch*.55},{l:'Charges pers.',v:-ch*.30},{l:'Autres charges',v:-ch*.15},
+    {l:'Résultat expl.',v:ca-ch,bold:true},{l:'Impôts',v:-r.tot,db:true},{l:'Résultat net',v:resultat,bold:true,cr:true}
+  ].map(l=>`<div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}"><span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'}">${l.l}</span><span class="sr-v ${l.cr?'cr':l.db?'db':''}" style="font-size:${l.bold?'14px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),cur)}</span></div>`).join('');
+
+  // TVA
+  refreshTVA(cur,tvaRate);
+
+  // Simulateur — pré-remplir avec données du secteur si pas touché
+  prefillSimulateur();
+
+  // Conseils liste complète — textContent pour éviter parsing HTML
+  const conseilsEl=document.getElementById('conseils-list');
+  conseilsEl.innerHTML=conseils.slice(0,6).map((c,ci)=>`
+    <div class="conseil-card" style="background:${c.bg}" data-ci="${ci}">
+      <span class="cc-ico">${c.ico}</span>
+      <div class="cc-body">
+        <div class="cc-tag" style="color:${varColor(c.bg.includes('0,200')?'green':c.bg.includes('61')?'blue':c.bg.includes('255,154')?'amber':'red')}">${c.tag}</div>
+        <div class="cc-title-el"></div>
+        <div class="cc-desc-el" style="color:var(--muted);font-size:11px;font-weight:600;line-height:1.55"></div>
+        <div class="cc-save" style="color:var(--green)">💚 <span class="cc-save-el"></span></div>
+      </div>
+    </div>`).join('');
+  // Remplir textContent séparément
+  conseilsEl.querySelectorAll('.conseil-card').forEach((el,ci)=>{
+    const c=conseils[ci];if(!c)return;
+    el.querySelector('.cc-title-el').textContent=c.title;
+    el.querySelector('.cc-desc-el').textContent=c.desc;
+    el.querySelector('.cc-save-el').textContent=c.save;
+    el.addEventListener('click',()=>openChat(c.title));
+  });
+
+  // Comparer statuts
+  refreshStatuts(ca,ch);
+
+  // Canton
+  const isCH=statut.endsWith('_ch');
+  document.getElementById('canton-bloc').style.display=isCH?'block':'none';
+}
+
+function refreshTVA(cur,rate){
+  const ca=getCA(),ch=getCH();
+  const isCH=country==='ch';
+  const r=rate||SECT_TVA[secteur]||0.20;
+
+  // FIX — Seuil TVA CH : en dessous de 100 000 CHF → franchise TVA
+  // Au seuil exact 100 000 CHF → assujetti (dès que le seuil est atteint)
+  const SEUIL_TVA_CH=100000;
+  const sousSeuil=isCH && ca<SEUIL_TVA_CH;
+  const auSeuil=isCH && ca===SEUIL_TVA_CH;
+
+  if(sousSeuil){
+    // Franchise TVA — pas de TVA due
+    document.getElementById('tva-amt').textContent='Franchise';
+    document.getElementById('tva-dead').textContent='Non assujetti';
+    document.getElementById('tva-detail').innerHTML=`
+      <div class="sr"><span class="sr-n" style="color:var(--muted);font-weight:700">CA annuel</span><span class="sr-v">${fmt(ca,'CHF')}</span></div>
+      <div class="sr"><span class="sr-n" style="color:var(--amber);font-weight:700">Seuil TVA CH</span><span class="sr-v" style="color:var(--amber)">100 000 CHF</span></div>
+      <div class="sr"><span class="sr-n" style="color:var(--green-d);font-weight:700">Statut</span><span class="sr-v" style="color:var(--green-d)">Franchise TVA ✓</span></div>
+      <div style="font-size:10px;color:var(--muted);padding:8px 0;line-height:1.5">En dessous de 100 000 CHF de CA, vous bénéficiez de la franchise TVA. Dès que vous dépassez ce seuil, vous devrez vous assujettir.</div>`;
+    return;
+  }
+
+  const tvaCol=ca*r,tvaDed=ch*r,tvaN=Math.max(0,tvaCol-tvaDed);
+  document.getElementById('tva-amt').textContent=fmt(tvaN,cur||(isCH?'CHF':'€'));
+  document.getElementById('tva-dead').textContent=isCH?'le 30 du mois suivant':'le 15 du mois';
+  document.getElementById('tva-detail').innerHTML=[
+    {l:'CA HT',v:fmt(ca,cur)},
+    {l:`TVA collectée (${Math.round(r*100)}%)`,v:fmt(tvaCol,cur)},
+    {l:'TVA déductible',v:'−'+fmt(tvaDed,cur),cls:'cr'},
+    {l:'À reverser',v:fmt(tvaN,cur),cls:'am'}
+  ].map(l=>`<div class="sr"><span class="sr-n" style="color:var(--muted);font-weight:700">${l.l}</span><span class="sr-v ${l.cls||''}">${l.v}</span></div>`).join('')+
+  (isCH?`
+    <div class="sr"><span style="color:var(--muted);font-weight:700">Taux normal CH</span><span class="sr-v">8.1%</span></div>
+    <div class="sr"><span style="color:var(--muted);font-weight:700">Taux réduit CH</span><span class="sr-v">2.6%</span></div>
+    <div class="sr"><span style="color:var(--muted);font-weight:700">Hébergement CH</span><span class="sr-v">3.8%</span></div>
+    <div style="font-size:10px;color:var(--muted);padding:6px 0;line-height:1.5">💡 Impôt anticipé : les dividendes suisses sont soumis à une retenue de 35%, récupérable via votre déclaration d'impôt annuelle.</div>
+    <div style="font-size:10px;color:var(--muted);padding:2px 0;line-height:1.5">📊 LPP : cotisations 2ème pilier variables selon votre caisse de pension. Seuil d'entrée : 22 050 CHF/an.</div>
+    <div style="font-size:9px;color:rgba(var(--muted-rgb),.6);padding:6px 0;font-style:italic">Données indicatives 2024/2025 — taux cantonaux susceptibles de varier.</div>`:
+  `<div class="sr"><span style="color:var(--muted);font-weight:700">Taux services</span><span class="sr-v">20%</span></div>
+   <div class="sr"><span style="color:var(--muted);font-weight:700">Restauration</span><span class="sr-v">10%</span></div>
+   <div class="sr"><span style="color:var(--muted);font-weight:700">Alimentaire</span><span class="sr-v">5.5%</span></div>`);
+}
+
+function refreshStatuts(ca,ch){
+  const rem=Math.min(ca*.35,Math.max(24000,ca*.25));
+  const isCH=statut.endsWith('_ch');
+  const keys=isCH?['sarl_ch','sa_ch','ind_ch','sarl_immo_ch']:['ae','sasu','eurl','sa','sci_ir','sci_is','sel'];
+  const res=keys.map(k=>{const c=getCfg(k),r=c.calc(ca,ch,rem);return{k,n:c.n,e:c.e,net:r.net,tot:r.tot,cur:c.c};}).sort((a,b)=>b.net-a.net);
+  document.getElementById('st-grid').innerHTML=res.map((r,i)=>`
+    <div class="st-card ${i===0?'best':''}" onclick="setStatut('${r.k}');document.getElementById('sel-statut').value='${r.k}'">
+      ${i===0?'<div class="st-badge">✦ Optimal</div>':''}
+      <div class="st-emoji">${r.e}</div>
+      <div class="st-name">${r.n}</div>
+      <div class="st-net" style="color:${i===0?'var(--green)':i===1?'var(--blue)':'var(--dark)'}">${fmt(r.net,r.cur)}</div>
+      <div class="st-imp">Impôts : ${fmt(r.tot,r.cur)}</div>
+    </div>`).join('');
+}
+
+// ══ SAISIE ══
+function buildCats(){
+  document.getElementById('s-cats').innerHTML=CATS[eType].map(c=>`
+    <div class="cat-btn ${c.id===selCat?'on':''}" onclick="selCatFn('${c.id}',this)">
+      <span class="ci">${c.ico}</span><span class="cl">${c.lbl}</span>
+    </div>`).join('');
+}
+function setType(t,el){
+  eType=t;
+  document.getElementById('btn-rev').className='tt'+(t==='rev'?' on g':'');
+  document.getElementById('btn-ch').className='tt'+(t==='ch'?' on r':'');
+  selCat=CATS[t][0].id;buildCats();
+}
+function selCatFn(id,el){selCat=id;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+async function confirmSaisie(){
+  const amount=parseFloat(document.getElementById('s-amount').value);
+  const desc=document.getElementById('s-desc').value.trim()||selCat;
+  if(!amount||amount<=0){document.getElementById('s-amount').style.borderColor='var(--red)';return;}
+  const cat=CATS[eType].find(c=>c.id===selCat)||CATS[eType][0];
+  const today=new Date(),m=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const entry={id:Date.now(),desc,cat:cat.id,ico:cat.ico,type:eType,amount,date:today.getDate()+' '+m[today.getMonth()]};
+  entries.unshift(entry);
+  closeOv('ov-saisie');refresh();toast('✅ Opération ajoutée');
+  await saveEntry(entry);
+}
+
+// ══ TX ══
+function renderTx(id,list){
+  const el=document.getElementById(id);if(!el)return;
+  const showActions=id==='tx-full'; // boutons modifier/supprimer seulement dans la liste complète
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-e">📋</div><div class="empty-t">Aucune opération</div><div class="empty-s">Tape + pour ajouter</div></div>';return;}
+  el.innerHTML=list.map(t=>`
+    <div class="tx" id="tx-${t.id}">
+      <div class="tx-ico" style="background:${t.type==='rev'?'var(--green-l)':'var(--blue-l)'}">${t.ico||'📄'}</div>
+      <div class="tx-info"><div class="tx-name">${t.desc}</div><div class="tx-cat">${t.cat}</div></div>
+      <div class="tx-r"><div class="tx-amt ${t.type==='rev'?'cr':''}">${t.type==='rev'?'+':'−'}${fmt(t.amount)}</div><div class="tx-date">${t.date}</div></div>
+      ${showActions?`<div class="tx-actions">
+        <button class="tx-btn edit" onclick="openEdit(${t.id})" title="Modifier">✏️</button>
+        <button class="tx-btn del" onclick="deleteTx(${t.id})" title="Supprimer">🗑️</button>
+      </div>`:''}
+    </div>`).join('');
+}
+function getFiltered(){return filterMode==='all'?entries:entries.filter(e=>e.type===filterMode);}
+function filterTx(m,el){
+  filterMode=m;
+  document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  renderTx('tx-full',getFiltered());
+}
+
+// ══ EDIT / DELETE OPÉRATIONS ══
+let editType='rev', editCat='Prestations';
+
+function openEdit(id){
+  const entry=entries.find(e=>e.id===id);
+  if(!entry)return;
+  document.getElementById('edit-id').value=id;
+  editType=entry.type;
+  editCat=entry.cat;
+  document.getElementById('edit-amount').value=entry.amount;
+  document.getElementById('edit-desc').value=entry.desc;
+  // Toggle type
+  document.getElementById('edit-btn-rev').className='tt'+(editType==='rev'?' on g':'');
+  document.getElementById('edit-btn-ch').className='tt'+(editType==='ch'?' on r':'');
+  buildEditCats();
+  openOv('ov-edit');
+}
+
+function setEditType(t,el){
+  editType=t;
+  document.getElementById('edit-btn-rev').className='tt'+(t==='rev'?' on g':'');
+  document.getElementById('edit-btn-ch').className='tt'+(t==='ch'?' on r':'');
+  editCat=CATS[t][0].id;
+  buildEditCats();
+}
+
+function buildEditCats(){
+  document.getElementById('edit-cats').innerHTML=CATS[editType].map(c=>`
+    <div class="cat-btn ${c.id===editCat?'on':''}" onclick="selEditCat('${c.id}',this)">
+      <span class="ci">${c.ico}</span><span class="cl">${c.lbl}</span>
+    </div>`).join('');
+}
+
+function selEditCat(id,el){
+  editCat=id;
+  document.querySelectorAll('#edit-cats .cat-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function confirmEdit(){
+  const id=parseInt(document.getElementById('edit-id').value);
+  const amount=parseFloat(document.getElementById('edit-amount').value);
+  const desc=document.getElementById('edit-desc').value.trim();
+  if(!amount||amount<=0){document.getElementById('edit-amount').style.borderColor='var(--red)';return;}
+  const idx=entries.findIndex(e=>e.id===id);
+  if(idx===-1)return;
+  const cat=CATS[editType].find(c=>c.id===editCat)||CATS[editType][0];
+  entries[idx]={...entries[idx],type:editType,amount,desc:desc||editCat,cat:cat.id,ico:cat.ico};
+  closeOv('ov-edit');
+  refresh();
+  toast('✅ Opération modifiée');
+}
+
+function deleteTx(id){
+  const entry=entries.find(e=>e.id===id);
+  if(!entry)return;
+  entries=entries.filter(e=>e.id!==id);
+  refresh();
+  deleteEntryDB(id);
+  showUndoToast(`🗑️ "${entry.desc}" supprimée`,async()=>{
+    entries.unshift(entry);
+    refresh();
+    await saveEntry(entry);
+  });
+}
+
+function deleteFacture(id){
+  const f=factures.find(x=>x.id===id);
+  if(!f)return;
+  factures=factures.filter(x=>x.id!==id);
+  renderFactures();
+  deleteFactureDB(id);
+  showUndoToast(`🗑️ Facture ${f.num} supprimée`,async()=>{
+    factures.unshift(f);
+    renderFactures();
+    await saveFacture(f);
+  });
+}
+
+function showUndoToast(msg,undoFn){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div');
+  t.className='toast';
+  t.style.cssText='position:fixed;bottom:calc(var(--tab-h) + var(--safe-b) + 14px);left:50%;transform:translateX(-50%);background:#0A0A12;color:white;border-radius:99px;padding:10px 16px;font-size:13px;font-weight:800;z-index:300;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;border:1px solid rgba(255,255,255,.1)';
+  t.innerHTML=`<span>${msg}</span><button onclick="undoAction()" style="background:var(--green);color:#000;border:none;border-radius:99px;padding:4px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;cursor:pointer;flex-shrink:0">Annuler</button>`;
+  document.body.appendChild(t);
+  window._undoFn=undoFn;
+  window._undoTimer=setTimeout(()=>{
+    t.style.transition='opacity .3s';t.style.opacity='0';
+    setTimeout(()=>t.remove(),300);
+    window._undoFn=null;
+  },4000);
+}
+
+function undoAction(){
+  if(window._undoFn){
+    window._undoFn();
+    window._undoFn=null;
+    clearTimeout(window._undoTimer);
+    document.querySelectorAll('.toast').forEach(t=>t.remove());
+    toast('↩️ Action annulée');
+  }
+}
+
+// ══ SIMULATEUR ══
+function onSlider(){
+  const ca=parseInt(document.getElementById('sl-ca').value)||0;
+  const ch=parseInt(document.getElementById('sl-ch').value)||0;
+  const rem=parseInt(document.getElementById('sl-rem').value)||0;
+  document.getElementById('sl-ca').dataset.touched='1';
+  const isCH=statut.endsWith('_ch'),cur=isCH?'CHF':'€';
+  document.getElementById('sl-ca-v').textContent=fmtK(ca,cur);
+  document.getElementById('sl-ch-v').textContent=fmtK(ch,cur);
+  document.getElementById('sl-rem-v').textContent=fmtK(rem,cur);
+  const cfg=getCfg(statut),r=cfg.calc(ca,ch,rem);
+  document.getElementById('sim-tot').textContent=fmt(r.tot,cur);
+  document.getElementById('sim-net').textContent=fmt(r.net,cur);
+  document.getElementById('sim-taux').textContent=ca>0?pct(r.tot/ca*100):'—';
+  document.getElementById('sim-mois').textContent=fmt(r.net/12,cur);
+  // Label : secteur exemple ou taux effectif
+  const sd=SECT_DATA[secteur];
+  document.getElementById('sim-sub').textContent=sd?`${sd.label} · Taux effectif ${r.txEff||0}%`:`Taux effectif ${r.txEff||0}%`;
+
+  document.getElementById('sim-detail').innerHTML=(r.lines||[]).map((l,i)=>{
+    if(!l) return '';
+    if(l.v===null) return `<div style="padding:4px 18px;font-size:11px;color:var(--muted)">${l.l}</div>`;
+    if(l.note) return `<div style="padding:8px 18px;font-size:11px;color:var(--blue);font-weight:700;background:var(--blue-l);margin:4px 18px;border-radius:8px">${l.l}</div>`;
+    if(l.pct) return `<div class="sr" style="border-top:2px solid var(--border)"><span style="font-weight:900">Taux effectif global</span><span class="sr-v" style="font-size:15px;color:${l.v>40?'var(--red)':l.v>30?'var(--amber)':'var(--green)'}">${l.v}%</span></div>`;
+    const isLast=i===r.lines.length-1||r.lines[i+1]?.pct;
+    return `<div class="sr" style="${isLast?'border-top:2px solid var(--border)':''}">
+      <span style="color:${l.cls==='cr'||isLast?'var(--dark)':'var(--muted)'};font-weight:${isLast?'900':'700'};font-size:${isLast?'14px':'13px'}">${l.l}</span>
+      <span class="sr-v ${l.cls||''}" style="font-size:${isLast?'14px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),cur)}</span>
+    </div>`;
+  }).join('');
+}
+
+// Pré-remplir le simulateur avec données du secteur
+function prefillSimulateur(){
+  const sd=SECT_DATA[secteur]||SECT_DATA.autre;
+  const slCa=document.getElementById('sl-ca');
+  if(slCa&&!slCa.dataset.touched){
+    slCa.value=Math.min(500000,Math.max(10000,sd.ca));
+    document.getElementById('sl-ch').value=Math.min(200000,sd.ch);
+    document.getElementById('sl-rem').value=Math.min(150000,sd.rem);
+  }
+  onSlider();
+}
+
+// ══ FACTURES ══
+function calcF(){
+  const ht=parseFloat(document.getElementById('f-ht').value)||0;
+  const tva=parseFloat(document.getElementById('f-tva').value)||0.20;
+  const ttc=ht+ht*tva;
+  const cur=statut.endsWith('_ch')?'CHF':'€';
+  document.getElementById('fp-ht').textContent=fmt(ht,cur);
+  document.getElementById('fp-tva').textContent=fmt(ht*tva,cur);
+  document.getElementById('fp-ttc').textContent=fmt(ttc,cur);
+  document.getElementById('f-prev').style.display=ht>0?'block':'none';
+}
+async function genFacture(){
+  const client=document.getElementById('f-client').value.trim();
+  if(!client){document.getElementById('f-client').focus();return;}
+  const ht=parseFloat(document.getElementById('f-ht').value)||0;
+  const tvaR=parseFloat(document.getElementById('f-tva').value)||0.20;
+  const tva=ht*tvaR,ttc=ht+tva;
+  const cur=statut.endsWith('_ch')?'CHF':'€';
+  const emetteur=document.getElementById('f-emetteur').value||'Mon Entreprise';
+  const desc=document.getElementById('f-desc').value||'Prestation';
+  const now=new Date(),m=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  const dateStr=now.getDate()+' '+m[now.getMonth()];
+  const num='FA-2026-'+String(factNum).padStart(3,'0');factNum++;
+  const facture={id:Date.now(),num,client,emetteur,desc,ht,tva,ttc,cur,date:dateStr,st:'En attente'};
+  const entry={id:Date.now()+1,desc:num+' — '+client,cat:'Prestations',ico:'🧾',type:'rev',amount:ht,date:dateStr};
+  factures.unshift(facture);
+  entries.unshift(entry);
+  closeOv('ov-facture');
+  renderFactures();
+  refresh();toast('✅ Facture '+num+' créée · ajoutée aux revenus');
+  await saveFacture(facture);
+  await saveEntry(entry);
+}
+
+function renderFactures(){
+  const el=document.getElementById('factures-list');if(!el)return;
+  if(!factures.length){
+    el.innerHTML='<div class="empty"><div class="empty-e">🧾</div><div class="empty-t">Aucune facture</div><div class="empty-s">Tape "+ Nouvelle" pour créer ta première facture pro</div></div>';
+    return;
+  }
+  el.innerHTML=factures.map(f=>`
+    <div class="fi" id="fi-${f.id}">
+      <div class="fi-ico">🧾</div>
+      <div class="fi-info">
+        <div class="fi-num">${f.num}</div>
+        <div class="fi-client">${f.client}</div>
+        <div class="fi-date">${f.date}</div>
+      </div>
+      <div class="fi-r">
+        <div class="fi-amt">${fmt(f.ttc,f.cur)} TTC</div>
+        <span class="fi-st ${f.st==='Payée'?'paid':'wait'}">${f.st}</span>
+      </div>
+      <div class="tx-actions">
+        ${f.st!=='Payée'?`<button class="tx-btn pay" onclick="payFacture(${f.id})" title="Marquer payée">✓</button>`:''}
+        <button class="tx-btn del" onclick="deleteFacture(${f.id})" title="Supprimer">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+async function payFacture(id){
+  const idx=factures.findIndex(f=>f.id===id);
+  if(idx===-1)return;
+  factures[idx].st='Payée';
+  renderFactures();
+  toast('✅ Facture marquée comme payée');
+  await updateFactureDB(id,{statut:'Payée'});
+}
+
+// ══ CHAT ══
+const SYS=`Tu es Fiskai, conseiller fiscal expert France et Suisse. Tu parles simplement, sans jargon. Max 2 paragraphes courts. Bienveillant, direct, concret. Tu connais : IS, IR, TVA, cotisations, SCI IR/IS, SEL, Sàrl immo CH, cantons suisses, optimisations secteur.`;
+async function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const msg=inp.value.trim();if(!msg)return;
+  inp.value='';
+  document.getElementById('chat-sugg').style.display='none';
+  addBubble('user',msg);
+  chatHist.push({role:'user',content:`Contexte: ${statut} · ${country==='ch'?'Suisse':'France'} · Secteur: ${secteur} · CA~${fmt(getCA()*12)} · Charges~${fmt(getCH()*12)}. Question: ${msg}`});
+  const tp=addTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:SYS,messages:chatHist})});
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||'Désolé, une erreur.';
+    tp.remove();addBubble('ai',reply);chatHist.push({role:'assistant',content:reply});
+  }catch(e){tp.remove();addBubble('ai','Erreur réseau — réessaie 🙏');}
+}
+function addBubble(role,text){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  const isAI=role==='ai';
+  d.style.cssText=`max-width:84%;padding:11px 14px;font-size:13px;font-weight:600;line-height:1.55;border-radius:18px;font-family:'Nunito',sans-serif;animation:fi .25s ease;align-self:${isAI?'flex-start':'flex-end'};background:${isAI?'var(--surface)':'#0A0A12'};color:${isAI?'var(--dark)':'white'};border-bottom-${isAI?'left':'right'}-radius:4px;box-shadow:${isAI?'var(--sh)':'none'}`;
+  d.textContent=text;el.appendChild(d);el.scrollTop=el.scrollHeight;return d;
+}
+function addTyping(){
+  const el=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.style.cssText='padding:12px 14px;background:var(--surface);border-radius:18px;border-bottom-left-radius:4px;box-shadow:var(--sh);align-self:flex-start;display:flex;gap:4px;align-items:center';
+  [1,2,3].forEach((_,i)=>{const s=document.createElement('span');s.style.cssText=`width:6px;height:6px;border-radius:50%;background:var(--muted);animation:fi 1.2s ${i*.2}s infinite`;d.appendChild(s);});
+  el.appendChild(d);el.scrollTop=el.scrollHeight;return d;
+}
+function useS(el){document.getElementById('chat-in').value=el.textContent;sendChat();}
+function openChat(question){
+  openOv('ov-chat');
+  if(question){
+    setTimeout(()=>{document.getElementById('chat-in').value=question;sendChat();},300);
+  }
+}
+
+// ══ NAVIGATION ══
+const PG_TITLES={home:'Mon argent',tout:'Tout voir'};
+function goTab(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>{if(!t.classList.contains('fab'))t.classList.remove('on');});
+  const pg=document.getElementById('pg-'+id);if(pg)pg.classList.add('on');
+  const tab=document.getElementById('tab-'+id);if(tab)tab.classList.add('on');
+  const pgTitle=document.getElementById('pg-title');
+  if(pgTitle) pgTitle.textContent=PG_TITLES[id]||id;
+  document.getElementById('scroll').scrollTop=0;
+}
+
+// ══ PAYS / STATUT / CANTON ══
+function setStatut(val){
+  statut=val;
+  country=val.endsWith('_ch')?'ch':'fr';
+  document.getElementById('country-lbl').textContent='Pays : '+(country==='ch'?'Suisse 🇨🇭':'France 🇫🇷');
+  document.getElementById('canton-bloc').style.display=country==='ch'?'block':'none';
+  buildCantonSel();refresh();
+}
+function toggleCountry(){
+  country=country==='fr'?'ch':'fr';
+  statut=country==='ch'?'sarl_ch':'sasu';
+  document.getElementById('sel-statut').value=statut;
+  document.getElementById('country-lbl').textContent='Pays : '+(country==='ch'?'Suisse 🇨🇭':'France 🇫🇷');
+  document.getElementById('canton-bloc').style.display=country==='ch'?'block':'none';
+  buildCantonSel();refresh();
+  toast(country==='ch'?'🇨🇭 Mode Suisse activé':'🇫🇷 Mode France activé');
+}
+function setCanton(val){
+  canton=val;
+  const c=CANTONS[val]||CANTONS.zg;
+  document.getElementById('canton-val').textContent=c.name+' · IS '+Math.round(c.is*1000)/10+'%';
+  document.getElementById('canton-detail').innerHTML=`
+    <div class="sr"><span class="sr-n" style="color:var(--muted);font-weight:700">IS combiné</span><span class="sr-v">${Math.round(c.is*1000)/10}%</span></div>
+    <div class="sr"><span class="sr-n" style="color:var(--muted);font-weight:700">Impôt revenu mult.</span><span class="sr-v">${Math.round(c.ir*100)}%</span></div>`;
+  refresh();
+}
+function buildCantonSel(){
+  const sel=document.getElementById('sel-canton');if(!sel)return;
+  sel.innerHTML=Object.entries(CANTONS).sort((a,b)=>a[1].is-b[1].is).map(([k,v])=>`<option value="${k}" ${k===canton?'selected':''}>${v.name} — IS ${Math.round(v.is*1000)/10}%</option>`).join('');
+}
+
+// ══ THEME ══
+function setTheme(dark){
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  localStorage.setItem('fsk-theme',dark?'dark':'light');
+  document.getElementById('theme-btn').textContent=dark?'🌙':'☀️';
+}
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  setTheme(!isDark);
+  document.getElementById('dark-chk').checked=!isDark;
+}
+function initTheme(){
+  const saved=localStorage.getItem('fsk-theme');
+  const dark=saved?saved==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(dark);
+  document.getElementById('dark-chk').checked=dark;
+}
+
+// ══ OVERLAYS ══
+function openOv(id){document.getElementById(id).classList.add('on');}
+function closeOv(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.overlay').forEach(ov=>{ov.addEventListener('click',e=>{if(e.target===ov)closeOv(ov.id);});});
+
+// ══ TOAST ══
+function toast(msg){
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},2400);
+}
+
+// ══ GREETING ══
+function initGreet(){const h=new Date().getHours();document.getElementById('greet').textContent=h<12?'Bonjour 👋':h<18?'Bon après-midi ☀️':'Bonsoir 🌙';}
+
+// ══ DIDACTICIEL ══
+const TUTO=[
+  {sel:'.hero',title:'Ton revenu net 💰',desc:'Ce chiffre c\'est ce qu\'il te reste après impôts et charges. Fiskai le calcule en temps réel dès que tu saisis une opération.',pos:'bottom'},
+  {sel:'#ia-card-wrap',title:'Ton conseil du jour 💡',desc:'Fiskai analyse ta situation et te propose LE meilleur conseil fiscal adapté à ton secteur. Clique dessus pour en savoir plus.',pos:'bottom'},
+  {sel:'#tab-fab',title:'Le bouton essentiel ✨',desc:'Ce + vert c\'est tout. Tap ici pour saisir en 3 secondes ce que tu as encaissé ou dépensé.',pos:'top'},
+  {sel:'#tab-tout',title:'Tout le reste 📊',desc:'Simulateur d\'impôts, TVA, bilan, factures, conseils — tout est là dans un scroll simple.',pos:'top'},
+];
+let tStep=0,tActive=false;
+
+function startTuto(){
+  tStep=0;tActive=true;
+  if(tutoSpot){tutoSpot.remove();tutoSpot=null;}
+  if(tutoBub){tutoBub.remove();tutoBub=null;}
+  tutoSpot=document.createElement('div');tutoSpot.className='tuto-spot';document.body.appendChild(tutoSpot);
+  tutoBub=document.createElement('div');tutoBub.className='tuto-bub';document.body.appendChild(tutoBub);
+  showTStep(0);
+}
+
+function showTStep(i){
+  const step=TUTO[i];if(!step){endTuto();return;}
+  const el=document.querySelector(step.sel);if(!el){showTStep(i+1);return;}
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+  setTimeout(()=>{
+    const r=el.getBoundingClientRect(),pad=10;
+    tutoSpot.style.cssText=`left:${r.left-pad}px;top:${r.top-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px`;
+    const bW=Math.min(window.innerWidth-32,320);
+    let bTop=step.pos==='top'?r.top-pad-170:r.bottom+pad+14;
+    bTop=Math.max(56,Math.min(bTop,window.innerHeight-190));
+    const dots=TUTO.map((_,j)=>`<div style="width:${j===i?'18px':'6px'};height:6px;border-radius:99px;background:${j===i?'#00C897':'rgba(0,0,0,0.12)'};transition:all .3s;flex-shrink:0"></div>`).join('');
+    tutoBub.style.cssText=`left:16px;top:${bTop}px;width:${bW}px`;
+    tutoBub.innerHTML=`<div style="background:white;border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,0.18);font-family:'Nunito',sans-serif;animation:fi .32s cubic-bezier(.34,1.56,.64,1)">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:9px"><div style="display:flex;gap:4px">${dots}</div><span style="margin-left:auto;font-size:10px;color:#9898A8;font-weight:800">${i+1}/${TUTO.length}</span></div>
+      <div style="font-size:15px;font-weight:900;color:#0A0A12;margin-bottom:7px">${step.title}</div>
+      <div style="font-size:12px;font-weight:600;color:#9898A8;line-height:1.6;margin-bottom:16px">${step.desc}</div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <span onclick="endTuto()" style="font-size:11px;color:#9898A8;font-weight:800;cursor:pointer;flex-shrink:0">Passer ×</span>
+        <button onclick="${i===TUTO.length-1?'endTuto()':'showTStep('+(i+1)+')'}" style="flex:1;padding:12px;background:#0A0A12;color:white;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;cursor:pointer">${i===TUTO.length-1?'🎉 C\'est parti !':'Suivant →'}</button>
+      </div>
+    </div>`;
+  },200);
+}
+
+function endTuto(){
+  tActive=false;
+  if(tutoSpot){tutoSpot.remove();tutoSpot=null;}
+  if(tutoBub){tutoBub.remove();tutoBub=null;}
+  localStorage.setItem('fsk-tuto','1');
+  toast('🎉 Tu es prêt ! Tape + pour commencer');
+}
+
+// ══ ONBOARDING ══
+let obPays=null,obSect=null,obStat=null;
+const OB_STATS={
+  fr:[{v:'ae',e:'🛠️',l:'Auto-entrepreneur'},{v:'sasu',e:'🏢',l:'SASU / SAS'},{v:'eurl',e:'👤',l:'EURL / SARL'},{v:'sa',e:'🏛️',l:'SA'},{v:'sci_ir',e:'🏠',l:'SCI à l\'IR'},{v:'sci_is',e:'🏠',l:'SCI à l\'IS'},{v:'sel',e:'⚕️',l:'SEL / SELARL'}],
+  ch:[{v:'sarl_ch',e:'🏔️',l:'Sàrl'},{v:'sa_ch',e:'🏛️',l:'SA'},{v:'ind_ch',e:'👤',l:'Indépendant'},{v:'sarl_immo_ch',e:'🏠',l:'Sàrl immobilière'}]
+};
+
+function obGo(step){
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('on'));
+  ['od0','od1','od2','od3'].forEach((id,i)=>{const d=document.getElementById(id);if(d)d.classList.toggle('on',i<=step);});
+  const s=document.getElementById('ob'+step);if(s)s.classList.add('on');
+
+  // Étape 3 — construire la liste des statuts
+  if(step===3){
+    // Si le pays n'a pas encore été choisi, utiliser France par défaut
+    const pays=obPays||'fr';
+    const list=OB_STATS[pays]||OB_STATS.fr;
+    document.getElementById('ob-statuts').innerHTML=list.map(s=>`
+      <div class="ob-choice" onclick="obSelStat('${s.v}',this)">
+        <span class="oc-ico">${s.e}</span><div class="oc-lbl">${s.l}</div>
+      </div>`).join('');
+    obStat=null;
+    document.getElementById('ob-btn3').disabled=true;
+  }
+}
+
+function obSelPays(v,el){
+  obPays=v;
+  document.querySelectorAll('#ob-pays .ob-country').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('ob-btn1').disabled=false;
+}
+
+function obSelSect(v,el){
+  obSect=v;
+  document.querySelectorAll('#ob-secteurs .ob-choice').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  const btn=document.getElementById('ob-btn2');
+  btn.disabled=false;
+  btn.style.opacity='1';
+  // Scroll jusqu'au bouton pour qu'il soit visible
+  setTimeout(()=>btn.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function obSelStat(v,el){
+  obStat=v;
+  document.querySelectorAll('#ob-statuts .ob-choice').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  const btn=document.getElementById('ob-btn3');
+  btn.disabled=false;
+  btn.style.opacity='1';
+}
+
+function obFinish(){
+  country=obPays||'fr';statut=obStat||(country==='ch'?'sarl_ch':'sasu');secteur=obSect||'autre';
+  const sN={ae:'Auto-entrepreneur',sasu:'SASU / SAS',eurl:'EURL / SARL',sa:'SA',sci_ir:'SCI à l\'IR',sci_is:'SCI à l\'IS',sel:'SEL/SELARL',sarl_ch:'Sàrl',sa_ch:'SA CH',ind_ch:'Indépendant',sarl_immo_ch:'Sàrl immobilière'};
+  const sectN={btp:'BTP & Artisanat 🔧',tech:'Tech & Freelance 💻',commerce:'Commerce 🛒',resto:'Restauration 🍽️',sante:'Santé & Libéral ⚕️',immo:'Immobilier / SCI 🏠',transport:'Transport 🚗',creatif:'Créatif 🎨',juridique:'Juridique ⚖️',autre:'Autre ✨'};
+  document.getElementById('ob-sum').innerHTML=`
+    <div class="ob-sum-row"><span style="font-size:18px">${country==='ch'?'🇨🇭':'🇫🇷'}</span>Pays : <span class="ob-sum-val">${country==='ch'?'Suisse':'France'}</span></div>
+    <div class="ob-sum-row"><span style="font-size:18px">🎯</span>Secteur : <span class="ob-sum-val">${sectN[secteur]||secteur}</span></div>
+    <div class="ob-sum-row"><span style="font-size:18px">📋</span>Statut : <span class="ob-sum-val">${sN[statut]||statut}</span></div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:rgba(255,255,255,.38);font-weight:600;line-height:1.6">💡 Fiskai va personnaliser tes conseils fiscaux pour ton secteur automatiquement.</div>`;
+  obGo(4);
+}
+
+function obLaunch(){
+  document.getElementById('sel-statut').value=statut;
+  const ob=document.getElementById('ob');
+  ob.style.transition='opacity .45s ease';ob.style.opacity='0';
+  setTimeout(()=>{
+    ob.style.display='none';
+    refresh();
+    if(!localStorage.getItem('fsk-tuto')) setTimeout(()=>startTuto(),700);
+    else toast('Bienvenue sur Fiskai ! 🎉');
+  },450);
+  localStorage.setItem('fsk-ob','1');
+}
+
+function obSkip(){
+  const ob=document.getElementById('ob');
+  ob.style.transition='opacity .3s';ob.style.opacity='0';
+  setTimeout(()=>ob.style.display='none',300);
+  localStorage.setItem('fsk-ob','1');
+}
+
+// ══ SCAN IA ══
+let scanMode='charge'; // 'charge' ou 'facture'
+let scanData=null;     // données extraites par l'IA
+let scanB64=null;      // image en base64
+let scanMime=null;     // type MIME
+
+function openScan(mode){
+  scanMode=mode;
+  resetScan();
+  closeOv(mode==='charge'?'ov-saisie':'ov-facture');
+  openOv('ov-scan');
+}
+
+function resetScan(){
+  scanData=null;scanB64=null;scanMime=null;
+  document.getElementById('scan-drop').style.display='block';
+  document.getElementById('scan-preview').style.display='none';
+  document.getElementById('scan-result').style.display='none';
+  document.getElementById('scan-loading').style.display='none';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-confirm-btn').style.display='none';
+  document.getElementById('scan-input').value='';
+  const img=document.getElementById('scan-img');
+  img.src='';img.style.display='none';
+  document.getElementById('scan-pdf-preview').style.display='none';
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('scan-drop').style.borderColor='var(--border)';
+  const file=e.dataTransfer.files[0];
+  if(file) processScanFile(file);
+}
+
+function handleScanFile(input){
+  const file=input.files[0];
+  if(file) processScanFile(file);
+}
+
+function processScanFile(file){
+  const maxSize=10*1024*1024; // 10MB max
+  if(file.size>maxSize){
+    showScanError('Fichier trop lourd (max 10 Mo). Compresse l\'image et réessaie.');
+    return;
+  }
+  const allowed=['image/jpeg','image/png','image/webp','image/gif','application/pdf'];
+  if(!allowed.includes(file.type)){
+    showScanError('Format non supporté. Utilise JPG, PNG, WebP ou PDF.');
+    return;
+  }
+  scanMime=file.type;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const result=e.target.result;
+    scanB64=result.split(',')[1];
+    // Afficher preview
+    document.getElementById('scan-drop').style.display='none';
+    document.getElementById('scan-preview').style.display='block';
+    if(file.type==='application/pdf'){
+      document.getElementById('scan-img').style.display='none';
+      document.getElementById('scan-pdf-preview').style.display='block';
+      document.getElementById('scan-pdf-name').textContent=file.name;
+    } else {
+      document.getElementById('scan-img').style.display='block';
+      document.getElementById('scan-img').src=result;
+      document.getElementById('scan-pdf-preview').style.display='none';
+    }
+    // Lancer l'analyse IA
+    analyseDocument();
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyseDocument(){
+  document.getElementById('scan-loading').style.display='block';
+  document.getElementById('scan-error').style.display='none';
+  document.getElementById('scan-result').style.display='none';
+  document.getElementById('scan-confirm-btn').style.display='none';
+
+  const prompt=scanMode==='facture'
+    ? `Tu es un expert comptable. Analyse cette facture et extrais exactement ces informations en JSON valide uniquement (pas de markdown, pas d'explication) :
+{
+  "client": "nom du client destinataire",
+  "fournisseur": "nom de l'émetteur/fournisseur",
+  "description": "description de la prestation ou produit",
+  "montant_ht": nombre,
+  "taux_tva": nombre entre 0 et 1 (ex: 0.20 pour 20%),
+  "montant_ttc": nombre,
+  "date": "date de la facture format DD/MM/YYYY",
+  "numero": "numéro de facture si visible"
+}
+Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`
+    : `Tu es un expert comptable. Analyse ce document (ticket de caisse, facture fournisseur, note de frais, reçu) et extrais exactement ces informations en JSON valide uniquement :
+{
+  "fournisseur": "nom du fournisseur ou magasin",
+  "description": "description courte de l'achat",
+  "montant_ttc": nombre,
+  "montant_ht": nombre ou null,
+  "taux_tva": nombre entre 0 et 1 ou null,
+  "date": "date du document format DD/MM/YYYY",
+  "categorie": "une parmi: Matériel, Loyer, Déplacement, Repas, Téléphone, Formation, Assurance, Autre"
+}
+Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`;
+
+  try{
+    const messages=[{
+      role:'user',
+      content:[
+        {type:'image',source:{type:'base64',media_type:scanMime==='application/pdf'?'application/pdf':scanMime,data:scanB64}},
+        {type:'text',text:prompt}
+      ]
+    }];
+
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:500,
+        messages
+      })
+    });
+
+    if(!res.ok) throw new Error('Erreur API '+res.status);
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+
+    // Parser le JSON
+    let parsed;
+    try{
+      const clean=text.replace(/```json|```/g,'').trim();
+      parsed=JSON.parse(clean);
+    } catch(e){
+      throw new Error('L\'IA n\'a pas pu lire ce document. Essaie avec une image plus nette.');
+    }
+
+    scanData=parsed;
+    showScanResult(parsed);
+
+  } catch(e){
+    showScanError(e.message||'Erreur lors de l\'analyse. Réessaie avec une image plus nette.');
+  } finally {
+    document.getElementById('scan-loading').style.display='none';
+  }
+}
+
+function showScanResult(d){
+  document.getElementById('scan-result').style.display='block';
+  document.getElementById('scan-confirm-btn').style.display='block';
+
+  // Champs éditables — l'utilisateur peut corriger avant de confirmer
+  const fields=scanMode==='charge'?[
+    {k:'fournisseur',l:'Fournisseur',v:d.fournisseur||''},
+    {k:'description',l:'Description',v:d.description||''},
+    {k:'montant_ht',l:'Montant HT (€)',v:d.montant_ht||'',type:'number'},
+    {k:'taux_tva',l:'TVA (%)',v:d.taux_tva?Math.round(d.taux_tva*100):'',type:'number'},
+  ]:[
+    {k:'client',l:'Client',v:d.client||''},
+    {k:'fournisseur',l:'Émetteur',v:d.fournisseur||''},
+    {k:'description',l:'Prestation',v:d.description||''},
+    {k:'montant_ht',l:'Montant HT (€)',v:d.montant_ht||'',type:'number'},
+    {k:'taux_tva',l:'TVA (%)',v:d.taux_tva?Math.round(d.taux_tva*100):'',type:'number'},
+  ];
+
+  document.getElementById('scan-fields').innerHTML=`
+    <div style="font-size:10px;color:var(--green-d);font-weight:700;margin-bottom:8px">✓ Vérifie et corrige si besoin</div>
+    ${fields.map(f=>`
+      <div style="margin-bottom:8px">
+        <div style="font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">${f.l}</div>
+        <input
+          data-key="${f.k}"
+          type="${f.type||'text'}"
+          value="${f.v}"
+          style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--dark);outline:none"
+          oninput="updateScanData(this)"
+        >
+      </div>`).join('')}`;
+}
+
+function updateScanData(el){
+  const key=el.dataset.key;
+  let val=el.value;
+  // Convertir TVA de % à décimal pour le stockage
+  if(key==='taux_tva') val=parseFloat(val)/100||0;
+  else if(key==='montant_ht'||key==='montant_ttc') val=parseFloat(val)||0;
+  if(!scanData) scanData={};
+  scanData[key]=val;
+}
+
+function showScanError(msg){
+  document.getElementById('scan-error').style.display='block';
+  document.getElementById('scan-error').textContent='⚠️ '+msg;
+  document.getElementById('scan-loading').style.display='none';
+}
+
+function confirmScan(){
+  if(!scanData) return;
+  const d=scanData;
+  closeOv('ov-scan');
+
+  if(scanMode==='charge'){
+    // Pré-remplir la saisie charge
+    eType='ch';
+    document.getElementById('btn-rev').className='tt';
+    document.getElementById('btn-ch').className='tt on r';
+    // Montant : préférer HT si dispo, sinon TTC
+    const amount=d.montant_ht||d.montant_ttc||0;
+    document.getElementById('s-amount').value=amount;
+    document.getElementById('s-amount').style.borderColor='var(--green)';
+    document.getElementById('s-desc').value=d.description||d.fournisseur||'';
+    // Catégorie
+    const catMap={'Matériel':'Matériel','Loyer':'Loyer','Déplacement':'Déplacement','Repas':'Repas','Téléphone':'Téléphone','Formation':'Formation','Assurance':'Assurance','Autre':'Autre'};
+    selCat=catMap[d.categorie]||'Autre';
+    buildCats();
+    openOv('ov-saisie');
+    toast('✅ Document analysé — vérifie et valide');
+
+  } else {
+    // Pré-remplir la facture émise
+    if(d.client) document.getElementById('f-client').value=d.client;
+    if(d.fournisseur) document.getElementById('f-emetteur').value=d.fournisseur;
+    if(d.description) document.getElementById('f-desc').value=d.description;
+    if(d.montant_ht){
+      document.getElementById('f-ht').value=d.montant_ht;
+    }
+    if(d.taux_tva!=null){
+      const tvaSel=document.getElementById('f-tva');
+      const rates=[0.20,0.10,0.055,0.021,0.081,0.026,0];
+      const closest=rates.reduce((a,b)=>Math.abs(b-d.taux_tva)<Math.abs(a-d.taux_tva)?b:a);
+      tvaSel.value=closest;
+    }
+    calcF();
+    openOv('ov-facture');
+    toast('✅ Facture analysée — vérifie et génère');
+  }
+}
+
+// ══ SUPABASE ══
+const SUPA_URL = 'https://dbvdmnqwwddwiycvamnr.supabase.co';
+const SUPA_KEY = 'Sb_publiable_zmlqTdqK-4sxq941HRvNnw_kIZwUAbP';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let authMode = 'login';
+
+// ── Auth tab switch ──
+function switchAuthTab(mode) {
+  authMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('tab-login').style.background = isLogin ? '#00C897' : 'transparent';
+  document.getElementById('tab-login').style.color = isLogin ? '#000' : 'rgba(255,255,255,.5)';
+  document.getElementById('tab-signup').style.background = isLogin ? 'transparent' : '#00C897';
+  document.getElementById('tab-signup').style.color = isLogin ? 'rgba(255,255,255,.5)' : '#000';
+  document.getElementById('auth-btn').textContent = isLogin ? 'Se connecter →' : 'Créer mon compte →';
+  document.getElementById('auth-error').style.display = 'none';
+}
+
+// ── Handle login/signup ──
+async function handleAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl = document.getElementById('auth-error');
+  const btn = document.getElementById('auth-btn');
+
+  if (!email || !password) {
+    errEl.textContent = 'Remplis tous les champs.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.textContent = '⏳ Chargement...';
+  btn.style.opacity = '.7';
+  errEl.style.display = 'none';
+
+  try {
+    let result;
+    if (authMode === 'login') {
+      result = await supa.auth.signInWithPassword({ email, password });
+    } else {
+      result = await supa.auth.signUp({ email, password });
+      if (!result.error && result.data.user) {
+        errEl.textContent = '✅ Compte créé ! Vérifie ton email pour confirmer.';
+        errEl.style.color = '#00C897';
+        errEl.style.display = 'block';
+        btn.textContent = 'Créer mon compte →';
+        btn.style.opacity = '1';
+        return;
+      }
+    }
+
+    if (result.error) {
+      const msgs = {
+        'Invalid login credentials': 'Email ou mot de passe incorrect.',
+        'Email not confirmed': 'Confirme ton email avant de te connecter.',
+        'User already registered': 'Un compte existe déjà avec cet email.',
+        'Password should be at least 6 characters': 'Mot de passe trop court (min. 6 caractères).',
+      };
+      errEl.textContent = msgs[result.error.message] || result.error.message;
+      errEl.style.color = '#FF6060';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Erreur de connexion. Réessaie.';
+    errEl.style.color = '#FF6060';
+    errEl.style.display = 'block';
+  }
+
+  btn.textContent = authMode === 'login' ? 'Se connecter →' : 'Créer mon compte →';
+  btn.style.opacity = '1';
+}
+
+// ── Reset password ──
+async function resetPassword() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) {
+    document.getElementById('auth-error').textContent = 'Entre ton email d\'abord.';
+    document.getElementById('auth-error').style.color = '#FF6060';
+    document.getElementById('auth-error').style.display = 'block';
+    return;
+  }
+  await supa.auth.resetPasswordForEmail(email);
+  document.getElementById('auth-error').textContent = '✅ Email de réinitialisation envoyé !';
+  document.getElementById('auth-error').style.color = '#00C897';
+  document.getElementById('auth-error').style.display = 'block';
+}
+
+// ── Sign out ──
+async function signOut() {
+  await supa.auth.signOut();
+  currentUser = null;
+  entries = [];
+  factures.length = 0;
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
+// ── Load user data ──
+async function loadUserData(userId) {
+  // Charger les opérations
+  const { data: ents } = await supa
+    .from('entries')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (ents) {
+    entries = ents.map(e => ({
+      id: e.id,
+      desc: e.label,
+      cat: e.cat,
+      ico: e.ico || '📄',
+      type: e.type,
+      amount: parseFloat(e.amount),
+      date: e.date_op,
+    }));
+  }
+
+  // Charger les factures
+  const { data: facts } = await supa
+    .from('factures')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (facts) {
+    factures.length = 0;
+    facts.forEach(f => factures.push({
+      id: f.id,
+      num: f.num,
+      client: f.client,
+      emetteur: f.emetteur,
+      desc: f.label,
+      ht: parseFloat(f.ht),
+      tva: parseFloat(f.tva),
+      ttc: parseFloat(f.ttc),
+      cur: f.cur,
+      date: f.date_op,
+      st: f.statut,
+    }));
+  }
+
+  // Charger profil
+  const { data: profile } = await supa
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single();
+
+  if (profile) {
+    if (profile.pays) { country = profile.pays; }
+    if (profile.statut) { statut = profile.statut; }
+    if (profile.secteur) { secteur = profile.secteur; }
+  }
+
+  refresh();
+  renderFactures();
+}
+
+// ── Save entry to Supabase ──
+async function saveEntry(entry) {
+  if (!currentUser) return;
+  const { data } = await supa.from('entries').insert({
+    user_id: currentUser.id,
+    label: entry.desc,
+    cat: entry.cat,
+    ico: entry.ico,
+    type: entry.type,
+    amount: entry.amount,
+    date_op: entry.date,
+  }).select().single();
+  if (data) entry.id = data.id; // update local id with DB id
+}
+
+// ── Delete entry from Supabase ──
+async function deleteEntryDB(id) {
+  if (!currentUser) return;
+  await supa.from('entries').delete().eq('id', id);
+}
+
+// ── Save facture to Supabase ──
+async function saveFacture(f) {
+  if (!currentUser) return;
+  const { data } = await supa.from('factures').insert({
+    user_id: currentUser.id,
+    num: f.num,
+    client: f.client,
+    emetteur: f.emetteur,
+    label: f.desc,
+    ht: f.ht,
+    tva: f.tva,
+    ttc: f.ttc,
+    cur: f.cur,
+    date_op: f.date,
+    statut: f.st,
+  }).select().single();
+  if (data) f.id = data.id;
+}
+
+// ── Update facture status ──
+async function updateFactureDB(id, updates) {
+  if (!currentUser) return;
+  await supa.from('factures').update(updates).eq('id', id);
+}
+
+// ── Delete facture from Supabase ──
+async function deleteFactureDB(id) {
+  if (!currentUser) return;
+  await supa.from('factures').delete().eq('id', id);
+}
+
+// ── Save profile ──
+async function saveProfile() {
+  if (!currentUser) return;
+  await supa.from('profiles').update({
+    pays: country,
+    statut: statut,
+    secteur: secteur,
+  }).eq('id', currentUser.id);
+}
+
+// ── Auth state listener ──
+supa.auth.onAuthStateChange(async (event, session) => {
+  if (session && session.user) {
+    currentUser = session.user;
+    document.getElementById('auth-screen').style.display = 'none';
+    await loadUserData(currentUser.id);
+  } else {
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+});
+
+// ══ DÉTECTION PAYS VIA URL ══
+// fiskai.fr/app.html?pays=fr  →  mode France
+// fiskai.ch/app.html?pays=ch  →  mode Suisse
+function detectPays(){
+  const params = new URLSearchParams(window.location.search);
+  const paysParam = params.get('pays');
+  if(paysParam === 'ch'){
+    country = 'ch';
+    statut = 'sarl_ch';
+  } else if(paysParam === 'fr'){
+    country = 'fr';
+    statut = 'sasu';
+  }
+  // Mise à jour du badge pays dans le header
+  updateCountryBadge();
+}
+
+function updateCountryBadge(){
+  const isCH = country === 'ch';
+  const flag = isCH ? '🇨🇭' : '🇫🇷';
+  const name = isCH ? 'Suisse' : 'France';
+
+  // Badge header
+  const flagEl = document.getElementById('country-flag');
+  const nameEl = document.getElementById('country-name');
+  if(flagEl) flagEl.textContent = flag;
+  if(nameEl) nameEl.textContent = name;
+
+  // Paramètres
+  const lbl = document.getElementById('country-lbl');
+  if(lbl) lbl.textContent = `Pays : ${name} ${flag}`;
+  const flagSet = document.getElementById('country-flag-set');
+  if(flagSet) flagSet.textContent = flag;
+
+  // Sélecteur statut — filtrer selon pays
+  const sel = document.getElementById('sel-statut');
+  if(sel){
+    const optgroups = sel.querySelectorAll('optgroup');
+    optgroups.forEach(og => {
+      if(isCH){
+        og.style.display = og.label.includes('🇨🇭') ? '' : 'none';
+      } else {
+        og.style.display = og.label.includes('🇫🇷') ? '' : 'none';
+      }
+    });
+    // Sélectionner le bon statut par défaut
+    sel.value = statut;
+  }
+
+  // Canton bloc
+  const cantonBloc = document.getElementById('canton-bloc');
+  if(cantonBloc) cantonBloc.style.display = isCH ? 'block' : 'none';
+}
+
+// ══ INIT ══
+if(localStorage.getItem('fsk-ob')) document.getElementById('ob').style.display='none';
+initTheme();initGreet();buildCats();buildCantonSel();
+detectPays(); // Détecte le pays via URL param
+supa.auth.getSession().then(({data:{session}})=>{
+  if(!session){
+    document.getElementById('auth-screen').style.display='flex';
+  }
+});
+</script>
+</body>
+</html>

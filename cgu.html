@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGU — Fiskai</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0A0A0F;color:#fff;line-height:1.7}
+nav{padding:20px 32px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.logo{font-size:16px;font-weight:800;letter-spacing:-.3px;text-decoration:none;color:white;display:flex;align-items:center;gap:8px}
+.logo span{color:#00C897}
+.container{max-width:720px;margin:0 auto;padding:60px 24px}
+h1{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.date{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:48px}
+h2{font-size:18px;font-weight:700;margin:36px 0 12px;color:#00C897}
+p{font-size:14px;color:rgba(255,255,255,.65);margin-bottom:12px}
+ul{font-size:14px;color:rgba(255,255,255,.65);margin-bottom:12px;padding-left:20px}
+ul li{margin-bottom:6px}
+.highlight{background:rgba(0,200,151,.08);border:1px solid rgba(0,200,151,.15);border-radius:12px;padding:16px 20px;margin:20px 0}
+.highlight p{color:rgba(255,255,255,.8);margin:0}
+footer{border-top:1px solid rgba(255,255,255,.06);padding:24px 32px;text-align:center;font-size:12px;color:rgba(255,255,255,.3);margin-top:60px}
+a{color:#00C897;text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <svg width="24" height="24" viewBox="0 0 34 34" fill="none">
+      <rect width="34" height="34" rx="9" fill="#00C897"/>
+      <rect x="10" y="9" width="4" height="16" rx="1.5" fill="#0A0A0F"/>
+      <rect x="10" y="9" width="13" height="4" rx="1.5" fill="#0A0A0F"/>
+      <rect x="10" y="17" width="9" height="3.5" rx="1.5" fill="#0A0A0F"/>
+      <circle cx="26" cy="9" r="4" fill="#007D5E"/>
+      <circle cx="26" cy="9" r="2" fill="#004D3A"/>
+    </svg>
+    fiskai<span>ai</span>
+  </a>
+</nav>
+
+<div class="container">
+  <h1>Conditions Générales d'Utilisation</h1>
+  <p class="date">Dernière mise à jour : mai 2026</p>
+
+  <div class="highlight">
+    <p>En utilisant Fiskai, vous acceptez les présentes conditions. Lisez-les attentivement avant d'utiliser notre service.</p>
+  </div>
+
+  <h2>1. Présentation du service</h2>
+  <p>Fiskai est une application d'assistance fiscale intelligente destinée aux entrepreneurs, artisans, freelances et investisseurs immobiliers en France et en Suisse. Elle fournit des estimations fiscales, des conseils d'optimisation et des outils de gestion comptable.</p>
+
+  <h2>2. Nature des informations fournies</h2>
+  <p>Les informations et conseils fournis par Fiskai ont une valeur indicative et éducative. Ils ne constituent pas un conseil fiscal, juridique ou comptable professionnel au sens légal.</p>
+  <ul>
+    <li>Fiskai n'est pas un expert-comptable agréé</li>
+    <li>Les calculs sont des estimations basées sur les barèmes fiscaux en vigueur</li>
+    <li>Pour toute décision fiscale importante, consultez un professionnel qualifié</li>
+    <li>Fiskai ne peut être tenu responsable des décisions prises sur la base de ses estimations</li>
+  </ul>
+
+  <h2>3. Abonnements et paiements</h2>
+  <p>Fiskai propose les forfaits suivants :</p>
+  <ul>
+    <li><strong style="color:white">Gratuit</strong> — 7 jours d'essai sans carte bancaire</li>
+    <li><strong style="color:white">Starter</strong> — 49€/mois, sans engagement</li>
+    <li><strong style="color:white">Pro</strong> — 99€/mois, sans engagement</li>
+  </ul>
+  <p>Les paiements sont traités par Stripe. Fiskai ne stocke aucune information bancaire.</p>
+  <p>Les abonnements sont renouvelés automatiquement chaque mois. Vous pouvez annuler à tout moment depuis votre espace Stripe ou en nous contactant.</p>
+
+  <h2>4. Annulation et remboursement</h2>
+  <p>Vous pouvez annuler votre abonnement à tout moment. L'annulation prend effet à la fin de la période de facturation en cours. Aucun remboursement partiel n'est effectué pour les périodes entamées.</p>
+  <p>En cas de problème technique empêchant l'accès au service, un remboursement au prorata peut être accordé sur demande à <a href="mailto:contact@fiskai.fr">contact@fiskai.fr</a>.</p>
+
+  <h2>5. Données personnelles</h2>
+  <p>Fiskai collecte et traite vos données dans le respect du RGPD :</p>
+  <ul>
+    <li>Vos données comptables restent confidentielles et ne sont pas partagées</li>
+    <li>Nous n'vendons jamais vos données à des tiers</li>
+    <li>Vous pouvez demander la suppression de vos données à tout moment</li>
+    <li>Les données sont hébergées en Europe (Vercel — région EU)</li>
+  </ul>
+
+  <h2>6. Propriété intellectuelle</h2>
+  <p>L'application Fiskai, son design, son code et ses contenus sont la propriété exclusive de Fiskai. Toute reproduction sans autorisation est interdite.</p>
+
+  <h2>7. Limitation de responsabilité</h2>
+  <p>Fiskai met tout en œuvre pour fournir des calculs précis et à jour. Cependant :</p>
+  <ul>
+    <li>Les barèmes fiscaux peuvent évoluer sans préavis</li>
+    <li>Fiskai n'est pas responsable des erreurs de saisie de l'utilisateur</li>
+    <li>La responsabilité de Fiskai est limitée au montant de l'abonnement mensuel en cours</li>
+  </ul>
+
+  <h2>8. Modification des CGU</h2>
+  <p>Fiskai se réserve le droit de modifier les présentes CGU. Les utilisateurs seront informés par email en cas de modification substantielle. La poursuite de l'utilisation du service vaut acceptation des nouvelles conditions.</p>
+
+  <h2>9. Contact</h2>
+  <p>Pour toute question relative aux présentes CGU : <a href="mailto:contact@fiskai.fr">contact@fiskai.fr</a></p>
+
+  <div class="highlight" style="margin-top:40px">
+    <p>En utilisant Fiskai, vous reconnaissez avoir lu, compris et accepté les présentes Conditions Générales d'Utilisation.</p>
+  </div>
+</div>
+
+<footer>
+  © 2026 Fiskai · <a href="index.html">Retour à l'accueil</a> · <a href="confidentialite.html">Politique de confidentialité</a>
+</footer>
+
+</body>
+</html>
