@@ -190,9 +190,9 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
   </div>
 
   <div class="phone-wrap">
-    <div class="fc fc1"><div class="fcl">Économie IS</div><div class="fcv g">+4 250 €</div><div class="fcs">Avant le 31/12</div></div>
+    <div class="fc fc1"><div class="fcl">Économie IS</div><div class="fcv g">+4 750 CHF</div><div class="fcs">Avant le 31/12</div></div>
     <div class="fc fc2"><div class="fcl">Score fiscal</div><div class="fcv g">82 / 100</div><div class="fcs">Mis à jour en direct</div></div>
-    <div class="fc fc3"><div class="fcl">TVA ce mois</div><div class="fcv r">3 200 €</div><div class="fcs">Échéance le 15</div></div>
+    <div class="fc fc3"><div class="fcl">TVA ce mois</div><div class="fcv r">3 450 CHF</div><div class="fcs">Échéance le 30</div></div>
 
     <div class="phone">
       <div class="notch"></div>
@@ -213,25 +213,25 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
         </div>
         <div class="pbal">
           <div class="pbl">Revenu net · 2025</div>
-          <div class="pba">68 400 €</div>
+          <div class="pba">74 800 CHF</div>
           <div class="pbchips">
-            <div class="pbchip"><div class="pbcl">💚 Revenus</div><div class="pbcv">120k €</div></div>
-            <div class="pbchip"><div class="pbcl">💙 Charges</div><div class="pbcv">18k €</div></div>
-            <div class="pbchip"><div class="pbcl">❤️ Impôts</div><div class="pbcv">33k €</div></div>
+            <div class="pbchip"><div class="pbcl">💚 Revenus</div><div class="pbcv">132k CHF</div></div>
+            <div class="pbchip"><div class="pbcl">💙 Charges</div><div class="pbcv">20k CHF</div></div>
+            <div class="pbchip"><div class="pbcl">❤️ Impôts</div><div class="pbcv">36k CHF</div></div>
           </div>
         </div>
         <div class="pia" id="ia-r">
           <div class="piai" id="ia-ico">💻</div>
           <div>
-            <div class="piat" id="ia-tag">⏱ 47j · Tech</div>
+            <div class="piat" id="ia-tag">⏱ 47j · Tech CH</div>
             <div class="piatitle" id="ia-ti">MacBook Pro déductible avant clôture</div>
-            <div class="piav" id="ia-v">💚 IS économisé : 625 €</div>
+            <div class="piav" id="ia-v">💚 IS économisé : 690 CHF</div>
           </div>
         </div>
         <div class="ptxs">
-          <div class="ptx"><div class="ptxi" style="background:rgba(0,200,151,.1)">💼</div><div><div class="ptxn">Mission Alpha SAS</div><div class="ptxc">Prestations · 22 avr.</div></div><div class="ptxa g">+12 000 €</div></div>
-          <div class="ptx"><div class="ptxi" style="background:rgba(61,127,255,.1)">🏢</div><div><div class="ptxn">Loyer bureau</div><div class="ptxc">Loyer · 20 avr.</div></div><div class="ptxa" style="color:var(--muted)">−850 €</div></div>
-          <div class="ptx"><div class="ptxi" style="background:rgba(0,200,151,.1)">🧾</div><div><div class="ptxn">FA-2025-012</div><div class="ptxc">Facture · 18 avr.</div></div><div class="ptxa g">+8 500 €</div></div>
+          <div class="ptx"><div class="ptxi" style="background:rgba(0,200,151,.1)">💼</div><div><div class="ptxn">Mission Alpha Sàrl</div><div class="ptxc">Prestations · 22 avr.</div></div><div class="ptxa g">+13 200 CHF</div></div>
+          <div class="ptx"><div class="ptxi" style="background:rgba(61,127,255,.1)">🏢</div><div><div class="ptxn">Loyer bureau</div><div class="ptxc">Loyer · 20 avr.</div></div><div class="ptxa" style="color:var(--muted)">−920 CHF</div></div>
+          <div class="ptx"><div class="ptxi" style="background:rgba(0,200,151,.1)">🧾</div><div><div class="ptxn">FA-2026-012</div><div class="ptxc">Facture · 18 avr.</div></div><div class="ptxa g">+9 350 CHF</div></div>
         </div>
       </div>
       <div class="ptabs">
@@ -463,11 +463,11 @@ window.addEventListener('scroll',()=>{document.getElementById('nav').classList.t
 const io=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('on')})},{threshold:.1});
 document.querySelectorAll('.r').forEach(el=>io.observe(el));
 const cs=[
-  {i:'💻',t:'⏱ 47j · Tech',ti:'MacBook Pro déductible avant clôture',v:'💚 IS économisé : 625 €'},
-  {i:'🚐',t:'⏱ 47j · BTP',ti:'Van utilitaire 100% déductible',v:'💚 IS économisé : 4 250 €'},
-  {i:'🏠',t:'SCI IS · Continu',ti:'Amortissement 2.5%/an sur ton bien',v:'💚 IS économisé : 2 250 €/an'},
-  {i:'🏖️',t:'Retraite · Avant le 31/12',ti:'PER — jusqu\'à 8 500 € déductibles',v:'💚 IR économisé : 2 890 €'},
-  {i:'🛡️',t:'Santé · Madelin',ti:'Mutuelle + prévoyance déductibles',v:'💚 Jusqu\'à 37 094 € déductibles'},
+  {i:'💻',t:'⏱ 47j · Tech CH',ti:'MacBook Pro déductible avant clôture',v:'💚 IS économisé : 690 CHF'},
+  {i:'🚐',t:'⏱ 47j · BTP CH',ti:'Van utilitaire 100% déductible',v:'💚 IS économisé : 4 750 CHF'},
+  {i:'🏠',t:'Sàrl IS · Continu',ti:'Amortissement 2.5%/an sur ton bien',v:'💚 IS économisé : 2 480 CHF/an'},
+  {i:'🏖️',t:'Retraite · Avant le 31/12',ti:'Pilier 3a — jusqu\'à 7 056 CHF déductibles',v:'💚 IFD économisé : 2 450 CHF'},
+  {i:'🛡️',t:'Santé · Madelin',ti:'Mutuelle + prévoyance déductibles',v:'💚 Jusqu\'à 41 000 CHF déductibles'},
 ];
 let ci=0;
 const r=document.getElementById('ia-r');
