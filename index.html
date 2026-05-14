@@ -8,9 +8,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 html{scroll-behavior:smooth}
-body{background:#0A0A0F;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+html,body{background:#0A0A0F!important;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
 :root{--g:#00C897;--bg:#0A0A0F;--card:#111118;--card2:#16161F;--border:rgba(255,255,255,0.06);--muted:rgba(255,255,255,0.4)}
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;transition:all .3s;gap:12px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;transition:all .3s;gap:12px;background:#0A0A0F}
 nav.s{background:rgba(10,10,15,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
 .logo{font-size:17px;font-weight:800;letter-spacing:-.4px}
 .logo span{color:var(--g)}
@@ -19,7 +19,7 @@ nav.s{background:rgba(10,10,15,0.92);backdrop-filter:blur(24px);border-bottom:1p
 .nav-l:hover{color:#fff}
 .nbtn{background:var(--g);color:#000;border:none;border-radius:99px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
 .nbtn:hover{opacity:.9}
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;overflow:hidden}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;overflow:hidden;background:#0A0A0F}
 .hbg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(0,200,151,0.09),transparent 70%),radial-gradient(ellipse 40% 30% at 90% 90%,rgba(61,127,255,0.05),transparent)}
 .htag{display:inline-flex;align-items:center;gap:8px;background:rgba(0,200,151,0.07);border:1px solid rgba(0,200,151,0.14);border-radius:99px;padding:7px 18px;font-size:12px;font-weight:600;color:var(--g);letter-spacing:.2px;margin-bottom:32px;animation:up .5s .1s both}
 .ldot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 1.4s infinite}
@@ -83,7 +83,7 @@ h1 .a{background:linear-gradient(90deg,#00C897,#4AE8C0 60%);-webkit-background-c
 .mqitem{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--muted);flex-shrink:0}
 .mqdot{width:4px;height:4px;border-radius:50%;background:var(--g)}
 @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.sec{padding:100px 24px;max-width:1040px;margin:0 auto}
+.sec{padding:100px 24px;max-width:1040px;margin:0 auto;position:relative}
 .sl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--g);margin-bottom:14px}
 .sh{font-size:clamp(26px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.08;margin-bottom:12px}
 .sp{font-size:15px;color:var(--muted);line-height:1.7;max-width:460px}
@@ -159,8 +159,25 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
 </style>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2300C897%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%223%22%20height%3D%2218%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%2211%22%20height%3D%223%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%228%22%20height%3D%223%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Ccircle%20cx%3D%2223%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23007D5E%22/%3E%0A%3Ccircle%20cx%3D%2223%22%20cy%3D%228%22%20r%3D%221.5%22%20fill%3D%22%23004D3A%22/%3E%0A%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%2300C897%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%223%22%20height%3D%2218%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%227%22%20width%3D%2211%22%20height%3D%223%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Crect%20x%3D%228%22%20y%3D%2214%22%20width%3D%228%22%20height%3D%223%22%20rx%3D%221%22%20fill%3D%22%230A0A0F%22/%3E%0A%3Ccircle%20cx%3D%2223%22%20cy%3D%228%22%20r%3D%223%22%20fill%3D%22%23007D5E%22/%3E%0A%3Ccircle%20cx%3D%2223%22%20cy%3D%228%22%20r%3D%221.5%22%20fill%3D%22%23004D3A%22/%3E%0A%3C/svg%3E">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '970971975537160');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
-<body>
+<body style="background:#0A0A0F!important">
 
 <nav id="nav">
   <div style="display:flex;align-items:center;gap:9px">
@@ -268,7 +285,7 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
   </div>
 </div>
 
-<div class="sec r" id="feat">
+<div style="background:#0A0A0F" class="sec r" id="feat">
   <div class="sl">Fonctionnalités</div>
   <h2 class="sh">Tout ce que fait ton comptable.<br>En mieux.</h2>
   <p class="sp">Fiskai couvre 100% des besoins fiscaux quotidiens en Suisse — de l'indépendant au dirigeant de Sàrl, en passant par l'immobilier.</p>
@@ -276,7 +293,7 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
     <div class="fc-card w2">
       <div class="fci">🤖</div>
       <div class="fct">IA fiscale proactive</div>
-      <div class="fcd">Fiskai analyse tes chiffres en temps réel et te propose des optimisations avant la clôture. "Tu as 28 400€ de bénéfice. Un utilitaire avant le 31/12 t'économise 4 250€ d'IS." Pas du conseil générique — tes vrais chiffres, ton vrai secteur.</div>
+      <div class="fcd">Fiskai analyse tes chiffres en temps réel et te propose des optimisations avant la clôture. "Tu as 31 200 CHF de bénéfice. Un utilitaire avant le 31/12 t'économise 4 680 CHF d'IS." Pas du conseil générique — tes vrais chiffres, ton vrai secteur.</div>
       <div class="fbadge">Exclusif Fiskai</div>
     </div>
     <div class="fc-card">
@@ -326,7 +343,7 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
       <div class="sres">
         <div class="srt">✓ Extrait automatiquement</div>
         <div class="srrow"><span class="srrl">Fournisseur</span><span class="srrv">Leroy Merlin</span></div>
-        <div class="srrow"><span class="srrl">Montant HT</span><span class="srrv">416,67 €</span></div>
+        <div class="srrow"><span class="srrl">Montant HT</span><span class="srrv">458 CHF</span></div>
         <div class="srrow"><span class="srrl">TVA</span><span class="srrv" style="color:var(--g)">20%</span></div>
         <div class="srrow"><span class="srrl">Catégorie</span><span class="srrv">🔧 Matériel</span></div>
       </div>
@@ -367,7 +384,7 @@ footer{border-top:1px solid var(--border);padding:28px 32px;display:flex;align-i
   </div>
 </div>
 
-<div class="sec r" id="price">
+<div style="background:#0A0A0F" class="sec r" id="price">
   <div class="sl">Tarifs</div>
   <h2 class="sh">Simple. Transparent.<br>Sans engagement.</h2>
   <div class="pgrid r d1">
