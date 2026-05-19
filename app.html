@@ -685,7 +685,14 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
   </div>
   <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px">
     <input id="auth-email" type="email" placeholder="Email" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
-    <input id="auth-password" type="password" placeholder="Mot de passe (min. 6 caractères)" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+    <div style="position:relative;width:100%">
+      <input id="auth-password" type="password" placeholder="Mot de passe (min. 6 caractères)" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;padding-right:48px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+      <div onclick="togglePwd('auth-password',this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:rgba(255,255,255,.3);user-select:none">👁️</div>
+    </div>
+    <div id="auth-confirm-wrap" style="position:relative;width:100%;display:none">
+      <input id="auth-password-confirm" type="password" placeholder="Confirmer le mot de passe" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;padding-right:48px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:white;outline:none;width:100%" onfocus="this.style.borderColor='#00C897'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+      <div onclick="togglePwd('auth-password-confirm',this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:16px;color:rgba(255,255,255,.3);user-select:none">👁️</div>
+    </div>
     <div id="auth-error" style="font-size:12px;color:#FF6060;font-weight:700;display:none;padding:0 4px"></div>
     <button id="auth-btn" onclick="handleAuth()" style="background:#00C897;color:#000;border:none;border-radius:12px;padding:15px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;width:100%">Se connecter →</button>
     <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.3);cursor:pointer" onclick="resetPassword()">Mot de passe oublié ?</div>
@@ -2490,6 +2497,18 @@ let currentUser = null;
 let authMode = 'login';
 
 // ── Auth tab switch ──
+// ── Toggle password visibility ──
+function togglePwd(inputId, el) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    el.style.color = '#00C897';
+  } else {
+    inp.type = 'password';
+    el.style.color = 'rgba(255,255,255,.3)';
+  }
+}
+
 function switchAuthTab(mode) {
   authMode = mode;
   const isLogin = mode === 'login';
@@ -2499,6 +2518,7 @@ function switchAuthTab(mode) {
   document.getElementById('tab-signup').style.color = isLogin ? 'rgba(255,255,255,.5)' : '#000';
   document.getElementById('auth-btn').textContent = isLogin ? 'Se connecter →' : 'Créer mon compte →';
   document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-confirm-wrap').style.display = isLogin ? 'none' : 'block';
 }
 
 // ── Handle login/signup ──
@@ -2510,8 +2530,27 @@ async function handleAuth() {
 
   if (!email || !password) {
     errEl.textContent = 'Remplis tous les champs.';
+    errEl.style.color = '#FF6060';
     errEl.style.display = 'block';
     return;
+  }
+
+  if (password.length < 6) {
+    errEl.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+    errEl.style.color = '#FF6060';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  // Vérification confirmation mot de passe en mode signup
+  if (authMode !== 'login') {
+    const confirmPwd = document.getElementById('auth-password-confirm').value;
+    if (password !== confirmPwd) {
+      errEl.textContent = 'Les mots de passe ne correspondent pas.';
+      errEl.style.color = '#FF6060';
+      errEl.style.display = 'block';
+      return;
+    }
   }
 
   btn.textContent = '⏳ Chargement...';
