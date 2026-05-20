@@ -922,21 +922,7 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
       <!-- ── UPGRADE ── -->
       <div class="card" style="background:linear-gradient(135deg,#0F1A15,#0A1510);border:1px solid rgba(0,200,151,.2)">
         <div class="card-title" style="color:var(--green)">⚡ Passer à un forfait</div>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-          <button onclick="window.open('https://buy.stripe.com/cNi28r6Qi94n84IcvIcAo00','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,151,.08);border:1px solid rgba(0,200,151,.2);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
-            <div>
-              <div style="font-size:13px;font-weight:900;color:var(--dark)">Starter</div>
-              <div style="font-size:10px;color:var(--muted)">AE · Indépendant · FR + CH</div>
-            </div>
-            <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">49€/mois →</div>
-          </button>
-          <button onclick="window.open('https://buy.stripe.com/bJefZhfmO1BVdp29jwcAo01','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:#0A0A0F;border:1px solid rgba(0,200,151,.3);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
-            <div>
-              <div style="font-size:13px;font-weight:900;color:white">Pro ⭐</div>
-              <div style="font-size:10px;color:rgba(255,255,255,.4)">SASU · EURL · SCI · SEL · Sàrl CH</div>
-            </div>
-            <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">99€/mois →</div>
-          </button>
+        <div id="upgrade-buttons" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
         </div>
       </div>
 
@@ -2761,6 +2747,35 @@ supa.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
+// ── Upgrade buttons dynamiques selon pays ──
+function renderUpgradeButtons(){
+  const isCH = country === 'ch';
+  const starterLink = isCH ? 'https://buy.stripe.com/cNi7sL3E62FZ70EcvIcAo02' : 'https://buy.stripe.com/cNi28r6Qi94n84IcvIcAo00';
+  const proLink = isCH ? 'https://buy.stripe.com/5kQ5kD6QigwPbgU9jwcAo03' : 'https://buy.stripe.com/bJefZhfmO1BVdp29jwcAo01';
+  const starterPrice = isCH ? '59 CHF/mois' : '49€/mois';
+  const proPrice = isCH ? '119 CHF/mois' : '99€/mois';
+  const starterDesc = isCH ? 'Indépendant · PME · Sàrl CH' : 'AE · Indépendant · FR + CH';
+  const proDesc = isCH ? 'Sàrl · SA · Immo · Libéral' : 'SASU · EURL · SCI · SEL · Sàrl CH';
+
+  const el = document.getElementById('upgrade-buttons');
+  if(!el) return;
+  el.innerHTML = `
+    <button onclick="window.open('${starterLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,151,.08);border:1px solid rgba(0,200,151,.2);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
+      <div>
+        <div style="font-size:13px;font-weight:900;color:var(--dark)">Starter</div>
+        <div style="font-size:10px;color:var(--muted)">${starterDesc}</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">${starterPrice} →</div>
+    </button>
+    <button onclick="window.open('${proLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:#0A0A0F;border:1px solid rgba(0,200,151,.3);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
+      <div>
+        <div style="font-size:13px;font-weight:900;color:white">Pro ⭐</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.4)">${proDesc}</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:15px;font-weight:700;color:var(--green)">${proPrice} →</div>
+    </button>`;
+}
+
 // ══ DÉTECTION PAYS VIA URL ══
 // fiskai.fr/app.html?pays=fr  →  mode France
 // fiskai.ch/app.html?pays=ch  →  mode Suisse
@@ -2819,6 +2834,7 @@ function updateCountryBadge(){
 if(localStorage.getItem('fsk-ob')) document.getElementById('ob').style.display='none';
 initTheme();initGreet();buildCats();buildCantonSel();
 detectPays(); // Détecte le pays via URL param
+renderUpgradeButtons(); // Affiche les prix selon le pays
 supa.auth.getSession().then(({data:{session}})=>{
   if(!session){
     document.getElementById('auth-screen').style.display='flex';
