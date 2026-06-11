@@ -2003,7 +2003,7 @@ async function sendChat(){
   chatHist.push({role:'user',content:`Contexte: ${statut} · ${country==='ch'?'Suisse':'France'} · Secteur: ${secteur} · CA~${fmt(getCA())} · Charges~${fmt(getCH())}. Question: ${msg}`});
   const tp=addTyping();
   try{
-    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:SYS,messages:chatHist})});
+    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,system:SYS,messages:chatHist})});
     const data=await res.json();
     const reply=data.content?.[0]?.text||'Désolé, une erreur.';
     tp.remove();addBubble('ai',reply);chatHist.push({role:'assistant',content:reply});
@@ -2360,7 +2360,7 @@ Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`;
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:500,
         messages
       })
