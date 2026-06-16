@@ -987,14 +987,22 @@ let entries=[];  // Vide au démarrage — l'utilisateur saisit ses propres donn
 
 // ══ CANTONS ══
 const CANTONS={
-  zg:{name:'Zoug',is:0.115,ir:0.62},nw:{name:'Nidwald',is:0.122,ir:0.68},
-  sz:{name:'Schwytz',is:0.140,ir:0.72},lu:{name:'Lucerne',is:0.146,ir:0.75},
-  bs:{name:'Bâle-Ville',is:0.130,ir:0.71},ag:{name:'Argovie',is:0.163,ir:0.81},
-  zh:{name:'Zurich',is:0.197,ir:0.90},be:{name:'Berne',is:0.208,ir:0.93},
-  vd:{name:'Vaud',is:0.214,ir:0.94},ge:{name:'Genève',is:0.242,ir:0.98},
-  vs:{name:'Valais',is:0.175,ir:0.85},gr:{name:'Grisons',is:0.160,ir:0.80},
-  ti:{name:'Tessin',is:0.190,ir:0.87},fr:{name:'Fribourg',is:0.193,ir:0.88},
-  ne:{name:'Neuchâtel',is:0.155,ir:0.78},so:{name:'Soleure',is:0.168,ir:0.83},
+  zg:{name:'Zoug',      is:0.115, ir:0.12},  // cantonal+communal ~12%
+  nw:{name:'Nidwald',   is:0.122, ir:0.13},  // ~13%
+  sz:{name:'Schwytz',   is:0.140, ir:0.14},  // ~14%
+  lu:{name:'Lucerne',   is:0.146, ir:0.17},  // ~17%
+  bs:{name:'Bâle-Ville',is:0.198, ir:0.22},  // ~22%
+  ag:{name:'Argovie',   is:0.163, ir:0.18},  // ~18%
+  zh:{name:'Zurich',    is:0.195, ir:0.20},  // ~20%
+  be:{name:'Berne',     is:0.208, ir:0.24},  // ~24%
+  vd:{name:'Vaud',      is:0.218, ir:0.26},  // ~26%
+  ge:{name:'Genève',    is:0.242, ir:0.30},  // ~30%
+  vs:{name:'Valais',    is:0.185, ir:0.20},  // ~20%
+  gr:{name:'Grisons',   is:0.160, ir:0.17},  // ~17%
+  ti:{name:'Tessin',    is:0.190, ir:0.21},  // ~21%
+  fr:{name:'Fribourg',  is:0.137, ir:0.18},  // ~18%
+  ne:{name:'Neuchâtel', is:0.208, ir:0.23},  // ~23%
+  so:{name:'Soleure',   is:0.168, ir:0.19},  // ~19%
 };
 
 // ══ CATÉGORIES ══
@@ -1361,8 +1369,11 @@ const CFGS={
     // ── Dirigeant salarié (obligatoires) ──
     const avsEr=Math.round(rem*0.0625);
     const avsEe=Math.round(rem*0.0625);
-    const lppEr=rem>22050?Math.round((rem-22050)*0.08):0;
-    const lppEe=rem>22050?Math.round((rem-22050)*0.08):0;
+    // LPP taux selon âge (défaut 40 ans = 10%)
+    const salCoord=Math.max(0, Math.min(rem,88200+25725)-25725);
+    const lppTaux=0.10; // 35ans:7% 35-44:10% 45-54:15% 55+:18%
+    const lppEr=rem>22050?Math.round(salCoord*lppTaux/2):0;
+    const lppEe=rem>22050?Math.round(salCoord*lppTaux/2):0;
     const laa=Math.round(rem*0.015);
     const ac=Math.round(Math.min(rem,148200)*0.011);
     const remNet=rem-avsEe-lppEe-laa-ac;
@@ -1475,9 +1486,7 @@ const CFGS={
       {l:'Charges professionnelles déductibles',v:-ch,cls:'cr'},
       {l:'Revenu net d\'activité',v:rv},
       {l:'── Prélèvements OBLIGATOIRES ──',v:null,sep:true},
-      {l:'AVS — Assurance Vieillesse Survivants (~8.7%)',v:-avs,cls:'db'},
-      {l:'AI — Assurance Invalidité (1.4%)',v:-ai,cls:'db'},
-      {l:'APG — Allocations Perte de Gain (0.5%)',v:-apg,cls:'db'},
+      {l:'AVS/AI/APG (taux dégressif 5.4%→10.6%)',v:-avsTot,cls:'db'},
       {l:'IFD — Impôt fédéral direct (barème progressif)',v:-ifd,cls:'db'},
       {l:`Impôt cantonal + communal (${c.name})`,v:-cantIR,cls:'db'},
       {l:'Revenu net après obligations (CHF)',v:net,cls:'cr',bold:true},
