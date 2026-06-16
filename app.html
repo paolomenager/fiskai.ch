@@ -1670,15 +1670,34 @@ function refresh(){
   renderTx('tx-home',entries.slice(0,3));
   renderTx('tx-full',getFiltered());
 
-  // Bilan
-  const resultat=Math.max(0,ca-ch-r.tot);
-  const marge=ca>0?Math.round(resultat/ca*100):0;
-  document.getElementById('bl-net').textContent=fmt(resultat,cur);
-  document.getElementById('bl-marge').textContent=marge+'% de marge';
-  document.getElementById('pl-detail').innerHTML=[
-    {l:'Chiffre d\'affaires',v:ca,g:true},{l:'Charges ext.',v:-ch*.55},{l:'Charges pers.',v:-ch*.30},{l:'Autres charges',v:-ch*.15},
-    {l:'Résultat expl.',v:ca-ch,bold:true},{l:'Impôts',v:-r.tot,db:true},{l:'Résultat net',v:resultat,bold:true,cr:true}
-  ].map(l=>`<div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}"><span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'}">${l.l}</span><span class="sr-v ${l.cr?'cr':l.db?'db':''}" style="font-size:${l.bold?'14px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),cur)}</span></div>`).join('');
+  // Bilan — vraies données uniquement
+  const bilanCaReal=getCA(), bilanChReal=getCH();
+  const bilanCur=country==='ch'?'CHF':'€';
+  const bilanCfg=getCfg(statut);
+  const bilanRemAuto=Math.min(Math.max(0,bilanCaReal-bilanChReal)*0.45,120000);
+  const bilanR=bilanCaReal>0?bilanCfg.calc(bilanCaReal,bilanChReal,bilanRemAuto):{net:0,tot:0};
+  const bilanNet=bilanR.net;
+  const bilanMarge=bilanCaReal>0?Math.round(bilanNet/bilanCaReal*100):0;
+  const blNet=document.getElementById('bl-net');
+  const blMarge=document.getElementById('bl-marge');
+  const plDetail=document.getElementById('pl-detail');
+  if(blNet) blNet.textContent=bilanCaReal>0?fmt(bilanNet,bilanCur):'—';
+  if(blMarge) blMarge.textContent=bilanCaReal>0?bilanMarge+'% de marge nette':'Saisis tes opérations';
+  if(plDetail){
+    if(bilanCaReal>0){
+      plDetail.innerHTML=[
+        {l:'Revenus encaissés',v:bilanCaReal},
+        {l:'Charges payées',v:-bilanChReal,db:true},
+        {l:'Impôts & charges estimés',v:-bilanR.tot,db:true},
+        {l:'Résultat net',v:bilanNet,bold:true,cr:true},
+      ].map(l=>`<div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}">
+        <span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'}">${l.l}</span>
+        <span class="sr-v ${l.cr?'cr':l.db?'db':''}" style="font-size:${l.bold?'15px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),bilanCur)}</span>
+      </div>`).join('');
+    } else {
+      plDetail.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;font-weight:700">📊 Saisis tes premières opérations<br>pour voir ton bilan réel</div>';
+    }
+  }
 
   // TVA
   refreshTVA(cur,tvaRate);
