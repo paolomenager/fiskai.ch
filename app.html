@@ -1592,21 +1592,7 @@ function refresh(){
   document.getElementById('h-imp').textContent=fmt(r.tot,cur);
   document.getElementById('h-sub').textContent=`${cfg.n} · ${country==='ch'?'🇨🇭 Suisse':'🇫🇷 France'}`;
 
-  // Mini bilan accueil — toujours sur vraies données
-  const bilanCA=getCA(), bilanCH=getCH();
-  const bilanR=cfg.calc(bilanCA>0?bilanCA:ca, bilanCH>0?bilanCH:ch, bilanCA>0?Math.min((bilanCA-bilanCH)*.45,120000):Math.min((ca-ch)*.45,120000));
-  const hbCa=document.getElementById('hb-ca');
-  const hbCh=document.getElementById('hb-ch');
-  const hbImp=document.getElementById('hb-imp');
-  const hbNet=document.getElementById('hb-net');
-  if(hbCa){
-    hbCa.textContent=fmt(bilanCA,cur);
-    hbCh.textContent=fmt(bilanCH,cur);
-    hbImp.textContent=fmt(bilanR.tot,cur);
-    hbNet.textContent=fmt(bilanR.net,cur);
-    // Colorer selon résultat
-    hbNet.style.color=bilanR.net>0?'var(--green)':'var(--red)';
-  }
+
 
   // Score
   const score=Math.min(100,Math.max(20,Math.round(50+(r.net/Math.max(ca,1))*60-(r.tot/Math.max(ca,1))*20)));
@@ -1670,13 +1656,13 @@ function refresh(){
   renderTx('tx-home',entries.slice(0,3));
   renderTx('tx-full',getFiltered());
 
-  // Bilan — vraies données uniquement
+  // Bilan — vraies données
   const bilanCaReal=getCA(), bilanChReal=getCH();
   const bilanCur=country==='ch'?'CHF':'€';
   const bilanCfg=getCfg(statut);
   const bilanRemAuto=Math.min(Math.max(0,bilanCaReal-bilanChReal)*0.45,120000);
-  const bilanR=bilanCaReal>0?bilanCfg.calc(bilanCaReal,bilanChReal,bilanRemAuto):{net:0,tot:0};
-  const bilanNet=bilanR.net;
+  const bilanResult=bilanCaReal>0?bilanCfg.calc(bilanCaReal,bilanChReal,bilanRemAuto):{net:0,tot:0};
+  const bilanNet=bilanResult.net;
   const bilanMarge=bilanCaReal>0?Math.round(bilanNet/bilanCaReal*100):0;
   const blNet=document.getElementById('bl-net');
   const blMarge=document.getElementById('bl-marge');
@@ -1688,14 +1674,11 @@ function refresh(){
       plDetail.innerHTML=[
         {l:'Revenus encaissés',v:bilanCaReal},
         {l:'Charges payées',v:-bilanChReal,db:true},
-        {l:'Impôts & charges estimés',v:-bilanR.tot,db:true},
+        {l:'Impôts & charges estimés',v:-bilanResult.tot,db:true},
         {l:'Résultat net',v:bilanNet,bold:true,cr:true},
-      ].map(l=>`<div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}">
-        <span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'}">${l.l}</span>
-        <span class="sr-v ${l.cr?'cr':l.db?'db':''}" style="font-size:${l.bold?'15px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),bilanCur)}</span>
-      </div>`).join('');
+      ].map(l=>`<div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}"><span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'}">${l.l}</span><span class="sr-v ${l.cr?'cr':l.db?'db':''}" style="font-size:${l.bold?'15px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),bilanCur)}</span></div>`).join('');
     } else {
-      plDetail.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;font-weight:700">📊 Saisis tes premières opérations<br>pour voir ton bilan réel</div>';
+      plDetail.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;font-weight:700">📊 Saisis tes premières opérations pour voir ton bilan réel</div>';
     }
   }
 
