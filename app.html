@@ -2274,7 +2274,7 @@ function showTStep(i){
       <div style="font-size:12px;font-weight:600;color:#9898A8;line-height:1.6;margin-bottom:16px">${step.desc}</div>
       <div style="display:flex;gap:10px;align-items:center">
         <span onclick="endTuto()" style="font-size:11px;color:#9898A8;font-weight:800;cursor:pointer;flex-shrink:0">Passer ×</span>
-        <button onclick="${i===TUTO.length-1?'endTuto()':'showTStep('+(i+1)+')'}" style="flex:1;padding:12px;background:#0A0A12;color:white;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;cursor:pointer">${i===TUTO.length-1?'🎉 C\'est parti !':'Suivant →'}</button>
+        <button data-step="${i}" onclick="var s=parseInt(this.dataset.step);if(s===TUTO.length-1)endTuto();else showTStep(s+1)" style="flex:1;padding:12px;background:#0A0A12;color:white;border:none;border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:900;cursor:pointer">${i===TUTO.length-1?'🎉 C\'est parti !':'Suivant →'}</button>
       </div>
     </div>`;
   },200);
