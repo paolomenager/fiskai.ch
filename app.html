@@ -598,13 +598,6 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
       <div class="field" style="flex:1"><label>Montant HT *</label><input id="f-ht" type="number" inputmode="decimal" placeholder="0.00" oninput="calcF()"></div>
       <div class="field" style="flex:1"><label>TVA</label>
         <select id="f-tva" onchange="calcF()" style="background:var(--bg);border:2px solid var(--border);border-radius:var(--r-sm);padding:12px 13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--dark);width:100%;outline:none">
-          <option value="0.20">20% (normal)</option>
-          <option value="0.10">10% (réduit)</option>
-          <option value="0.055">5.5% (alimentaire)</option>
-          <option value="0.021">2.1% (presse)</option>
-          <option value="0.081">8.1% 🇨🇭</option>
-          <option value="0.026">2.6% 🇨🇭 réduit</option>
-          <option value="0">0% (exonéré)</option>
         </select>
       </div>
     </div>
@@ -668,7 +661,7 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
 </div>
 
 <!-- LOGIN SCREEN -->
-<div id="auth-screen" style="position:fixed;inset:0;background:#0A0A0F;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto">
+<div id="auth-screen" style="position:fixed;inset:0;background:#0A0A0F;z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;overflow-y:auto">
   <svg width="56" height="56" viewBox="0 0 34 34" fill="none" style="margin-bottom:16px">
     <rect width="34" height="34" rx="9" fill="#00C897"/>
     <rect x="10" y="9" width="4" height="16" rx="1.5" fill="#0A0A0F"/>
@@ -783,6 +776,27 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
       <!-- Alertes -->
       <div id="alertes-wrap"></div>
 
+      <!-- Mini Bilan -->
+      <div class="sec mt8"><div class="sec-t">Mon bilan réel</div><div class="sec-a" onclick="goTab('tout')">Détail</div></div>
+      <div class="card" id="home-bilan">
+        <div class="sr">
+          <div class="sr-left"><div class="sr-ico" style="background:var(--green-l)">💚</div><div><div class="sr-n">Revenus encaissés</div><div class="sr-s">Cette année</div></div></div>
+          <div class="sr-v cr" id="hb-ca">—</div>
+        </div>
+        <div class="sr">
+          <div class="sr-left"><div class="sr-ico" style="background:var(--red-l)">💸</div><div><div class="sr-n">Charges payées</div><div class="sr-s">Cette année</div></div></div>
+          <div class="sr-v db" id="hb-ch">—</div>
+        </div>
+        <div class="sr">
+          <div class="sr-left"><div class="sr-ico" style="background:var(--amber-l)">🧾</div><div><div class="sr-n">Impôts estimés</div><div class="sr-s">Sur tes vraies données</div></div></div>
+          <div class="sr-v am" id="hb-imp">—</div>
+        </div>
+        <div class="sr" style="border-top:2px solid var(--border)">
+          <div class="sr-left"><div class="sr-ico" style="background:var(--blue-l)">💰</div><div><div class="sr-n" style="font-weight:900">Résultat net</div><div class="sr-s">Ce que tu gardes vraiment</div></div></div>
+          <div class="sr-v cr" id="hb-net" style="font-size:16px;font-weight:900">—</div>
+        </div>
+      </div>
+
       <!-- Dernières 3 opérations -->
       <div class="sec mt8"><div class="sec-t">Dernières opérations</div><div class="sec-a" onclick="goTab('tout')">Voir tout</div></div>
       <div class="card"><div id="tx-home"></div></div>
@@ -807,20 +821,28 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
       <div class="bloc">
         <div class="bloc-title">📊 Simulateur d'impôts</div>
         <div class="sim-hero">
-          <div class="sh-lbl">Impôts & charges estimés</div>
-          <div class="sh-val" id="sim-tot">—</div>
-          <div class="sim-sub-lbl" id="sim-sub">sur ton CA annuel</div>
+          <div class="sh-lbl">Tu gardes estimé</div>
+          <div class="sh-val" id="sim-net">—</div>
+          <div class="sim-sub-lbl" id="sim-sub">après impôts & charges</div>
           <div class="sh-row">
-            <div class="sh-item"><div class="sh-il">Net</div><div class="sh-iv" id="sim-net">—</div></div>
+            <div class="sh-item"><div class="sh-il">Impôts</div><div class="sh-iv" id="sim-tot">—</div></div>
             <div class="sh-item"><div class="sh-il">Taux</div><div class="sh-iv" id="sim-taux">—</div></div>
             <div class="sh-item"><div class="sh-il">/mois</div><div class="sh-iv" id="sim-mois">—</div></div>
           </div>
         </div>
         <div class="card">
-          <div style="padding:16px 16px 4px">
-            <div class="sl-field"><div class="sl-top"><span class="sl-lbl">💼 CA annuel</span><span class="sl-val" id="sl-ca-v">100k €</span></div><input type="range" min="10000" max="500000" step="5000" value="100000" id="sl-ca" oninput="onSlider()"></div>
-            <div class="sl-field"><div class="sl-top"><span class="sl-lbl">💸 Charges</span><span class="sl-val" id="sl-ch-v">30k €</span></div><input type="range" min="0" max="200000" step="2000" value="30000" id="sl-ch" oninput="onSlider()"></div>
-            <div class="sl-field" id="sl-rem-wrap"><div class="sl-top"><span class="sl-lbl">👤 Rémunération</span><span class="sl-val" id="sl-rem-v">40k €</span></div><input type="range" min="0" max="150000" step="2000" value="40000" id="sl-rem" oninput="onSlider()"></div>
+          <div style="padding:16px 16px 8px">
+            <div class="sl-field">
+              <div class="sl-top"><span class="sl-lbl">💼 CA annuel</span><span class="sl-val" id="sl-ca-v">100k €</span></div>
+              <input type="range" min="10000" max="500000" step="5000" value="100000" id="sl-ca" oninput="onSlider()">
+            </div>
+            <div class="sl-field">
+              <div class="sl-top"><span class="sl-lbl">💸 Charges pro</span><span class="sl-val" id="sl-ch-v">30k €</span></div>
+              <input type="range" min="0" max="200000" step="2000" value="30000" id="sl-ch" oninput="onSlider()">
+            </div>
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:4px;margin-bottom:12px">
+              💡 Simulation · La rémunération est auto-calculée selon ton statut — pour tes vraies données, vois le bilan en haut
+            </div>
           </div>
           <div id="sim-detail"></div>
         </div>
@@ -921,9 +943,13 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
       </div>
 
       <!-- ── UPGRADE ── -->
-      <div class="card" style="background:linear-gradient(135deg,#0F1A15,#0A1510);border:1px solid rgba(0,200,151,.2)">
-        <div class="card-title" style="color:var(--green)">⚡ Passer à un forfait</div>
-        <div id="upgrade-buttons" style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+      <div style="background:linear-gradient(135deg,#0A1510,#0F1A15);border-radius:20px;padding:18px 16px;margin-bottom:12px;border:1px solid rgba(0,200,151,.15)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:14px">⚡</span>
+          <span style="font-size:13px;font-weight:900;color:#00C897">Passer à un forfait</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:14px">Accès illimité · Support prioritaire · Sans engagement</div>
+        <div id="upgrade-buttons" style="display:flex;gap:8px">
         </div>
       </div>
 
@@ -942,6 +968,9 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
     </div>
     <div class="tab" onclick="goTab('tout')" id="tab-tout">
       <span class="ti">📊</span><span class="tl">Tout</span>
+    </div>
+    <div class="tab" onclick="openOv('ov-chat')" id="tab-chat">
+      <span class="ti">🤖</span><span class="tl">IA</span>
     </div>
   </div>
 
@@ -1544,7 +1573,10 @@ function varColor(name){
 
 // ══ REFRESH ══
 function refresh(){
-  const ca=getCA(), ch=getCH();
+  const caReal=getCA(), chReal=getCH();
+  // Utiliser des valeurs par défaut si pas encore de données
+  const ca=caReal>0?caReal:50000;
+  const ch=chReal>0?chReal:15000;
   const cfg=getCfg(statut);
   const rem=Math.min(ch*.45,ca*.28);
   const r=cfg.calc(ca,ch,rem);
@@ -1553,12 +1585,28 @@ function refresh(){
   // Auto-detect secteur uniquement si l'utilisateur n'a pas choisi de secteur à l'onboarding
   if(secteur==='autre'&&entries.length>=5) secteur=detectSecteur();
 
-  // Hero
+  // Hero (utilise valeurs réelles si dispo, sinon défaut)
   document.getElementById('h-net').textContent=fmt(r.net,cur);
   document.getElementById('h-ca').textContent=fmt(ca,cur);
   document.getElementById('h-ch').textContent=fmt(ch,cur);
   document.getElementById('h-imp').textContent=fmt(r.tot,cur);
   document.getElementById('h-sub').textContent=`${cfg.n} · ${country==='ch'?'🇨🇭 Suisse':'🇫🇷 France'}`;
+
+  // Mini bilan accueil — toujours sur vraies données
+  const bilanCA=getCA(), bilanCH=getCH();
+  const bilanR=cfg.calc(bilanCA>0?bilanCA:ca, bilanCH>0?bilanCH:ch, bilanCA>0?Math.min((bilanCA-bilanCH)*.45,120000):Math.min((ca-ch)*.45,120000));
+  const hbCa=document.getElementById('hb-ca');
+  const hbCh=document.getElementById('hb-ch');
+  const hbImp=document.getElementById('hb-imp');
+  const hbNet=document.getElementById('hb-net');
+  if(hbCa){
+    hbCa.textContent=fmt(bilanCA,cur);
+    hbCh.textContent=fmt(bilanCH,cur);
+    hbImp.textContent=fmt(bilanR.tot,cur);
+    hbNet.textContent=fmt(bilanR.net,cur);
+    // Colorer selon résultat
+    hbNet.style.color=bilanR.net>0?'var(--green)':'var(--red)';
+  }
 
   // Score
   const score=Math.min(100,Math.max(20,Math.round(50+(r.net/Math.max(ca,1))*60-(r.tot/Math.max(ca,1))*20)));
@@ -1711,7 +1759,10 @@ function refreshTVA(cur,rate){
    <div class="sr"><span style="color:var(--muted);font-weight:700">Alimentaire</span><span class="sr-v">5.5%</span></div>`);
 }
 
-function refreshStatuts(ca,ch){
+function refreshStatuts(caRaw,chRaw){
+  // Valeurs par défaut si pas de données
+  const ca=caRaw>0?caRaw:50000;
+  const ch=chRaw>0?chRaw:15000;
   const rem=Math.min(ca*.35,Math.max(24000,ca*.25));
   const isCH=statut.endsWith('_ch');
   const keys=isCH?['sarl_ch','sa_ch','ind_ch','sarl_immo_ch']:['ae','sasu','eurl','sa','sci_ir','sci_is','sel'];
@@ -1884,35 +1935,45 @@ function undoAction(){
 function onSlider(){
   const ca=parseInt(document.getElementById('sl-ca').value)||0;
   const ch=parseInt(document.getElementById('sl-ch').value)||0;
-  const rem=parseInt(document.getElementById('sl-rem').value)||0;
-  document.getElementById('sl-ca').dataset.touched='1';
-  const isCH=statut.endsWith('_ch'),cur=isCH?'CHF':'€';
+  const isCH=country==='ch', cur=isCH?'CHF':'€';
   document.getElementById('sl-ca-v').textContent=fmtK(ca,cur);
   document.getElementById('sl-ch-v').textContent=fmtK(ch,cur);
-  document.getElementById('sl-rem-v').textContent=fmtK(rem,cur);
-  const cfg=getCfg(statut),r=cfg.calc(ca,ch,rem);
-  document.getElementById('sim-tot').textContent=fmt(r.tot,cur);
+
+  // Rémunération auto selon statut
+  const ben=Math.max(0,ca-ch);
+  let remAuto=0;
+  if(statut==='ae') remAuto=0; // AE: pas de rémunération formelle
+  else if(['sasu','sa'].includes(statut)) remAuto=Math.min(ben*.45, 120000);
+  else if(['eurl','sel'].includes(statut)) remAuto=Math.min(ben*.60, 150000);
+  else if(['sarl_ch','sa_ch','sarl_immo_ch'].includes(statut)) remAuto=Math.min(ben*.50, 200000);
+  else if(statut==='ind_ch') remAuto=Math.min(ben*.65, 180000);
+  else remAuto=Math.min(ben*.40, 100000);
+
+  const cfg=getCfg(statut);
+  const r=cfg.calc(ca,ch,remAuto);
+  const taux=ca>0?Math.round(r.tot/ca*100):0;
+
   document.getElementById('sim-net').textContent=fmt(r.net,cur);
+  document.getElementById('sim-tot').textContent=fmt(r.tot,cur);
   document.getElementById('sim-taux').textContent=ca>0?pct(r.tot/ca*100):'—';
   document.getElementById('sim-mois').textContent=fmt(r.net/12,cur);
-  // Label : secteur exemple ou taux effectif
-  const sd=SECT_DATA[secteur];
-  document.getElementById('sim-sub').textContent=sd?`${sd.label} · Taux effectif ${r.txEff||0}%`:`Taux effectif ${r.txEff||0}%`;
+  document.getElementById('sim-sub').textContent=`${getCfg(statut).n} · taux effectif ${taux}%`;
 
-  document.getElementById('sim-detail').innerHTML=(r.lines||[]).map((l,i)=>{
-    if(!l) return '';
-    if(l.v===null) return `<div style="padding:4px 18px;font-size:11px;color:var(--muted)">${l.l}</div>`;
-    if(l.note) return `<div style="padding:8px 18px;font-size:11px;color:var(--blue);font-weight:700;background:var(--blue-l);margin:4px 18px;border-radius:8px">${l.l}</div>`;
-    if(l.pct) return `<div class="sr" style="border-top:2px solid var(--border)"><span style="font-weight:900">Taux effectif global</span><span class="sr-v" style="font-size:15px;color:${l.v>40?'var(--red)':l.v>30?'var(--amber)':'var(--green)'}">${l.v}%</span></div>`;
-    const isLast=i===r.lines.length-1||r.lines[i+1]?.pct;
-    return `<div class="sr" style="${isLast?'border-top:2px solid var(--border)':''}">
-      <span style="color:${l.cls==='cr'||isLast?'var(--dark)':'var(--muted)'};font-weight:${isLast?'900':'700'};font-size:${isLast?'14px':'13px'}">${l.l}</span>
-      <span class="sr-v ${l.cls||''}" style="font-size:${isLast?'14px':'13px'}">${l.v<0?'−':''}${fmt(Math.abs(l.v),cur)}</span>
-    </div>`;
-  }).join('');
+  // Détail simplifié - 3 lignes max
+  const lines=[
+    {l:'Ton CA annuel',v:ca,cls:''},
+    {l:'Charges pro déduites',v:-ch,cls:'cr'},
+    {l:'Impôts & charges sociales',v:-r.tot,cls:'db'},
+    {l:'💚 Ce que tu gardes',v:r.net,cls:'cr',bold:true},
+  ];
+  document.getElementById('sim-detail').innerHTML=lines.map((l,i)=>`
+    <div class="sr" style="${l.bold?'border-top:2px solid var(--border)':''}">
+      <span style="color:${l.bold?'var(--dark)':'var(--muted)'};font-weight:${l.bold?'900':'700'};font-size:${l.bold?'14px':'13px'}">${l.l}</span>
+      <span class="sr-v ${l.cls}" style="${l.bold?'font-size:15px;font-weight:900;color:var(--green)':''}">${l.v<0?'-':''}${fmt(Math.abs(l.v),cur)}</span>
+    </div>`).join('');
 }
 
-// Pré-remplir le simulateur avec données du secteur
+
 function prefillSimulateur(){
   const sd=SECT_DATA[secteur]||SECT_DATA.autre;
   const slCa=document.getElementById('sl-ca');
@@ -1927,9 +1988,9 @@ function prefillSimulateur(){
 // ══ FACTURES ══
 function calcF(){
   const ht=parseFloat(document.getElementById('f-ht').value)||0;
-  const tva=parseFloat(document.getElementById('f-tva').value)||0.20;
-  const ttc=ht+ht*tva;
-  const cur=statut.endsWith('_ch')?'CHF':'€';
+const tva=parseFloat(document.getElementById('f-tva').value); // pas de ||0.20
+const ttc=ht+ht*tva;
+  const cur=country==='ch'?'CHF':'€';
   document.getElementById('fp-ht').textContent=fmt(ht,cur);
   document.getElementById('fp-tva').textContent=fmt(ht*tva,cur);
   document.getElementById('fp-ttc').textContent=fmt(ttc,cur);
@@ -1939,9 +2000,9 @@ async function genFacture(){
   const client=document.getElementById('f-client').value.trim();
   if(!client){document.getElementById('f-client').focus();return;}
   const ht=parseFloat(document.getElementById('f-ht').value)||0;
-  const tvaR=parseFloat(document.getElementById('f-tva').value)||0.20;
+  const tvaR=parseFloat(document.getElementById('f-tva').value)||0;
   const tva=ht*tvaR,ttc=ht+tva;
-  const cur=statut.endsWith('_ch')?'CHF':'€';
+  const cur=country==='ch'?'CHF':'€';
   const emetteur=document.getElementById('f-emetteur').value||'Mon Entreprise';
   const desc=document.getElementById('f-desc').value||'Prestation';
   const now=new Date(),m=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
@@ -1952,6 +2013,20 @@ async function genFacture(){
   factures.unshift(facture);
   entries.unshift(entry);
   closeOv('ov-facture');
+  // Générer PDF téléchargeable
+const html=`<html><body style="font-family:Arial;padding:40px">
+<h2>${emetteur}</h2><p>Facture n° ${num} — ${dateStr}</p><hr>
+<p><b>Client :</b> ${client}</p>
+<p><b>Description :</b> ${desc}</p><hr>
+<p>Total HT : ${ht} ${cur}</p>
+<p>TVA (${Math.round(tvaR*100)}%) : ${tva.toFixed(2)} ${cur}</p>
+<p><b>Total TTC : ${ttc.toFixed(2)} ${cur}</b></p>
+</body></html>`;
+const blob=new Blob([html],{type:'text/html'});
+const a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download=`${num}.html`;
+a.click();
   renderFactures();
   refresh();toast('✅ Facture '+num+' créée · ajoutée aux revenus');
   await saveFacture(facture);
@@ -1993,7 +2068,55 @@ async function payFacture(id){
 }
 
 // ══ CHAT ══
-const SYS=`Tu es Fiskai, conseiller fiscal expert France et Suisse. Tu parles simplement, sans jargon. Max 2 paragraphes courts. Bienveillant, direct, concret. Tu connais : IS, IR, TVA, cotisations, SCI IR/IS, SEL, Sàrl immo CH, cantons suisses, optimisations secteur.`;
+const SYS=`Tu es Fiskai, expert-comptable et conseiller fiscal pour indépendants, professions libérales et TPE/PME en France et Suisse.
+
+RÈGLES ABSOLUES :
+- Réponds en français, max 3 paragraphes courts
+- Chiffres précis (taux, plafonds, délais)
+- Action concrète à la fin
+- Si hors périmètre, suggère un expert comptable humain
+- NE JAMAIS citer de logiciels, apps ou services concurrents (Indy, Pennylane, Comptastart, Qonto, Shine, Freeagent, QuickBooks, Sage, etc.)
+- Pour toute action sur documents ou tickets, recommande TOUJOURS la fonctionnalité scan de Fiskai
+- Tu représentes Fiskai exclusivement — tu n'existes que dans cet app
+
+STATUTS ET FISCALITÉ QUE TU CONNAIS PARFAITEMENT :
+
+🇫🇷 FRANCE :
+• Auto-entrepreneur (BIC vente 71%, BIC services 50%, BNC libéral 34%) — cotisations 12.8% à 22.1%
+• EURL/SARL — gérant TNS, cotisations ~42% (maladie, retraite, prévoyance, CSG)
+• SASU/SAS — président assimilé salarié, charges patronales 42% + salariales 23%
+• SA — même régime que SASU
+• SEL/SELARL — professions libérales réglementées (médecin, avocat, kiné, notaire, expert-comptable, architecte, pharmacien...) — loi Madelin, CARMF, CAVOM, CNBF, CARPIMKO selon profession
+• SCI à l'IR — revenus fonciers, déficit 10 700€/an, PS 17.2%
+• SCI à l'IS — amortissement 3%/an, flat tax dividendes 30%
+• IS France : 15% ≤42 500€ puis 25% (PME éligibles CA<10M€)
+• IR : tranches 0%/11%/30%/41%/45% (barème 2025)
+• TVA : 20% normal, 10% réduit, 5.5% alimentaire, 2.1% presse, 0% exonéré
+• PER : déductible jusqu'à 10% revenus pro (max 35 194€/an)
+• Loi Madelin : mutuelle, prévoyance, retraite déductibles pour TNS
+• CFE, CVAE supprimée 2024, cotisation foncière entreprises
+• Micro-fiscal et micro-social AE
+
+🇨🇭 SUISSE :
+• Sàrl/SA — IS cantonal (Zoug 11.5% → Genève 24.2%) + IFD fédéral
+• Indépendant — AVS/AI/APG ~10.6% employeur + salarié, TVA AFC 8.1%/2.6%/3.8%
+• Pilier 3a : déductible 7 056 CHF/an (salarié) ou 20% revenu (indép., max 35 280 CHF)
+• Sàrl immobilière — amortissement 4%/an, intérêts hypothécaires déductibles
+• Impôt anticipé 35% sur dividendes (remboursable si déclaré)
+• Choix du canton : optimisation IS possible
+
+PROFESSIONS LIBÉRALES (priorité si secteur=sante ou juridique) :
+- Médecin, chirurgien : CARMF, dépassements honoraires, secteur 1/2/3
+- Avocat : CNBF, TVA sur honoraires, BNC
+- Kiné, ostéo, infirmier : CARPIMKO, exonération TVA soins
+- Pharmacien : SEL obligatoire, TVA médicaments 2.1%/10%
+- Expert-comptable, notaire, architecte : cotisations ordinales déductibles
+- Vétérinaire : TVA mixte (soins/vente)
+
+CONTEXTE UTILISATEUR (adapte TOUS tes conseils à ça) :
+- Pays : PAYS_USER
+- Statut juridique : STATUT_USER  
+- Secteur d'activité : SECTEUR_USER`;
 async function sendChat(){
   const inp=document.getElementById('chat-in');
   const msg=inp.value.trim();if(!msg)return;
@@ -2003,7 +2126,8 @@ async function sendChat(){
   chatHist.push({role:'user',content:`Contexte: ${statut} · ${country==='ch'?'Suisse':'France'} · Secteur: ${secteur} · CA~${fmt(getCA())} · Charges~${fmt(getCH())}. Question: ${msg}`});
   const tp=addTyping();
   try{
-    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,system:SYS,messages:chatHist})});
+    const sysCtx=SYS+`\n\nCONTEXTE: Pays=${country==='ch'?'Suisse':'France'}, Statut=${statut}, Secteur=${secteur}.`;
+    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:700,system:sysCtx,messages:chatHist})});
     const data=await res.json();
     const reply=data.content?.[0]?.text||'Désolé, une erreur.';
     tp.remove();addBubble('ai',reply);chatHist.push({role:'assistant',content:reply});
@@ -2045,20 +2169,26 @@ function goTab(id){
 
 // ══ PAYS / STATUT / CANTON ══
 function setStatut(val){
+  // Bloquer si mauvais pays
+  const isCH = val.endsWith('_ch') || val==='ind_ch';
+  if(isCH && country!=='ch'){ 
+    document.getElementById('sel-statut').value=statut;
+    toast('⚠️ Statut non disponible pour la France');
+    return;
+  }
+  if(!isCH && country==='ch'){
+    document.getElementById('sel-statut').value=statut;
+    toast('⚠️ Statut non disponible pour la Suisse');
+    return;
+  }
   statut=val;
-  country=val.endsWith('_ch')?'ch':'fr';
   document.getElementById('country-lbl').textContent='Pays : '+(country==='ch'?'Suisse 🇨🇭':'France 🇫🇷');
   document.getElementById('canton-bloc').style.display=country==='ch'?'block':'none';
   buildCantonSel();refresh();
 }
 function toggleCountry(){
-  country=country==='fr'?'ch':'fr';
-  statut=country==='ch'?'sarl_ch':'sasu';
-  document.getElementById('sel-statut').value=statut;
-  document.getElementById('country-lbl').textContent='Pays : '+(country==='ch'?'Suisse 🇨🇭':'France 🇫🇷');
-  document.getElementById('canton-bloc').style.display=country==='ch'?'block':'none';
-  buildCantonSel();refresh();
-  toast(country==='ch'?'🇨🇭 Mode Suisse activé':'🇫🇷 Mode France activé');
+  // Verrouillé — le pays est défini à l'inscription
+  toast('⚠️ Le pays est défini à l\'inscription et ne peut pas être changé.');
 }
 function setCanton(val){
   canton=val;
@@ -2256,18 +2386,21 @@ function openScan(mode){
   openOv('ov-scan');
 }
 
+
 function resetScan(){
-  scanData=null;scanB64=null;scanMime=null;
+  scanData=null; scanB64=null; scanMime=null;
   document.getElementById('scan-drop').style.display='block';
   document.getElementById('scan-preview').style.display='none';
   document.getElementById('scan-result').style.display='none';
-  document.getElementById('scan-loading').style.display='none';
   document.getElementById('scan-error').style.display='none';
   document.getElementById('scan-confirm-btn').style.display='none';
+  document.getElementById('scan-loading').style.display='none';
   document.getElementById('scan-input').value='';
-  const img=document.getElementById('scan-img');
-  img.src='';img.style.display='none';
-  document.getElementById('scan-pdf-preview').style.display='none';
+}
+
+function handleScanFile(input){
+  const file=input.files[0];
+  if(file) processScanFile(file);
 }
 
 function handleDrop(e){
@@ -2277,41 +2410,33 @@ function handleDrop(e){
   if(file) processScanFile(file);
 }
 
-function handleScanFile(input){
-  const file=input.files[0];
-  if(file) processScanFile(file);
-}
-
 function processScanFile(file){
-  const maxSize=10*1024*1024; // 10MB max
-  if(file.size>maxSize){
-    showScanError('Fichier trop lourd (max 10 Mo). Compresse l\'image et réessaie.');
-    return;
-  }
-  const allowed=['image/jpeg','image/png','image/webp','image/gif','application/pdf'];
-  if(!allowed.includes(file.type)){
-    showScanError('Format non supporté. Utilise JPG, PNG, WebP ou PDF.');
-    return;
-  }
-  scanMime=file.type;
+  const maxSize=4*1024*1024;
+  if(file.size>maxSize){showScanError('Fichier trop lourd (max 4 Mo).');return;}
+  const allowed=['image/jpeg','image/png','image/webp','image/gif'];
+  if(!allowed.includes(file.type)){showScanError('Format non supporté. Utilise JPG ou PNG.');return;}
   const reader=new FileReader();
   reader.onload=e=>{
     const result=e.target.result;
-    scanB64=result.split(',')[1];
-    // Afficher preview
-    document.getElementById('scan-drop').style.display='none';
-    document.getElementById('scan-preview').style.display='block';
-    if(file.type==='application/pdf'){
-      document.getElementById('scan-img').style.display='none';
-      document.getElementById('scan-pdf-preview').style.display='block';
-      document.getElementById('scan-pdf-name').textContent=file.name;
-    } else {
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=800;
+      let w=img.width,h=img.height;
+      if(w>max){h=h*max/w;w=max;}
+      if(h>max){w=w*max/h;h=max;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      scanB64=canvas.toDataURL('image/jpeg',0.6).split(',')[1];
+      scanMime='image/jpeg';
+      document.getElementById('scan-drop').style.display='none';
+      document.getElementById('scan-preview').style.display='block';
       document.getElementById('scan-img').style.display='block';
       document.getElementById('scan-img').src=result;
       document.getElementById('scan-pdf-preview').style.display='none';
-    }
-    // Lancer l'analyse IA
-    analyseDocument();
+      analyseDocument();
+    };
+    img.src=result;
   };
   reader.readAsDataURL(file);
 }
@@ -2332,7 +2457,7 @@ async function analyseDocument(){
   "taux_tva": nombre entre 0 et 1 (ex: 0.20 pour 20%),
   "montant_ttc": nombre,
   "date": "date de la facture format DD/MM/YYYY",
-  "numero": "numéro de facture si visible"
+  "num_facture": "numéro de facture ou null"
 }
 Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`
     : `Tu es un expert comptable. Analyse ce document (ticket de caisse, facture fournisseur, note de frais, reçu) et extrais exactement ces informations en JSON valide uniquement :
@@ -2348,13 +2473,12 @@ Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`
 Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`;
 
   try{
-    const messages=[{
-      role:'user',
-      content:[
-        {type:'image',source:{type:'base64',media_type:scanMime==='application/pdf'?'application/pdf':scanMime,data:scanB64}},
-        {type:'text',text:prompt}
-      ]
-    }];
+    const mime='image/jpeg';
+    const contentArr=[
+      {type:'image',source:{type:'base64',media_type:mime,data:scanB64}},
+      {type:'text',text:prompt}
+    ];
+    const messages=[{role:'user',content:contentArr}];
 
     const res=await fetch('/api/claude',{
       method:'POST',
@@ -2370,7 +2494,6 @@ Si une valeur est absente mets null. Réponds UNIQUEMENT avec le JSON.`;
     const data=await res.json();
     const text=data.content?.[0]?.text||'';
 
-    // Parser le JSON
     let parsed;
     try{
       const clean=text.replace(/```json|```/g,'').trim();
@@ -2393,7 +2516,6 @@ function showScanResult(d){
   document.getElementById('scan-result').style.display='block';
   document.getElementById('scan-confirm-btn').style.display='block';
 
-  // Champs éditables — l'utilisateur peut corriger avant de confirmer
   const fields=scanMode==='charge'?[
     {k:'fournisseur',l:'Fournisseur',v:d.fournisseur||''},
     {k:'description',l:'Description',v:d.description||''},
@@ -2403,7 +2525,7 @@ function showScanResult(d){
     {k:'client',l:'Client',v:d.client||''},
     {k:'fournisseur',l:'Émetteur',v:d.fournisseur||''},
     {k:'description',l:'Prestation',v:d.description||''},
-    {k:'montant_ht',l:'Montant HT (€)',v:d.montant_ht||'',type:'number'},
+    {k:'montant_ht',l:'Montant HT',v:d.montant_ht||'',type:'number'},
     {k:'taux_tva',l:'TVA (%)',v:d.taux_tva?Math.round(d.taux_tva*100):'',type:'number'},
   ];
 
@@ -2425,7 +2547,6 @@ function showScanResult(d){
 function updateScanData(el){
   const key=el.dataset.key;
   let val=el.value;
-  // Convertir TVA de % à décimal pour le stockage
   if(key==='taux_tva') val=parseFloat(val)/100||0;
   else if(key==='montant_ht'||key==='montant_ttc') val=parseFloat(val)||0;
   if(!scanData) scanData={};
@@ -2444,30 +2565,23 @@ function confirmScan(){
   closeOv('ov-scan');
 
   if(scanMode==='charge'){
-    // Pré-remplir la saisie charge
     eType='ch';
     document.getElementById('btn-rev').className='tt';
     document.getElementById('btn-ch').className='tt on r';
-    // Montant : préférer HT si dispo, sinon TTC
     const amount=d.montant_ht||d.montant_ttc||0;
     document.getElementById('s-amount').value=amount;
     document.getElementById('s-amount').style.borderColor='var(--green)';
     document.getElementById('s-desc').value=d.description||d.fournisseur||'';
-    // Catégorie
     const catMap={'Matériel':'Matériel','Loyer':'Loyer','Déplacement':'Déplacement','Repas':'Repas','Téléphone':'Téléphone','Formation':'Formation','Assurance':'Assurance','Autre':'Autre'};
     selCat=catMap[d.categorie]||'Autre';
     buildCats();
     openOv('ov-saisie');
     toast('✅ Document analysé — vérifie et valide');
-
   } else {
-    // Pré-remplir la facture émise
     if(d.client) document.getElementById('f-client').value=d.client;
     if(d.fournisseur) document.getElementById('f-emetteur').value=d.fournisseur;
     if(d.description) document.getElementById('f-desc').value=d.description;
-    if(d.montant_ht){
-      document.getElementById('f-ht').value=d.montant_ht;
-    }
+    if(d.montant_ht) document.getElementById('f-ht').value=d.montant_ht;
     if(d.taux_tva!=null){
       const tvaSel=document.getElementById('f-tva');
       const rates=[0.20,0.10,0.055,0.021,0.081,0.026,0];
@@ -2613,6 +2727,91 @@ async function signOut() {
 }
 
 // ── Load user data ──
+// ── Trial check ──
+function buildTvaSelect(){
+  const sel = document.getElementById('f-tva');
+  if(!sel) return;
+  if(country === 'ch'){
+    sel.innerHTML = `
+      <option value="0.081">8.1% (normal 🇨🇭)</option>
+      <option value="0.026">2.6% (réduit 🇨🇭)</option>
+      <option value="0.038">3.8% (hébergement 🇨🇭)</option>
+      <option value="0">0% (exonéré)</option>`;
+  } else {
+    sel.innerHTML = `
+      <option value="0.20">20% (normal)</option>
+      <option value="0.10">10% (réduit)</option>
+      <option value="0.055">5.5% (alimentaire)</option>
+      <option value="0.021">2.1% (presse)</option>
+      <option value="0">0% (exonéré)</option>`;
+  }
+}
+
+function showTrialBanner(daysLeft){
+  // Ne pas afficher si déjà présent
+  if(document.getElementById('trial-banner')) return;
+  const urgent = daysLeft <= 3;
+  const banner = document.createElement('div');
+  banner.id = 'trial-banner';
+  banner.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:99;background:${urgent?'#FF4D6D':'#FF9A3C'};color:white;text-align:center;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;max-width:430px;margin:0 auto`;
+  banner.innerHTML = `
+    <span>${urgent?'🚨':'⏰'} Il vous reste <b>${daysLeft} jour${daysLeft>1?'s':''}</b> d'essai gratuit</span>
+    <button onclick="showPaywall()" style="background:white;color:${urgent?'#FF4D6D':'#FF9A3C'};border:none;border-radius:99px;padding:3px 10px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:900;cursor:pointer">Passer Pro →</button>`;
+  document.body.prepend(banner);
+  // Décaler l'app vers le bas pour ne pas cacher le contenu
+  const app = document.getElementById('app');
+  if(app) app.style.paddingTop = '36px';
+}
+
+function checkTrial(profile){
+  if(!profile || !profile.created_at) return;
+  if(profile.plan && profile.plan !== 'trial') return; // abonné = ok
+  const created = new Date(profile.created_at);
+  const now = new Date();
+  const diffDays = Math.floor((now - created) / (1000*60*60*24));
+  const daysLeft = 14 - diffDays;
+  if(daysLeft <= 0){
+    showPaywall();
+  } else if(daysLeft <= 7){
+    showTrialBanner(daysLeft);
+  }
+}
+
+function showPaywall(){
+  // Bloquer l'app et afficher le choix d'abonnement
+  const isCH = country === 'ch';
+  const starterLink = isCH ? 'https://buy.stripe.com/cNi7sL3E62FZ70EcvIcAo02' : 'https://buy.stripe.com/cNi28r6Qi94n84IcvIcAo00';
+  const proLink = isCH ? 'https://buy.stripe.com/5kQ5kD6QigwPbgU9jwcAo03' : 'https://buy.stripe.com/bJefZhfmO1BVdp29jwcAo01';
+  const starterPrice = isCH ? '59 CHF/mois' : '49€/mois';
+  const proPrice = isCH ? '119 CHF/mois' : '99€/mois';
+
+  const wall = document.createElement('div');
+  wall.id = 'paywall';
+  wall.style.cssText = 'position:fixed;inset:0;background:#0A0A12;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center';
+  wall.innerHTML = `
+    <div style="font-size:48px;margin-bottom:16px">⏰</div>
+    <div style="font-size:24px;font-weight:900;color:white;margin-bottom:8px">Essai terminé</div>
+    <div style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px;max-width:280px">Tes 14 jours gratuits sont écoulés.<br>Choisis un forfait pour continuer.</div>
+    <div style="display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px">
+      <button onclick="window.open('${starterLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,151,.1);border:1.5px solid rgba(0,200,151,.3);border-radius:14px;padding:16px 18px;cursor:pointer;font-family:'Nunito',sans-serif;width:100%">
+        <div style="text-align:left">
+          <div style="font-size:15px;font-weight:900;color:white">Starter</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">${isCH?'Indépendant · PME':'AE · Indépendant · FR + CH'}</div>
+        </div>
+        <div style="font-size:16px;font-weight:900;color:#00C897">${starterPrice} →</div>
+      </button>
+      <button onclick="window.open('${proLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:#111;border:1.5px solid rgba(0,200,151,.4);border-radius:14px;padding:16px 18px;cursor:pointer;font-family:'Nunito',sans-serif;width:100%">
+        <div style="text-align:left">
+          <div style="font-size:15px;font-weight:900;color:white">Pro ⭐</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">${isCH?'Sàrl · SA · Immo':'SASU · EURL · SCI · SEL'}</div>
+        </div>
+        <div style="font-size:16px;font-weight:900;color:#00C897">${proPrice} →</div>
+      </button>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);margin-top:8px;cursor:pointer" onclick="signOut()">Se déconnecter</div>
+    </div>`;
+  document.body.appendChild(wall);
+}
+
 async function loadUserData(userId) {
   // Charger les opérations
   const { data: ents } = await supa
@@ -2668,6 +2867,12 @@ async function loadUserData(userId) {
     if (profile.pays) { country = profile.pays; }
     if (profile.statut) { statut = profile.statut; }
     if (profile.secteur) { secteur = profile.secteur; }
+    // Verrouiller le pays — mettre à jour l'affichage
+    updateCountryBadge();
+    renderUpgradeButtons();
+    buildTvaSelect();
+    // Vérifier le trial
+    checkTrial(profile);
   }
 
   refresh();
@@ -2686,7 +2891,7 @@ async function saveEntry(entry) {
     amount: entry.amount,
     date_op: entry.date,
   }).select().single();
-  if (data) entry.id = data.id; // update local id with DB id
+  if (data) entry.id = data.id;
 }
 
 // ── Delete entry from Supabase ──
@@ -2748,32 +2953,28 @@ supa.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// ── Upgrade buttons dynamiques selon pays ──
 function renderUpgradeButtons(){
   const isCH = country === 'ch';
   const starterLink = isCH ? 'https://buy.stripe.com/cNi7sL3E62FZ70EcvIcAo02' : 'https://buy.stripe.com/cNi28r6Qi94n84IcvIcAo00';
   const proLink = isCH ? 'https://buy.stripe.com/5kQ5kD6QigwPbgU9jwcAo03' : 'https://buy.stripe.com/bJefZhfmO1BVdp29jwcAo01';
-  const starterPrice = isCH ? '59 CHF/mois' : '49€/mois';
-  const proPrice = isCH ? '119 CHF/mois' : '99€/mois';
-  const starterDesc = isCH ? 'Indépendant · PME · Sàrl CH' : 'AE · Indépendant · FR + CH';
-  const proDesc = isCH ? 'Sàrl · SA · Immo · Libéral' : 'SASU · EURL · SCI · SEL · Sàrl CH';
+  const starterPrice = isCH ? '59 CHF' : '49€';
+  const proPrice = isCH ? '119 CHF' : '99€';
+  const starterDesc = isCH ? 'Indépendant · PME' : 'AE · Indépendant';
+  const proDesc = isCH ? 'Sàrl · SA · Immo' : 'SASU · EURL · SCI';
 
   const el = document.getElementById('upgrade-buttons');
   if(!el) return;
   el.innerHTML = `
-    <button onclick="window.open('${starterLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,200,151,.08);border:1px solid rgba(0,200,151,.2);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
-      <div>
-        <div style="font-size:13px;font-weight:900;color:var(--dark)">Starter</div>
-        <div style="font-size:10px;color:var(--muted)">${starterDesc}</div>
-      </div>
-      <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--green)">${starterPrice} →</div>
+    <button onclick="window.open('${starterLink}','_blank')" style="flex:1;background:rgba(0,200,151,.1);border:1.5px solid rgba(0,200,151,.25);border-radius:14px;padding:14px 12px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:center;position:relative">
+      <div style="font-size:12px;font-weight:900;color:#00C897;margin-bottom:3px">Starter</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:8px">${starterDesc}</div>
+      <div style="font-size:18px;font-weight:900;color:white;font-family:'Nunito',sans-serif">${starterPrice}<span style="font-size:10px;font-weight:700;opacity:.5">/mois</span></div>
     </button>
-    <button onclick="window.open('${proLink}','_blank')" style="display:flex;align-items:center;justify-content:space-between;background:#0A0A0F;border:1px solid rgba(0,200,151,.3);border-radius:12px;padding:13px 15px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;width:100%">
-      <div>
-        <div style="font-size:13px;font-weight:900;color:white">Pro ⭐</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.4)">${proDesc}</div>
-      </div>
-      <div style="font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;color:var(--green)">${proPrice} →</div>
+    <button onclick="window.open('${proLink}','_blank')" style="flex:1;background:rgba(0,200,151,.18);border:2px solid #00C897;border-radius:14px;padding:14px 12px;cursor:pointer;font-family:'Nunito',sans-serif;text-align:center;position:relative">
+      <div style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#00C897;color:#000;font-size:8px;font-weight:900;padding:2px 8px;border-radius:99px;white-space:nowrap">POPULAIRE</div>
+      <div style="font-size:12px;font-weight:900;color:#00C897;margin-bottom:3px">Pro ⭐</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.35);margin-bottom:8px">${proDesc}</div>
+      <div style="font-size:18px;font-weight:900;color:white;font-family:'Nunito',sans-serif">${proPrice}<span style="font-size:10px;font-weight:700;opacity:.5">/mois</span></div>
     </button>`;
 }
 
@@ -2839,6 +3040,8 @@ renderUpgradeButtons(); // Affiche les prix selon le pays
 supa.auth.getSession().then(({data:{session}})=>{
   if(!session){
     document.getElementById('auth-screen').style.display='flex';
+  } else {
+    document.getElementById('auth-screen').style.display='none';
   }
 });
 </script>
