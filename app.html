@@ -978,7 +978,7 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
 
 <script>
 // ══ STATE ══
-let country='fr', statut='sasu', canton='zg', secteur='autre';
+let country='ch', statut='sarl_ch', canton='zg', secteur='autre';
 let eType='rev', selCat='Prestations', filterMode='all';
 const chatHist=[], factures=[];
 let factNum=1, tutoSpot=null, tutoBub=null;
@@ -987,14 +987,22 @@ let entries=[];  // Vide au démarrage — l'utilisateur saisit ses propres donn
 
 // ══ CANTONS ══
 const CANTONS={
-  zg:{name:'Zoug',is:0.115,ir:0.62},nw:{name:'Nidwald',is:0.122,ir:0.68},
-  sz:{name:'Schwytz',is:0.140,ir:0.72},lu:{name:'Lucerne',is:0.146,ir:0.75},
-  bs:{name:'Bâle-Ville',is:0.130,ir:0.71},ag:{name:'Argovie',is:0.163,ir:0.81},
-  zh:{name:'Zurich',is:0.197,ir:0.90},be:{name:'Berne',is:0.208,ir:0.93},
-  vd:{name:'Vaud',is:0.214,ir:0.94},ge:{name:'Genève',is:0.242,ir:0.98},
-  vs:{name:'Valais',is:0.175,ir:0.85},gr:{name:'Grisons',is:0.160,ir:0.80},
-  ti:{name:'Tessin',is:0.190,ir:0.87},fr:{name:'Fribourg',is:0.193,ir:0.88},
-  ne:{name:'Neuchâtel',is:0.155,ir:0.78},so:{name:'Soleure',is:0.168,ir:0.83},
+  zg:{name:'Zoug',      is:0.115, ir:0.12},  // cantonal+communal ~12%
+  nw:{name:'Nidwald',   is:0.122, ir:0.13},  // ~13%
+  sz:{name:'Schwytz',   is:0.140, ir:0.14},  // ~14%
+  lu:{name:'Lucerne',   is:0.146, ir:0.17},  // ~17%
+  bs:{name:'Bâle-Ville',is:0.198, ir:0.22},  // ~22%
+  ag:{name:'Argovie',   is:0.163, ir:0.18},  // ~18%
+  zh:{name:'Zurich',    is:0.195, ir:0.20},  // ~20%
+  be:{name:'Berne',     is:0.208, ir:0.24},  // ~24%
+  vd:{name:'Vaud',      is:0.218, ir:0.26},  // ~26%
+  ge:{name:'Genève',    is:0.242, ir:0.30},  // ~30%
+  vs:{name:'Valais',    is:0.185, ir:0.20},  // ~20%
+  gr:{name:'Grisons',   is:0.160, ir:0.17},  // ~17%
+  ti:{name:'Tessin',    is:0.190, ir:0.21},  // ~21%
+  fr:{name:'Fribourg',  is:0.137, ir:0.18},  // ~18%
+  ne:{name:'Neuchâtel', is:0.208, ir:0.23},  // ~23%
+  so:{name:'Soleure',   is:0.168, ir:0.19},  // ~19%
 };
 
 // ══ CATÉGORIES ══
@@ -1359,17 +1367,20 @@ const CFGS={
     const is=Math.round(ben*c.is);
     const impCap=Math.round((ca*0.20)*0.002);
     // ── Dirigeant salarié (obligatoires) ──
-    const avsEr=Math.round(rem*0.053);
-    const avsEe=Math.round(rem*0.053);
-    const lppEr=rem>22050?Math.round((rem-22050)*0.08):0;
-    const lppEe=rem>22050?Math.round((rem-22050)*0.08):0;
+    const avsEr=Math.round(rem*0.0625);
+    const avsEe=Math.round(rem*0.0625);
+    // LPP taux selon âge (défaut 40 ans = 10%)
+    const salCoord=Math.max(0, Math.min(rem,88200+25725)-25725);
+    const lppTaux=0.10; // 35ans:7% 35-44:10% 45-54:15% 55+:18%
+    const lppEr=rem>22050?Math.round(salCoord*lppTaux/2):0;
+    const lppEe=rem>22050?Math.round(salCoord*lppTaux/2):0;
     const laa=Math.round(rem*0.015);
     const ac=Math.round(Math.min(rem,148200)*0.011);
     const remNet=rem-avsEe-lppEe-laa-ac;
     const ifd=ifdCH(remNet);
     const cantIR=Math.round(remNet*(c.ir||0.12));
     const div=Math.max(0,ben-is);
-    const impDiv=Math.round(div*0.35*0.20);
+    const impDiv=0; // Impôt anticipé 35% récupérable à 100% si déclaré correctement
     const totOblig=is+impCap+avsEr+avsEe+lppEr+lppEe+laa+ac+ifd+cantIR+impDiv;
     const net=remNet-ifd-cantIR+div-impDiv;
     const econP3a=Math.round(7056*(c.ir||0.12)*0.85);
@@ -1381,10 +1392,10 @@ const CFGS={
       {l:'── Niveau SOCIÉTÉ (obligatoires) ──',v:null,sep:true},
       {l:`IS combiné ${Math.round(c.is*1000)/10}% (fédéral 8.5% + ${c.name})`,v:-is,cls:'db'},
       {l:'Impôt sur le capital (~0.2%)',v:-impCap,cls:'db'},
-      {l:'AVS/AI/APG employeur (5.3%)',v:-avsEr,cls:'db'},
+      {l:'AVS/AI/APG employeur (6.25%)',v:-avsEr,cls:'db'},
       {l:'LPP 2e pilier employeur (~8%) OBLIGATOIRE si sal. > 22 050',v:-lppEr,cls:'db'},
       {l:'── Niveau DIRIGEANT (obligatoires) ──',v:null,sep:true},
-      {l:'AVS/AI/APG employé (5.3%)',v:-avsEe,cls:'db'},
+      {l:'AVS/AI/APG employé (6.25%)',v:-avsEe,cls:'db'},
       {l:'LPP 2e pilier employé (~8%)',v:-lppEe,cls:'db'},
       {l:'LAA assurance accident (1.5%)',v:-laa,cls:'db'},
       {l:'AC assurance chômage (1.1%)',v:-ac,cls:'db'},
@@ -1408,8 +1419,8 @@ const CFGS={
     const is=Math.round(ben*(c.is+0.005)); // SA légèrement + élevé
     const impCap=Math.round((ca*0.20)*0.0025);
     // ── Dirigeant (obligatoires) ──
-    const avsEr=Math.round(rem*0.053);
-    const avsEe=Math.round(rem*0.053);
+    const avsEr=Math.round(rem*0.0625);
+    const avsEe=Math.round(rem*0.0625);
     const lppEr=rem>22050?Math.round((rem-22050)*0.09):0;
     const lppEe=rem>22050?Math.round((rem-22050)*0.09):0;
     const laa=Math.round(rem*0.02);
@@ -1418,7 +1429,7 @@ const CFGS={
     const ifd=ifdCH(remNet);
     const cantIR=Math.round(remNet*(c.ir||0.12));
     const div=Math.max(0,ben-is);
-    const impDiv=Math.round(div*0.35*0.20);
+    const impDiv=0; // Impôt anticipé 35% récupérable à 100% si déclaré correctement
     const totOblig=is+impCap+avsEr+avsEe+lppEr+lppEe+laa+ac+ifd+cantIR+impDiv;
     const net=remNet-ifd-cantIR+div-impDiv;
     const econP3a=Math.round(7056*(c.ir||0.12)*0.85);
@@ -1430,16 +1441,16 @@ const CFGS={
       {l:'── Niveau SOCIÉTÉ (obligatoires) ──',v:null,sep:true},
       {l:`IS combiné ${Math.round((c.is+0.005)*1000)/10}% — SA (fédéral + ${c.name})`,v:-is,cls:'db'},
       {l:'Impôt sur le capital (~0.25%)',v:-impCap,cls:'db'},
-      {l:'AVS/AI/APG employeur (5.3%)',v:-avsEr,cls:'db'},
+      {l:'AVS/AI/APG employeur (6.25%)',v:-avsEr,cls:'db'},
       {l:'LPP 2e pilier employeur (~9%)',v:-lppEr,cls:'db'},
       {l:'── Niveau DIRIGEANT (obligatoires) ──',v:null,sep:true},
-      {l:'AVS/AI/APG employé (5.3%)',v:-avsEe,cls:'db'},
+      {l:'AVS/AI/APG employé (6.25%)',v:-avsEe,cls:'db'},
       {l:'LPP 2e pilier employé (~9%)',v:-lppEe,cls:'db'},
       {l:'LAA assurance accident (2%)',v:-laa,cls:'db'},
       {l:'AC assurance chômage (1.1%)',v:-ac,cls:'db'},
       {l:'IFD — Impôt fédéral direct',v:-ifd,cls:'db'},
       {l:`Impôt cantonal + communal (${c.name})`,v:-cantIR,cls:'db'},
-      {l:'Impôt anticipé dividendes (récupérable ~80%)',v:-impDiv,cls:'db'},
+      {l:'💡 Impôt anticipé 35% sur dividendes → récupérable 100%',v:-impDiv,cls:'db'},
       {l:'Revenu net dirigeant (CHF)',v:net,cls:'cr',bold:true},
       {l:'Taux effectif global',v:ca>0?Math.round(totOblig/ca*100):0,pct:true},
       {l:'── Optimisations FACULTATIVES ──',v:null,sep:true},
@@ -1475,9 +1486,7 @@ const CFGS={
       {l:'Charges professionnelles déductibles',v:-ch,cls:'cr'},
       {l:'Revenu net d\'activité',v:rv},
       {l:'── Prélèvements OBLIGATOIRES ──',v:null,sep:true},
-      {l:'AVS — Assurance Vieillesse Survivants (~8.7%)',v:-avs,cls:'db'},
-      {l:'AI — Assurance Invalidité (1.4%)',v:-ai,cls:'db'},
-      {l:'APG — Allocations Perte de Gain (0.5%)',v:-apg,cls:'db'},
+      {l:'AVS/AI/APG (taux dégressif 5.4%→10.6%)',v:-avsTot,cls:'db'},
       {l:'IFD — Impôt fédéral direct (barème progressif)',v:-ifd,cls:'db'},
       {l:`Impôt cantonal + communal (${c.name})`,v:-cantIR,cls:'db'},
       {l:'Revenu net après obligations (CHF)',v:net,cls:'cr',bold:true},
@@ -1487,7 +1496,7 @@ const CFGS={
       {l:`💡 Pilier 3a (max ${Math.round(p3aMax/1000)}k CHF si sans LPP) → économie ~${econP3a} CHF/an`,v:null,tip:true},
       {l:`💡 Rachat LPP → économie ~${econRachat} CHF supplémentaires`,v:null,tip:true},
       {l:'💡 Frais réels bureau/voiture/formation → 100% déductibles',v:null,tip:true},
-      {l:'💡 Pilier 3b (assurance-vie) → pas de plafond, libre',v:null,tip:true},
+      {l:'💡 LLAMal (assurance maladie) → obligatoire, ~300-600 CHF/mois, primes partiellement déductibles',v:null,tip:true},
     ]};
   }},
 
@@ -1504,7 +1513,7 @@ const CFGS={
     const impCap=Math.round((valeurBien*0.10)*0.002);
     const impFoncier=Math.round(valeurBien*0.001);
     const div=Math.max(0,ben-is);
-    const impDiv=Math.round(div*0.35*0.20);
+    const impDiv=0; // Impôt anticipé 35% récupérable à 100% si déclaré correctement
     const totOblig=is+impCap+impFoncier+impDiv;
     const net=ca-ch-is-impCap-impFoncier-impDiv;
     const econProvRenov=Math.round(ca*0.10*(c.ir||0.12));
@@ -1519,7 +1528,7 @@ const CFGS={
       {l:`IS combiné ${Math.round(c.is*1000)/10}% — ${c.name}`,v:-is,cls:'db'},
       {l:'Impôt sur le capital (~0.2%)',v:-impCap,cls:'db'},
       {l:'Impôt foncier (~0.1% valeur fiscale)',v:-impFoncier,cls:'db'},
-      {l:'Impôt anticipé dividendes (récupérable ~80%)',v:-impDiv,cls:'db'},
+      {l:'💡 Impôt anticipé 35% sur dividendes → récupérable 100%',v:-impDiv,cls:'db'},
       {l:'Cash flow net (CHF)',v:net,cls:'cr',bold:true},
       {l:'Taux effectif',v:ca>0?Math.round(totOblig/ca*100):0,pct:true},
       {l:'── Optimisations FACULTATIVES ──',v:null,sep:true},
@@ -1755,7 +1764,7 @@ function refresh(){
   const tvaMois=Math.max(0,(getCA()-getCH())*tvaRate);
   // FIX — Alerte franchise TVA CH sous 100 000 CHF
   if(country==='ch' && ca < 100000){
-    alerts.push({cls:'green',ico:'✅',title:'Franchise TVA suisse active',sub:`CA ${fmt(ca,'CHF')} < 100 000 CHF — pas de TVA due`,tag:'Info',tagBg:'var(--green)'});
+    alerts.push({cls:'green',ico:'✅',title:'Non assujetti à la TVA AFC',sub:`CA ${fmt(ca,'CHF')} < 100 000 CHF — aucune TVA à collecter. Avantage : moins d\'admin. Attention : TVA sur achats non récupérable.`,tag:'Info',tagBg:'var(--green)'});
   } else if(country==='ch' && ca >= 100000 && ca < 110000){
     alerts.push({cls:'amber',ico:'⚠️',title:'Seuil TVA CH bientôt atteint',sub:'Dès 100 000 CHF de CA → assujettissement obligatoire',tag:'Attention',tagBg:'var(--amber)'});
   } else if(tvaMois>0){
@@ -1848,8 +1857,8 @@ function refreshTVA(cur,rate){
 
   if(sousSeuil){
     // Franchise TVA — pas de TVA due
-    document.getElementById('tva-amt').textContent='Franchise';
-    document.getElementById('tva-dead').textContent='Non assujetti';
+    document.getElementById('tva-amt').textContent='Non assujetti';
+    document.getElementById('tva-dead').textContent='⚠️ Échéance  Non assujetti (CA < 100k CHF)';
     document.getElementById('tva-detail').innerHTML=`
       <div class="sr"><span class="sr-n" style="color:var(--muted);font-weight:700">CA annuel</span><span class="sr-v">${fmt(ca,'CHF')}</span></div>
       <div class="sr"><span class="sr-n" style="color:var(--amber);font-weight:700">Seuil TVA CH</span><span class="sr-v" style="color:var(--amber)">100 000 CHF</span></div>
@@ -2086,7 +2095,10 @@ function onSlider(){
     {l:'Impôts & charges sociales',v:-r.tot,cls:'db'},
     {l:'💚 Ce que tu gardes',v:r.net,cls:'cr',bold:true},
   ];
-  document.getElementById('sim-detail').innerHTML=lines.map((l,i)=>{
+  // Use full CFGS lines for detail
+  const fullR=cfg.calc(ca,ch,remAuto);
+  const detailLines=fullR.lines||lines;
+  document.getElementById('sim-detail').innerHTML=detailLines.map((l,i)=>{
     if(l.sep) return `<div style="padding:6px 16px 2px;font-size:10px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px">${l.l}</div>`;
     if(l.tip) return `<div style="padding:6px 16px;font-size:11px;font-weight:700;color:var(--green);background:rgba(0,200,151,.06);border-radius:8px;margin:2px 8px">${l.l}</div>`;
     if(l.note) return `<div style="padding:6px 16px;font-size:11px;font-weight:700;color:var(--muted);font-style:italic">${l.l}</div>`;
@@ -2209,7 +2221,7 @@ const html=`<html><head><meta charset="UTF-8"><style>
       <div class="footer-logo">F</div>
       <div>
         <div class="footer-text">Créé avec Fiskai · Ton comptable intelligent</div>
-        <a class="footer-link" href="https://fiskai.fr">fiskai.fr</a>
+        <a class="footer-link" href="https://fiskai.ch">fiskai.ch</a>
       </div>
     </div>
     <div class="footer-text">Document généré le ${dateStr}</div>
@@ -2433,10 +2445,10 @@ function initGreet(){const h=new Date().getHours();document.getElementById('gree
 
 // ══ DIDACTICIEL ══
 const TUTO=[
-  {sel:'.hero',title:'Ton revenu net 💰',desc:'Exemple : tu gagnes 80 000€, tu as 15 000€ de charges → Fiskai calcule qu\'il te reste ~42 000€ après cotisations et impôts. Ce chiffre se met à jour en temps réel.',pos:'bottom'},
-  {sel:'#ia-card-wrap',title:'Ton conseil fiscal 💡',desc:'Exemple : "Verse 4 000€ sur ton PER → économise ~1 200€ d\'impôts cette année." Fiskai adapte chaque conseil à ton statut et ton secteur.',pos:'bottom'},
-  {sel:'#tab-fab',title:'Saisir en 3 secondes ✨',desc:'Tap + → choisis "Revenu" → tape 3 000 → valide. C\'est tout. Fiskai met à jour ton bilan, ta TVA et tes conseils automatiquement.',pos:'top'},
-  {sel:'#tab-tout',title:'Ton tableau de bord 📊',desc:'Simulateur : vois combien tu gardes selon ton CA. TVA : combien reverser ce trimestre. Bilan : tes vrais chiffres de l\'année.',pos:'top'},
+  {sel:'.hero',title:'Ton revenu net 💰',desc:'Exemple : tu gagnes 80 000 CHF, tu as 15 000 CHF de charges → Fiskai calcule qu\'il te reste ~46 000 CHF après AVS, IFD et impôt cantonal. Ce chiffre se met à jour en temps réel.',pos:'bottom'},
+  {sel:'#ia-card-wrap',title:'Ton conseil fiscal 💡',desc:'Exemple : "Verse 7 056 CHF sur ton Pilier 3a → économise ~1 400 CHF d\'impôts cette année." Fiskai adapte chaque conseil à ton canton et ton statut.',pos:'bottom'},
+  {sel:'#tab-fab',title:'Saisir en 3 secondes ✨',desc:'Tap + → choisis "Revenu" → tape 5 000 → valide. C\'est tout. Fiskai met à jour ton bilan, ta TVA et tes conseils automatiquement.',pos:'top'},
+  {sel:'#tab-tout',title:'Ton tableau de bord 📊',desc:'Simulateur : vois combien tu gardes selon ton CA. TVA : combien reverser à l\'AFC ce trimestre. Bilan : tes vrais chiffres de l\'année.',pos:'top'},
 ];
 let tStep=0,tActive=false;
 
@@ -3184,11 +3196,12 @@ function renderUpgradeButtons(){
 // fiskai.fr/app.html?pays=fr  →  mode France
 // fiskai.ch/app.html?pays=ch  →  mode Suisse
 function detectPays(){
-  // fiskai.fr — toujours France
-  country = 'fr';
-  if(!statut || statut.endsWith('_ch') || statut === 'ind_ch') statut = 'sasu';
+  // fiskai.ch — toujours Suisse
+  country = 'ch';
+  if(!statut || (!statut.endsWith('_ch') && statut !== 'ind_ch')) statut = 'sarl_ch';
   updateCountryBadge();
   buildTvaSelect();
+  buildCantonSel();
 }
 
 function updateCountryBadge(){
