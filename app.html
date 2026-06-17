@@ -1711,11 +1711,12 @@ function refresh(){
   // Auto-detect secteur uniquement si l'utilisateur n'a pas choisi de secteur à l'onboarding
   if(secteur==='autre'&&entries.length>=5) secteur=detectSecteur();
 
-  // Hero (utilise valeurs réelles si dispo, sinon défaut)
-  document.getElementById('h-net').textContent=fmt(r.net,cur);
-  document.getElementById('h-ca').textContent=fmt(ca,cur);
-  document.getElementById('h-ch').textContent=fmt(ch,cur);
-  document.getElementById('h-imp').textContent=fmt(r.tot,cur);
+  // Hero — uniquement si vraies données, sinon "—"
+  const hasData = caReal > 0;
+  document.getElementById('h-net').textContent=hasData?fmt(r.net,cur):'—';
+  document.getElementById('h-ca').textContent=hasData?fmt(ca,cur):'—';
+  document.getElementById('h-ch').textContent=hasData?fmt(ch,cur):'—';
+  document.getElementById('h-imp').textContent=hasData?fmt(r.tot,cur):'—';
   document.getElementById('h-sub').textContent=`${cfg.n} · ${country==='ch'?'🇨🇭 Suisse':'🇫🇷 France'}`;
 
 
@@ -2377,10 +2378,10 @@ function initGreet(){const h=new Date().getHours();document.getElementById('gree
 
 // ══ DIDACTICIEL ══
 const TUTO=[
-  {sel:'.hero',title:'Ton revenu net 💰',desc:'Ce chiffre c\'est ce qu\'il te reste après impôts et charges. Fiskai le calcule en temps réel dès que tu saisis une opération.',pos:'bottom'},
-  {sel:'#ia-card-wrap',title:'Ton conseil du jour 💡',desc:'Fiskai analyse ta situation et te propose LE meilleur conseil fiscal adapté à ton secteur. Clique dessus pour en savoir plus.',pos:'bottom'},
-  {sel:'#tab-fab',title:'Le bouton essentiel ✨',desc:'Ce + vert c\'est tout. Tap ici pour saisir en 3 secondes ce que tu as encaissé ou dépensé.',pos:'top'},
-  {sel:'#tab-tout',title:'Tout le reste 📊',desc:'Simulateur d\'impôts, TVA, bilan, factures, conseils — tout est là dans un scroll simple.',pos:'top'},
+  {sel:'.hero',title:'Ton revenu net 💰',desc:'Exemple : tu gagnes 80 000 CHF, tu as 15 000 CHF de charges → Fiskai calcule qu\'il te reste ~46 000 CHF après AVS, IFD et impôt cantonal. Ce chiffre se met à jour en temps réel.',pos:'bottom'},
+  {sel:'#ia-card-wrap',title:'Ton conseil fiscal 💡',desc:'Exemple : "Verse 7 056 CHF sur ton Pilier 3a → économise ~1 400 CHF d\'impôts cette année." Fiskai adapte chaque conseil à ton canton et ton statut.',pos:'bottom'},
+  {sel:'#tab-fab',title:'Saisir en 3 secondes ✨',desc:'Tap + → choisis "Revenu" → tape 5 000 → valide. C\'est tout. Fiskai met à jour ton bilan, ta TVA et tes conseils automatiquement.',pos:'top'},
+  {sel:'#tab-tout',title:'Ton tableau de bord 📊',desc:'Simulateur : vois combien tu gardes selon ton CA. TVA : combien reverser à l\'AFC ce trimestre. Bilan : tes vrais chiffres de l\'année.',pos:'top'},
 ];
 let tStep=0,tActive=false;
 
@@ -2422,7 +2423,12 @@ function endTuto(){
   if(tutoSpot){tutoSpot.remove();tutoSpot=null;}
   if(tutoBub){tutoBub.remove();tutoBub=null;}
   localStorage.setItem('fsk-tuto','1');
-  toast('🎉 Tu es prêt ! Tape + pour commencer');
+  // Remettre le hero à zéro — les vrais chiffres viendront avec les opérations
+  ['h-net','h-ca','h-ch','h-imp'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent='—';
+  });
+  toast('🎉 Tu es prêt ! Tape + pour saisir ta première opération');
 }
 
 // ══ ONBOARDING ══
@@ -2901,9 +2907,13 @@ function showTrialBanner(daysLeft){
 }
 
 function checkTrial(profile){
-  if(!profile || !profile.created_at) return;
+  if(!profile) return;
   if(profile.plan && profile.plan !== 'trial') return; // abonné = ok
-  const created = new Date(profile.created_at);
+  // Utiliser created_at du profil ou de l'auth (fallback)
+  const createdStr = profile.created_at || (currentUser && currentUser.created_at);
+  if(!createdStr) return; // pas de date = ne pas bloquer
+  const created = new Date(createdStr);
+  if(isNaN(created.getTime())) return; // date invalide = ne pas bloquer
   const now = new Date();
   const diffDays = Math.floor((now - created) / (1000*60*60*24));
   const daysLeft = 14 - diffDays;
