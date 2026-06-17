@@ -2152,13 +2152,80 @@ async function genFacture(){
   entries.unshift(entry);
   closeOv('ov-facture');
   // Générer PDF téléchargeable
-const html=`<html><body style="font-family:Arial;padding:40px">
-<h2>${emetteur}</h2><p>Facture n° ${num} — ${dateStr}</p><hr>
-<p><b>Client :</b> ${client}</p>
-<p><b>Description :</b> ${desc}</p><hr>
-<p>Total HT : ${ht} ${cur}</p>
-<p>TVA (${Math.round(tvaR*100)}%) : ${tva.toFixed(2)} ${cur}</p>
-<p><b>Total TTC : ${ttc.toFixed(2)} ${cur}</b></p>
+const html=`<html><head><meta charset="UTF-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Helvetica Neue',Arial,sans-serif}
+  body{background:#fff;color:#1a1a2e;padding:48px 56px}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}
+  .emetteur{font-size:22px;font-weight:800;color:#1a1a2e}
+  .badge{background:#0A0A12;color:#00C897;font-size:11px;font-weight:900;padding:6px 14px;border-radius:99px;letter-spacing:.5px}
+  .num{font-size:13px;color:#888;margin-top:6px}
+  .section{margin-bottom:28px}
+  .label{font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .value{font-size:15px;font-weight:600;color:#1a1a2e}
+  .divider{border:none;border-top:1.5px solid #f0f0f0;margin:28px 0}
+  .totals{background:#f8f9fa;border-radius:12px;padding:20px 24px}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .row-label{font-size:13px;color:#888;font-weight:600}
+  .row-value{font-size:13px;color:#1a1a2e;font-weight:700}
+  .total-row{border-top:2px solid #e0e0e0;margin-top:12px;padding-top:12px}
+  .total-label{font-size:15px;font-weight:900;color:#1a1a2e}
+  .total-value{font-size:18px;font-weight:900;color:#1a1a2e}
+  .footer{margin-top:48px;padding-top:20px;border-top:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+  .footer-brand{display:flex;align-items:center;gap:10px}
+  .footer-logo{width:28px;height:28px;background:#00C897;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:14px}
+  .footer-text{font-size:11px;color:#aaa;font-weight:600}
+  .footer-link{font-size:11px;color:#00C897;font-weight:700;text-decoration:none}
+  .status{display:inline-block;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;background:#fff3cd;color:#856404}
+</style></head>
+<body>
+  <div class="header">
+    <div>
+      <div class="emetteur">${emetteur}</div>
+      <div class="num">Facture n° ${num} · ${dateStr}</div>
+    </div>
+    <div>
+      <div class="badge">FACTURE</div>
+      <div class="status" style="margin-top:8px;display:block;text-align:center">En attente</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="label">Destinataire</div>
+    <div class="value">${client}</div>
+  </div>
+
+  <div class="section">
+    <div class="label">Prestation</div>
+    <div class="value">${desc}</div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="totals">
+    <div class="row">
+      <span class="row-label">Total HT</span>
+      <span class="row-value">${ht} ${cur}</span>
+    </div>
+    <div class="row">
+      <span class="row-label">TVA (${Math.round(tvaR*100)}%)</span>
+      <span class="row-value">${tva.toFixed(2)} ${cur}</span>
+    </div>
+    <div class="row total-row">
+      <span class="total-label">Total TTC</span>
+      <span class="total-value">${ttc.toFixed(2)} ${cur}</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">
+      <div class="footer-logo">F</div>
+      <div>
+        <div class="footer-text">Créé avec Fiskai · Ton comptable intelligent</div>
+        <a class="footer-link" href="https://fiskai.ch">fiskai.ch</a>
+      </div>
+    </div>
+    <div class="footer-text">Document généré le ${dateStr}</div>
+  </div>
 </body></html>`;
 const blob=new Blob([html],{type:'text/html'});
 const a=document.createElement('a');
