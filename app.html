@@ -823,11 +823,11 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
           <div style="padding:16px 16px 8px">
             <div class="sl-field">
               <div class="sl-top"><span class="sl-lbl">💼 CA annuel</span><span class="sl-val" id="sl-ca-v">100k €</span></div>
-              <input type="range" min="10000" max="500000" step="5000" value="100000" id="sl-ca" oninput="onSlider()">
+              <input type="range" min="10000" max="500000" step="5000" value="80000" id="sl-ca" oninput="onSlider()">
             </div>
             <div class="sl-field">
               <div class="sl-top"><span class="sl-lbl">💸 Charges pro</span><span class="sl-val" id="sl-ch-v">30k €</span></div>
-              <input type="range" min="0" max="200000" step="2000" value="30000" id="sl-ch" oninput="onSlider()">
+              <input type="range" min="0" max="200000" step="2000" value="15000" id="sl-ch" oninput="onSlider()">
             </div>
             <div style="font-size:11px;color:var(--muted);font-weight:700;margin-top:4px;margin-bottom:12px">
               💡 Simulation · La rémunération est auto-calculée selon ton statut — pour tes vraies données, vois le bilan en haut
@@ -1624,7 +1624,7 @@ function getConseils(r,ca,ch,cur){
   // ── TECH / FREELANCE ──
   if(s==='tech'){
     if(ben>5000) all.push({ico:'💻',bg:var_('green'),tag:`⏱ ${daysLeft} jours`,title:'Matériel informatique haut de gamme',desc:`Ordinateur, écran, tablette — amortissables sur 3 ans. MacBook Pro 2 499€ = ${fmt(2499*.25,cur)} d'économie IS.`,save:fmt(2499*.25,cur)+' économisés',pri:1});
-    all.push({ico:'🏠',bg:var_('blue'),tag:'Freelance · Quotidien',title:'Bureau à domicile déductible',desc:'Si tu travailles chez toi, une part de ton loyer et charges est déductible. Généralement 10 à 30% selon la surface.',save:'~'+fmt(1200,cur)+'/an',pri:2});
+    all.push({ico:'🏠',bg:var_('blue'),tag:'Freelance · Quotidien',title:'Bureau à domicile déductible',desc:'Si tu travailles chez toi, une part de ton loyer et charges est déductible. Généralement 10 à 30% selon la surface.',save:'~'+fmt(country==="ch"?2400:1200,cur)+'/an',pri:2});
     all.push({ico:'📱',bg:var_('amber'),tag:'Quotidien · Simple',title:'Abonnements SaaS pro déductibles',desc:'Adobe, Figma, Notion, GitHub — tous déductibles à 100%. Vérifie que tu les passes sur ton compte pro.',save:'Déduction sur chaque abonnement',pri:3});
   }
 
@@ -2435,7 +2435,7 @@ function initGreet(){const h=new Date().getHours();document.getElementById('gree
 // ══ DIDACTICIEL ══
 const TUTO=[
   {sel:'.hero',title:'Ton revenu net 💰',desc:'Exemple : tu gagnes 80 000 CHF, tu as 15 000 CHF de charges → Fiskai calcule qu\'il te reste ~46 000 CHF après AVS, IFD et impôt cantonal. Ce chiffre se met à jour en temps réel.',pos:'bottom'},
-  {sel:'#ia-card-wrap',title:'Ton conseil fiscal 💡',desc:'Exemple : "Verse 7 056 CHF sur ton Pilier 3a → économise ~1 400 CHF d\'impôts cette année." Fiskai adapte chaque conseil à ton canton et ton statut.',pos:'bottom'},
+  {sel:'#ia-card-wrap',title:'Ton conseil fiscal 💡',desc:'Exemple : "Verse 7 056 CHF sur ton Pilier 3a → économise ~4 200 CHF d\'impôts cette année." Fiskai adapte chaque conseil à ton canton et ton statut.',pos:'bottom'},
   {sel:'#tab-fab',title:'Saisir en 3 secondes ✨',desc:'Tap + → choisis "Revenu" → tape 5 000 → valide. C\'est tout. Fiskai met à jour ton bilan, ta TVA et tes conseils automatiquement.',pos:'top'},
   {sel:'#tab-tout',title:'Ton tableau de bord 📊',desc:'Simulateur : vois combien tu gardes selon ton CA. TVA : combien reverser à l\'AFC ce trimestre. Bilan : tes vrais chiffres de l\'année.',pos:'top'},
 ];
