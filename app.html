@@ -935,6 +935,11 @@ src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"
             <div class="set-text"><div class="set-name" style="color:var(--red)">Se déconnecter</div><div class="set-desc">Retour à l'écran de connexion</div></div>
             <span style="color:var(--muted);font-size:14px">→</span>
           </div>
+          <div class="set-row" id="pwa-install-btn" onclick="installPWA()" style="cursor:pointer">
+            <div class="set-ico" style="background:var(--green-l)">📲</div>
+            <div class="set-text"><div class="set-name" style="color:var(--green)">Installer l'app</div><div class="set-desc" id="pwa-install-desc">Ajouter Fiskai sur ton écran d'accueil</div></div>
+            <span style="color:var(--muted);font-size:14px">→</span>
+          </div>
         </div>
       </div>
 
@@ -3260,25 +3265,48 @@ supa.auth.getSession().then(({data:{session}})=>{
 
 // ── PWA Install ──
 let deferredPrompt = null;
+// Update install button desc based on device
+(function(){
+  const desc = document.getElementById('pwa-install-desc');
+  if(!desc) return;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  if(isIOS) desc.textContent = 'Partager ⎙ → Sur l\'écran d\'accueil';
+  else if(isAndroid) desc.textContent = 'Tap ici pour installer en 1 clic';
+  else desc.textContent = 'Ajouter Fiskai sur ton écran d\'accueil';
+})();
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  const btn = document.getElementById('pwa-install-btn');
-  if(btn) btn.style.display = 'flex';
 });
 
 function installPWA(){
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
   if(deferredPrompt){
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(r => {
       if(r.outcome === 'accepted') toast('🎉 Fiskai installé sur ton écran d\'accueil !');
       deferredPrompt = null;
-      const btn = document.getElementById('pwa-install-btn');
-      if(btn) btn.style.display = 'none';
     });
+  } else if(isIOS){
+    // Show iOS instructions modal
+    const m = document.createElement('div');
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;display:flex;align-items:flex-end;justify-content:center';
+    m.innerHTML = \`<div style="background:var(--surface);border-radius:24px 24px 0 0;padding:28px 24px 40px;width:100%;max-width:430px;text-align:center">
+      <div style="font-size:32px;margin-bottom:12px">📲</div>
+      <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:8px">Installer Fiskai</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px">
+        1. Appuie sur <strong>Partager</strong> <span style="font-size:18px">⎙</span> en bas de Safari<br>
+        2. Choisis <strong>"Sur l'écran d'accueil"</strong><br>
+        3. Appuie sur <strong>Ajouter</strong>
+      </div>
+      <button onclick="this.closest('div[style*=fixed]').remove()" style="background:var(--green);color:#000;border:none;border-radius:99px;padding:14px 32px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;width:100%">Compris ✓</button>
+    </div>\`;
+    document.body.appendChild(m);
+    m.onclick = e => { if(e.target===m) m.remove(); };
   } else {
-    // iOS fallback
-    toast('Sur iPhone : Partager → Sur l\'écran d\'accueil 📲');
+    toast('Ouvre fiskai.fr dans Chrome pour installer l\'app 📲');
   }
 }
 
