@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr-CH">
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 34 34' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='34' height='34' rx='9' fill='%2300C897'/%3E%3Crect x='10' y='9' width='4' height='16' rx='1.5' fill='%230A0A0F'/%3E%3Crect x='10' y='9' width='13' height='4' rx='1.5' fill='%230A0A0F'/%3E%3Crect x='10' y='17' width='9' height='3.5' rx='1.5' fill='%230A0A0F'/%3E%3Ccircle cx='26' cy='9' r='4' fill='%23007D5E'/%3E%3Ccircle cx='26' cy='9' r='2' fill='%23004D3A'/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fiskai — Ta fiduciaire intelligente en Suisse</title>
+<title>Fiskai — Ton comptable intelligent. Sans comptable. 🇨🇭</title>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s)
@@ -19,16 +19,16 @@ fbq('init', '970971975537160');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=970971975537160&ev=PageView&noscript=1"/></noscript>
-<meta name="description" content="Fiskai calcule tes impôts suisses en temps réel, scanne tes factures et génère devis et factures en 1 clic. 16 cantons, IFD + cantonal. 14 jours gratuits.">
+<meta name="description" content="Fiskai calcule tes impôts en temps réel, scanne tes factures et génère devis et factures en 1 clic. Pour indépendants, Sàrl et professions libérales en Suisse. 14 jours gratuits.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://fiskai.ch/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://fiskai.ch/">
-<meta property="og:title" content="Fiskai — Ta fiduciaire intelligente. Sans fiduciaire.">
-<meta property="og:description" content="Calcul d'impôts suisses · 16 cantons · Scan factures · Devis et factures en 1 clic. 14 jours gratuits.">
+<meta property="og:title" content="Fiskai — Ton comptable intelligent. Sans comptable.">
+<meta property="og:description" content="Calcul d'impôts en temps réel · Scan factures · Devis et factures en 1 clic. 14 jours gratuits.">
 <meta property="og:locale" content="fr_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fiskai — Ta fiduciaire intelligente. Sans fiduciaire.">
+<meta name="twitter:title" content="Fiskai — Ton comptable intelligent. Sans comptable.">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -46,116 +46,98 @@ fbq('track', 'PageView');
     --radius-pill: 100px;
   }
   html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-    background: var(--cream);
-    color: var(--black);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif; background: var(--cream); color: var(--black); line-height: 1.5; -webkit-font-smoothing: antialiased; }
 
-  /* ── NAV ── */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(238,234,227,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--cream-dark);
-    padding: 0 40px;
-    height: 60px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(238,234,227,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--cream-dark); padding: 0 40px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
   .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
   .nav-logo-box { width: 32px; height: 32px; background: var(--green); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #fff; }
   .nav-logo-name { font-size: 16px; font-weight: 700; color: var(--black); }
-  .nav-ch-badge { background: var(--cream-dark); border-radius: 6px; padding: 2px 8px; font-size: 11px; color: var(--gray); font-weight: 600; }
   .nav-cta { background: var(--green); color: #fff; border: none; cursor: pointer; padding: 10px 22px; border-radius: var(--radius-pill); font-size: 14px; font-weight: 700; text-decoration: none; transition: opacity 0.15s; }
   .nav-cta:hover { opacity: 0.88; }
 
-  /* ── HERO ── */
+  /* HERO */
   .hero { max-width: 1160px; margin: 0 auto; padding: 80px 40px 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
   .hero-eyebrow { display: inline-flex; align-items: center; gap: 7px; background: var(--green-light); border: 1px solid var(--green-border); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 22px; }
   .hero-eyebrow-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
   .hero-h1 { font-size: 56px; font-weight: 900; line-height: 1.05; letter-spacing: -2px; color: var(--black); margin-bottom: 18px; }
+  .hero-h1 em { color: var(--green); font-style: normal; display: block; }
   .hero-sub { font-size: 17px; color: var(--gray); line-height: 1.6; margin-bottom: 10px; }
   .hero-promise { font-size: 15px; font-weight: 700; color: var(--green); margin-bottom: 30px; }
   .hero-promise span { color: var(--gray-light); font-weight: 400; }
   .hero-cta-group { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 28px; }
-  .btn-primary { background: var(--green); color: #fff; border: none; cursor: pointer; padding: 16px 32px; border-radius: var(--radius-pill); font-size: 16px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s; }
+  .btn-primary { background: var(--green); color: #fff; border: none; cursor: pointer; padding: 16px 32px; border-radius: var(--radius-pill); font-size: 16px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s; white-space: nowrap; }
   .btn-primary:hover { opacity: 0.88; }
   .hero-micro { font-size: 12px; color: var(--gray-light); }
-
-  .hero-social { display: inline-flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--white); border-radius: var(--radius-sm); border: 1px solid var(--cream-dark); }
-  .hero-social-avatars { display: flex; }
-  .hero-social-avatars span { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--white); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; margin-left: -8px; }
-  .hero-social-avatars span:first-child { margin-left: 0; background: #3b82f6; }
-  .hero-social-avatars span:nth-child(2) { background: #f59e0b; }
-  .hero-social-avatars span:nth-child(3) { background: #ef4444; }
-  .hero-social-avatars span:nth-child(4) { background: var(--green); }
-  .hero-stars { color: #f59e0b; font-size: 14px; letter-spacing: 1px; }
-  .hero-social-text { font-size: 13px; color: var(--black); }
-
-  /* Phone frame */
   .hero-right { display: flex; justify-content: center; align-items: center; }
   .phone-frame { width: 300px; background: #111; border-radius: 40px; padding: 18px 12px 22px; box-shadow: 0 40px 100px rgba(0,0,0,0.22), inset 0 0 0 1.5px #333; position: relative; }
   .phone-notch { width: 80px; height: 20px; background: #0a0a0a; border-radius: 0 0 12px 12px; margin: 0 auto 14px; }
   .phone-screen { padding: 0 4px; }
-  .hero-app { background: transparent; }
-  .app-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .app-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
   .app-logo-row { display: flex; align-items: center; gap: 7px; }
   .app-logo-box { width: 22px; height: 22px; background: var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #000; }
   .app-logo-name { font-size: 13px; font-weight: 700; color: #fff; }
   .app-avatar { width: 24px; height: 24px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #000; }
-  .app-revenu-card { background: #1a2e20; border: 1px solid rgba(29,185,122,0.2); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
+  .app-revenu-card { background: #1a1a1a; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; }
   .app-revenu-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
-  .app-revenu-val { font-size: 24px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 10px; }
-  .app-revenu-stats { display: flex; gap: 0; }
+  .app-revenu-val { font-size: 28px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 10px; }
+  .app-revenu-stats { display: flex; }
   .app-stat { flex: 1; text-align: center; padding: 6px 0; background: #222; }
   .app-stat:first-child { border-radius: 8px 0 0 8px; }
   .app-stat:last-child { border-radius: 0 8px 8px 0; }
-  .app-stat-label { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
+  .app-stat-label { font-size: 9px; color: #555; text-transform: uppercase; }
   .app-stat-val { font-size: 13px; font-weight: 700; color: #fff; margin-top: 2px; }
   .app-stat-val.red { color: #ff6b6b; }
-  .app-alert { background: #0f2318; border: 1px solid rgba(29,185,122,0.3); border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-  .app-alert-emoji { font-size: 18px; }
+  .app-alert { background: #0f2318; border: 1px solid rgba(29,185,122,0.3); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .app-alert-emoji { font-size: 20px; }
   .app-alert-label { font-size: 9px; color: #3a6a4a; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
-  .app-alert-title { font-size: 11px; font-weight: 600; color: #fff; }
-  .app-alert-val { font-size: 12px; font-weight: 700; color: var(--green); margin-top: 1px; }
+  .app-alert-title { font-size: 12px; font-weight: 600; color: #fff; }
+  .app-alert-val { font-size: 13px; font-weight: 700; color: var(--green); margin-top: 1px; }
   .app-transactions { display: flex; flex-direction: column; gap: 6px; }
-  .app-tx { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: #1a1a1a; border-radius: 10px; }
-  .app-tx-left { display: flex; align-items: center; gap: 8px; }
-  .app-tx-icon { width: 26px; height: 26px; background: #222; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-  .app-tx-name { font-size: 11px; font-weight: 500; color: #ccc; }
-  .app-tx-date { font-size: 9px; color: #555; margin-top: 1px; }
-  .app-tx-val { font-size: 12px; font-weight: 700; }
+  .app-tx { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: #1a1a1a; border-radius: 10px; }
+  .app-tx-left { display: flex; align-items: center; gap: 9px; }
+  .app-tx-icon { width: 28px; height: 28px; background: #222; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .app-tx-name { font-size: 12px; font-weight: 600; color: #fff; }
+  .app-tx-date { font-size: 10px; color: #555; }
+  .app-tx-val { font-size: 13px; font-weight: 700; }
   .app-tx-val.pos { color: var(--green); }
   .app-tx-val.neg { color: #ff6b6b; }
 
-  /* ── CANTON PILL ── */
-  .canton-bar { max-width: 1160px; margin: 0 auto; padding: 0 40px 40px; display: flex; justify-content: center; }
-  .canton-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--white); border: 1px solid var(--cream-dark); border-radius: var(--radius-pill); padding: 10px 20px; font-size: 13px; color: var(--gray); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .canton-pill strong { color: var(--black); font-weight: 700; }
+  /* PROFILS CIBLES */
+  .profils-bar { background: var(--white); border-top: 1px solid var(--cream-dark); border-bottom: 1px solid var(--cream-dark); padding: 20px 40px; overflow-x: auto; }
+  .profils-inner { max-width: 1160px; margin: 0 auto; display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .profil-pill { display: inline-flex; align-items: center; gap: 7px; background: var(--cream); border: 1px solid var(--cream-dark); border-radius: var(--radius-pill); padding: 8px 16px; font-size: 13px; font-weight: 700; color: var(--black); white-space: nowrap; }
+  .profil-pill.active { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
 
-  /* ── STATS PILLS ── */
-  .stats-bar { max-width: 1160px; margin: 0 auto; padding: 0 40px; display: flex; gap: 16px; margin-bottom: 80px; }
-  .stat-pill { flex: 1; background: var(--white); border: 1px solid var(--cream-dark); border-radius: var(--radius); padding: 18px 20px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  /* STATS BAR */
+  .stats-bar { display: flex; align-items: center; justify-content: center; gap: 0; background: var(--white); border-top: 1px solid var(--cream-dark); border-bottom: 1px solid var(--cream-dark); padding: 0; overflow-x: auto; }
+  .stat-pill { display: flex; align-items: center; gap: 12px; padding: 20px 32px; border-right: 1px solid var(--cream-dark); }
+  .stat-pill:last-child { border-right: none; }
   .stat-pill-emoji { font-size: 22px; }
-  .stat-pill-val { font-size: 20px; font-weight: 900; color: var(--green); letter-spacing: -0.5px; }
-  .stat-pill-label { font-size: 12px; color: var(--gray); margin-top: 1px; }
+  .stat-pill-val { font-size: 20px; font-weight: 900; color: var(--black); line-height: 1; }
+  .stat-pill-label { font-size: 12px; color: var(--gray); margin-top: 2px; }
 
-  /* ── SECTIONS ── */
+  /* SECTIONS */
   .section { max-width: 1160px; margin: 0 auto; padding: 0 40px 80px; }
   .section-eyebrow { text-align: center; font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 14px; }
   .section-h2 { text-align: center; font-size: 40px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; color: var(--black); margin-bottom: 12px; }
   .section-sub { text-align: center; font-size: 16px; color: var(--gray); margin-bottom: 48px; }
 
-  /* ── FEATURES ── */
+  /* FEATURES */
   .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .feat-card { background: var(--white); border-radius: var(--radius); padding: 24px 22px; border: 1px solid var(--cream-dark); }
   .feat-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
   .feat-title { font-size: 16px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
   .feat-body { font-size: 14px; color: var(--gray); line-height: 1.6; }
 
-  /* ── TESTIMONIALS ── */
+  /* MÉTIERS */
+  .metiers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 40px; }
+  .metier-card { background: var(--white); border-radius: var(--radius-sm); padding: 18px 16px; border: 1px solid var(--cream-dark); text-align: center; }
+  .metier-icon { font-size: 28px; margin-bottom: 8px; }
+  .metier-name { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+  .metier-saving { font-size: 12px; font-weight: 700; color: var(--green); }
+
+  /* TESTIMONIALS */
   .testi-section { background: var(--white); padding: 80px 40px; }
   .testi-inner { max-width: 1160px; margin: 0 auto; }
   .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
@@ -168,7 +150,7 @@ fbq('track', 'PageView');
   .testi-role { font-size: 12px; color: var(--gray-light); }
   .testi-saving { display: inline-flex; align-items: center; gap: 5px; background: var(--green-light); border: 1px solid var(--green-border); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 700; color: var(--green); margin-top: 6px; }
 
-  /* ── PRICING ── */
+  /* PRICING */
   .pricing-section { max-width: 1160px; margin: 0 auto; padding: 80px 40px; }
   .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; align-items: start; }
   .pricing-card { background: var(--white); border-radius: var(--radius); padding: 28px 24px; border: 1px solid var(--cream-dark); }
@@ -189,7 +171,7 @@ fbq('track', 'PageView');
   .btn-pricing.primary { background: var(--green); color: #fff; }
   .btn-pricing.secondary { background: var(--cream); color: var(--black); border: 1px solid var(--cream-dark); }
 
-  /* ── FAQ ── */
+  /* FAQ */
   .faq-section { max-width: 760px; margin: 0 auto; padding: 0 40px 80px; }
   .faq-item { border-bottom: 1px solid var(--cream-dark); }
   .faq-q { width: 100%; background: none; border: none; cursor: pointer; padding: 20px 0; display: flex; align-items: center; justify-content: space-between; font-size: 16px; font-weight: 600; color: var(--black); text-align: left; gap: 16px; }
@@ -198,7 +180,7 @@ fbq('track', 'PageView');
   .faq-item.open .faq-a { display: block; }
   .faq-item.open .faq-icon { transform: rotate(45deg); }
 
-  /* ── FINAL CTA ── */
+  /* FINAL CTA */
   .final-cta { background: var(--green-light); border-top: 1px solid var(--green-border); padding: 80px 40px; text-align: center; }
   .final-cta-inner { max-width: 600px; margin: 0 auto; }
   .final-h2 { font-size: 44px; font-weight: 900; color: var(--black); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 14px; }
@@ -208,9 +190,9 @@ fbq('track', 'PageView');
   .final-cta-btn:hover { opacity: 0.88; }
   .final-micro { font-size: 13px; color: var(--gray-light); margin-top: 14px; }
   .final-trust { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 32px; flex-wrap: wrap; }
-  .final-trust-item { font-size: 13px; color: var(--gray); }
+  .final-trust-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--gray); }
 
-  /* ── FOOTER ── */
+  /* FOOTER */
   footer { background: var(--cream-dark); border-top: 1px solid #d8d4cc; padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .footer-logo { display: flex; align-items: center; gap: 8px; }
   .footer-logo-box { width: 24px; height: 24px; background: var(--green); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; }
@@ -220,21 +202,23 @@ fbq('track', 'PageView');
   .footer-links a:hover { color: var(--black); }
   .footer-copy { font-size: 12px; color: var(--gray-light); }
 
-  /* ── STICKY MOBILE ── */
+  /* STICKY CTA MOBILE */
   .sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: rgba(238,234,227,0.96); backdrop-filter: blur(12px); border-top: 1px solid var(--cream-dark); padding: 12px 20px; }
   .sticky-cta a { display: block; background: var(--green); color: #fff; text-align: center; padding: 14px; border-radius: var(--radius-pill); font-size: 15px; font-weight: 800; text-decoration: none; }
 
-  /* ── RESPONSIVE ── */
+  /* RESPONSIVE */
   @media (max-width: 768px) {
     nav { padding: 0 20px; }
-    .hero { grid-template-columns: 1fr; padding: 40px 20px; gap: 40px; }
+    .hero { grid-template-columns: 1fr; padding: 40px 20px 40px; gap: 40px; }
     .hero-h1 { font-size: 38px; letter-spacing: -1px; }
     .phone-frame { width: 260px; }
-    .stats-bar { flex-direction: column; padding: 0 20px; margin-bottom: 48px; }
-    .canton-bar { padding: 0 20px 30px; }
+    .hero-right { margin-top: 8px; }
+    .stats-bar { flex-direction: column; }
+    .stat-pill { border-right: none; border-bottom: 1px solid var(--cream-dark); width: 100%; }
     .section { padding: 0 20px 60px; }
     .section-h2 { font-size: 30px; }
     .features-grid { grid-template-columns: 1fr; }
+    .metiers-grid { grid-template-columns: repeat(2, 1fr); }
     .testi-section { padding: 60px 20px; }
     .testi-grid { grid-template-columns: 1fr; }
     .pricing-section { padding: 60px 20px; }
@@ -245,6 +229,8 @@ fbq('track', 'PageView');
     footer { padding: 20px; flex-direction: column; align-items: flex-start; }
     .sticky-cta { display: block; }
     body { padding-bottom: 72px; }
+    .profils-bar { padding: 16px 20px; }
+    .metiers-grid { grid-template-columns: repeat(2,1fr); }
   }
 </style>
 </head>
@@ -255,9 +241,8 @@ fbq('track', 'PageView');
   <a class="nav-logo" href="#">
     <div class="nav-logo-box">F</div>
     <span class="nav-logo-name">fiskai</span>
-    <span class="nav-ch-badge">🇨🇭 Suisse</span>
   </a>
-  <a class="nav-cta" href="#pricing">Tester gratuitement</a>
+  <a class="nav-cta" href="app.html?pays=ch">Essai gratuit 14 jours →</a>
 </nav>
 
 <!-- HERO -->
@@ -265,22 +250,25 @@ fbq('track', 'PageView');
   <div class="hero-left">
     <div class="hero-eyebrow">
       <div class="hero-eyebrow-dot"></div>
-      IA fiduciaire · temps réel
+      IA comptable · temps réel
     </div>
-    <h1 class="hero-h1">Tu paies trop d'impôts.<br>On t'aide à payer moins.</h1>
-    <p class="hero-sub">Tes impôts suisses calculés en temps réel. IFD, cantonal, TVA. Tes déductions trouvées automatiquement.</p>
-    <p class="hero-promise">Minimum 2 000 CHF économisés par an. <span>Jusqu'à 10× plus selon ton activité.</span></p>
+    <h1 class="hero-h1">Tu paies trop d'impôts.<br><em>Et tu ne le sais pas.</em></h1>
+    <p class="hero-sub">Fiskai analyse ta situation en temps réel et te dit exactement combien tu peux récupérer. Sans comptable. Sans effort.</p>
+    <p class="hero-promise">Minimum 1 800€ économisés par an. <span>Jusqu'à 10× plus selon ton activité.</span></p>
     <div class="hero-cta-group">
-      <a class="btn-primary" href="#pricing">Tester gratuitement →</a>
-      <span class="hero-micro">14 jours gratuits · Sans engagement</span>
+      <a class="btn-primary" href="app.html?pays=ch">Tester gratuitement →</a>
+      <span class="hero-micro">14 jours gratuits · Sans CB · Sans engagement</span>
     </div>
-    <div class="hero-social">
-      <div class="hero-social-avatars">
-        <span>T</span><span>M</span><span>S</span><span>+</span>
+    <div class="hero-social" style="display:inline-flex;align-items:center;gap:14px;background:#fff;border:1px solid #e2ede7;border-radius:14px;padding:12px 18px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div style="display:flex;">
+        <div style="width:30px;height:30px;border-radius:50%;background:#3b82f6;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;">T</div>
+        <div style="width:30px;height:30px;border-radius:50%;background:#f59e0b;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;margin-left:-8px;">M</div>
+        <div style="width:30px;height:30px;border-radius:50%;background:#ef4444;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;margin-left:-8px;">S</div>
+        <div style="width:30px;height:30px;border-radius:50%;background:#1DB97A;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-left:-8px;">+</div>
       </div>
       <div>
-        <div class="hero-stars">★★★★★</div>
-        <div class="hero-social-text"><strong>+800 indépendants suisses</strong> nous font confiance</div>
+        <div style="font-size:13px;color:#f59e0b;letter-spacing:2px;line-height:1;">★★★★★</div>
+        <div style="font-size:13px;color:#111;margin-top:3px;"><strong>+1 200 indépendants</strong> nous font confiance</div>
       </div>
     </div>
   </div>
@@ -288,21 +276,21 @@ fbq('track', 'PageView');
     <div class="phone-frame">
       <div class="phone-notch"></div>
       <div class="phone-screen">
-        <div class="hero-app">
+        <div>
           <div class="app-topbar">
             <div class="app-logo-row">
               <div class="app-logo-box">F</div>
               <span class="app-logo-name">fiskai</span>
             </div>
-            <div class="app-avatar">J</div>
+            <div class="app-avatar">T</div>
           </div>
           <div class="app-revenu-card">
             <div class="app-revenu-label">Revenu net · 2026</div>
-            <div class="app-revenu-val">52 800 CHF</div>
+            <div class="app-revenu-val">31 200 €</div>
             <div class="app-revenu-stats">
-              <div class="app-stat"><div class="app-stat-label">REV</div><div class="app-stat-val">95k</div></div>
-              <div class="app-stat"><div class="app-stat-label">CH.</div><div class="app-stat-val">24k</div></div>
-              <div class="app-stat"><div class="app-stat-label">IMP.</div><div class="app-stat-val red">24k</div></div>
+              <div class="app-stat"><div class="app-stat-label">REV</div><div class="app-stat-val">52k</div></div>
+              <div class="app-stat"><div class="app-stat-label">CH.</div><div class="app-stat-val">9k</div></div>
+              <div class="app-stat"><div class="app-stat-label">IMP.</div><div class="app-stat-val red">12k</div></div>
             </div>
           </div>
           <div class="app-alert">
@@ -310,30 +298,30 @@ fbq('track', 'PageView');
             <div>
               <div class="app-alert-label">⏱ 47j · BTP · Alerte</div>
               <div class="app-alert-title">Van utilitaire 100% déductible</div>
-              <div class="app-alert-val">720 CHF d'impôts en moins</div>
+              <div class="app-alert-val">625€ d'impôts en moins</div>
             </div>
           </div>
           <div class="app-transactions">
             <div class="app-tx">
               <div class="app-tx-left">
-                <div class="app-tx-icon">💼</div>
-                <div><div class="app-tx-name">Client Müller</div><div class="app-tx-date">Prestation · 22 avr.</div></div>
+                <div class="app-tx-icon">🔧</div>
+                <div><div class="app-tx-name">Chantier Dupont</div><div class="app-tx-date">Prestation · 22 avr.</div></div>
               </div>
-              <div class="app-tx-val pos">+6 200 CHF</div>
+              <div class="app-tx-val pos">+3 800 €</div>
             </div>
             <div class="app-tx">
               <div class="app-tx-left">
-                <div class="app-tx-icon">🏪</div>
-                <div><div class="app-tx-name">Migros Pro</div><div class="app-tx-date">Fournitures · 20 avr.</div></div>
+                <div class="app-tx-icon">🏢</div>
+                <div><div class="app-tx-name">Leroy Merlin</div><div class="app-tx-date">Matériel · 20 avr.</div></div>
               </div>
-              <div class="app-tx-val neg">−780 CHF</div>
+              <div class="app-tx-val neg">−420 €</div>
             </div>
             <div class="app-tx">
               <div class="app-tx-left">
                 <div class="app-tx-icon">🧾</div>
-                <div><div class="app-tx-name">Facture · Weber</div><div class="app-tx-date">Envoyée · 18 avr.</div></div>
+                <div><div class="app-tx-name">Facture · Martin</div><div class="app-tx-date">Envoyée · 18 avr.</div></div>
               </div>
-              <div class="app-tx-val pos">+4 100 CHF</div>
+              <div class="app-tx-val pos">+2 200 €</div>
             </div>
           </div>
         </div>
@@ -342,26 +330,33 @@ fbq('track', 'PageView');
   </div>
 </section>
 
-<!-- CANTON PILL -->
-<div class="canton-bar">
-  <div class="canton-pill">
-    🇨🇭 <strong>16 cantons suisses couverts</strong> · IFD + cantonal · TVA 8.1% / 2.6% / 3.8% · AVS/AI · LPP · Pilier 3a
+<!-- PROFILS CIBLES -->
+<div class="profils-bar">
+  <div class="profils-inner">
+    <span style="font-size:12px;font-weight:700;color:var(--gray-light);text-transform:uppercase;letter-spacing:.08em;">Pour :</span>
+    <div class="profil-pill active">🔧 Artisans</div>
+    <div class="profil-pill active">🏢 Sàrl · SA</div>
+    <div class="profil-pill active">💼 Indépendants</div>
+    <div class="profil-pill active">⚕️ Professions libérales</div>
+    <div class="profil-pill active">🖥️ Freelances</div>
+    <div class="profil-pill">🏠 Sàrl immo</div>
+    <div class="profil-pill">🏢 Sàrl immobilière</div>
   </div>
 </div>
 
-<!-- STATS PILLS -->
+<!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stat-pill">
     <div class="stat-pill-emoji">💰</div>
-    <div><div class="stat-pill-val">2 000 CHF</div><div class="stat-pill-label">économisés / an minimum</div></div>
-  </div>
-  <div class="stat-pill">
-    <div class="stat-pill-emoji">🇨🇭</div>
-    <div><div class="stat-pill-val">16 cantons</div><div class="stat-pill-label">IFD + impôt cantonal</div></div>
+    <div><div class="stat-pill-val">1 800€</div><div class="stat-pill-label">économisés / an minimum</div></div>
   </div>
   <div class="stat-pill">
     <div class="stat-pill-emoji">⏱️</div>
-    <div><div class="stat-pill-val">14 jours</div><div class="stat-pill-label">gratuits · aucune CB</div></div>
+    <div><div class="stat-pill-val">14 jours</div><div class="stat-pill-label">gratuits · sans engagement</div></div>
+  </div>
+  <div class="stat-pill">
+    <div class="stat-pill-emoji">🧑‍🔧</div>
+    <div><div class="stat-pill-val">+1 200</div><div class="stat-pill-label">indépendants · nous font confiance</div></div>
   </div>
   <div class="stat-pill">
     <div class="stat-pill-emoji">⚡</div>
@@ -369,41 +364,90 @@ fbq('track', 'PageView');
   </div>
 </div>
 
+<!-- MÉTIERS -->
+<section class="section" style="padding-top:80px;">
+  <div class="section-eyebrow">Adapté à ton métier</div>
+  <h2 class="section-h2">Fiskai connaît ton activité.<br>Pas les autres.</h2>
+  <p class="section-sub">Un plombier, un médecin et un consultant n'ont pas les mêmes déductions. Fiskai les connaît toutes.</p>
+  <div class="metiers-grid">
+    <div class="metier-card">
+      <div class="metier-icon">🔧</div>
+      <div class="metier-name">Plombier · Électricien</div>
+      <div class="metier-saving">Van + outils + déplacements</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">🏗️</div>
+      <div class="metier-name">Maçon · Carreleur · BTP</div>
+      <div class="metier-saving">Matériel · Sous-traitance</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">💇</div>
+      <div class="metier-name">Coiffeur · Esthéticien</div>
+      <div class="metier-saving">Local + fournitures + formation</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">⚕️</div>
+      <div class="metier-name">Médecin · Kiné · Infirmier</div>
+      <div class="metier-saving">CARMF · CARPIMKO · Madelin</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">⚖️</div>
+      <div class="metier-name">Avocat · Notaire · Architecte</div>
+      <div class="metier-saving">BNC · CNBF · frais de cabinet</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">💻</div>
+      <div class="metier-name">Consultant · Développeur</div>
+      <div class="metier-saving">Télétravail · équipement · formation</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">🚗</div>
+      <div class="metier-name">Chauffeur · Livreur</div>
+      <div class="metier-saving">Kilométrage · entretien · carburant</div>
+    </div>
+    <div class="metier-card">
+      <div class="metier-icon">🏠</div>
+      <div class="metier-name">SCI · Immo · Investisseur</div>
+      <div class="metier-saving">Sàrl immobilière · déficit foncier</div>
+    </div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section class="section">
   <div class="section-eyebrow">Fonctionnalités</div>
-  <h2 class="section-h2">Tout ce que fait ton fiduciaire.<br>En mieux.</h2>
-  <p class="section-sub">Fiskai couvre 100% de tes besoins fiscaux quotidiens. De l'indépendant à la SA.</p>
+  <h2 class="section-h2">Tout ce que fait ton comptable.<br>En mieux.</h2>
+  <p class="section-sub">Fiskai couvre 100% de tes besoins fiscaux quotidiens. En 30 secondes par jour.</p>
   <div class="features-grid">
     <div class="feat-card">
       <div class="feat-icon">📊</div>
       <div class="feat-title">Tes impôts en temps réel</div>
-      <div class="feat-body">Tu sais exactement combien tu vas payer. Pas dans 3 mois — maintenant. IFD, impôt cantonal, TVA, AVS/AI. Tout est calculé en live à chaque opération.</div>
+      <div class="feat-body">Tu sais exactement combien tu vas payer. Pas dans 3 mois — maintenant. IR, IS, TVA, cotisations AVS/AFC. Tout est calculé en live à chaque nouvelle opération.</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon">📸</div>
       <div class="feat-title">Scan tes factures</div>
-      <div class="feat-body">Prends une photo de ton ticket ou ta facture. Fournisseur, montant, TVA, catégorie — tout est extrait en 2 secondes. Zéro saisie manuelle.</div>
+      <div class="feat-body">Prends une photo de ton ticket ou ta facture. Fournisseur, montant, TVA, catégorie — tout est extrait en 2 secondes par l'IA. Zéro saisie manuelle.</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon">🧾</div>
       <div class="feat-title">Devis et factures en 1 clic</div>
-      <div class="feat-body">Génère un devis. Transforme-le en facture. PDF prêt à envoyer. Conforme aux exigences suisses. Plus besoin de fiduciaire pour ça.</div>
+      <div class="feat-body">Génère un devis. Transforme-le en facture. PDF prêt à envoyer. Conforme facturation électronique 2026. Plus besoin de secrétaire ni d'Excel.</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon">💡</div>
       <div class="feat-title">Conseils adaptés à ton métier</div>
-      <div class="feat-body">Un plombier et un médecin n'ont pas les mêmes déductions. Fiskai te dit quoi acheter et quand pour payer moins d'impôts, selon ton canton et ton activité.</div>
+      <div class="feat-body">Un plombier et un médecin n'ont pas les mêmes déductions. Fiskai te dit quoi déduire et quand pour payer moins d'impôts, selon ton activité exacte.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">Chat fiscal IA 24h/7j</div>
+      <div class="feat-body">Une question sur tes cotisations, ta TVA ou ton statut ? L'IA de Fiskai répond en 10 secondes avec des chiffres précis. Comme un comptable disponible à minuit.</div>
     </div>
     <div class="feat-card">
       <div class="feat-icon">⚖️</div>
-      <div class="feat-title">Quel statut est le mieux ?</div>
-      <div class="feat-body">Indépendant, Sàrl, SA — Fiskai simule chaque forme juridique avec tes vrais chiffres et te montre laquelle te fait payer le moins selon ton canton.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🇨🇭</div>
-      <div class="feat-title">16 cantons couverts</div>
-      <div class="feat-body">Les 16 cantons avec IFD fédéral + impôt cantonal. TVA suisse 8.1% / 2.6% / 3.8%. Pilier 3a et LPP intégrés. Fiskai connaît chaque règle, pour chaque canton.</div>
+      <div class="feat-title">Simulateur de statuts</div>
+      <div class="feat-body">AE, EURL, SCI — Fiskai simule chaque statut avec tes vrais chiffres et te montre lequel te fait payer le moins d'impôts cette année.</div>
     </div>
   </div>
 </section>
@@ -413,41 +457,41 @@ fbq('track', 'PageView');
   <div class="testi-inner">
     <div class="section-eyebrow">Témoignages</div>
     <h2 class="section-h2">Ils ont arrêté de payer trop.</h2>
-    <p class="section-sub">Des indépendants suisses qui récupèrent de l'argent qu'ils ne savaient pas qu'ils perdaient.</p>
+    <p class="section-sub">Des artisans et indépendants qui ont récupéré de l'argent qu'ils ne savaient pas qu'ils perdaient.</p>
     <div class="testi-grid">
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">&ldquo;Mon van était 100% déductible et je ne le savais pas. Fiskai m'a envoyé une alerte 47 jours avant la deadline fiscale. 720 CHF récupérés d'un coup.&rdquo;</p>
+        <p class="testi-quote">"Mon van était 100% déductible et je ne le savais pas. Fiskai m'a envoyé une alerte 47 jours avant la deadline. 625€ récupérés d'un coup."</p>
         <div class="testi-author">
           <div class="testi-avatar" style="background:#3b82f6;">T</div>
           <div>
-            <div class="testi-name">Thomas M.</div>
-            <div class="testi-role">Artisan BTP · Indépendant · Vaud</div>
-            <div class="testi-saving">💚 +720 CHF récupérés</div>
+            <div class="testi-name">Thomas R.</div>
+            <div class="testi-role">Plombier · Indépendant</div>
+            <div class="testi-saving">💚 +625 € récupérés</div>
           </div>
         </div>
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">&ldquo;Mon fiduciaire me coûtait 250 CHF/mois. Fiskai fait tout ce qu'il faisait, plus vite, et m'a trouvé des déductions qu'il avait manquées depuis 2 ans.&rdquo;</p>
+        <p class="testi-quote">"J'avais un comptable à 150€/mois. Fiskai fait tout ce qu'il faisait, plus vite, et m'a trouvé 2 300€ de déductions qu'il avait ratées."</p>
         <div class="testi-author">
-          <div class="testi-avatar" style="background:#f59e0b;">S</div>
+          <div class="testi-avatar" style="background:#f59e0b;">M</div>
           <div>
-            <div class="testi-name">Sophie K.</div>
-            <div class="testi-role">Consultante IT · Sàrl · Zürich</div>
-            <div class="testi-saving">💚 +2 800 CHF récupérés</div>
+            <div class="testi-name">Marie L.</div>
+            <div class="testi-role">Physiothérapeute · Sàrl</div>
+            <div class="testi-saving">💚 +2 300 € récupérés</div>
           </div>
         </div>
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-quote">&ldquo;Le calcul par canton était toujours flou pour moi. Fiskai m'a montré exactement combien je payais en trop à Genève. Simple et immédiat.&rdquo;</p>
+        <p class="testi-quote">"En 14 jours d'essai j'avais déjà récupéré plus que le prix de l'abonnement annuel. La question de continuer ne s'est même pas posée."</p>
         <div class="testi-author">
-          <div class="testi-avatar" style="background:#8b5cf6;">M</div>
+          <div class="testi-avatar" style="background:#8b5cf6;">S</div>
           <div>
-            <div class="testi-name">Marc D.</div>
-            <div class="testi-role">Médecin indépendant · Genève</div>
-            <div class="testi-saving">💚 +3 100 CHF récupérés</div>
+            <div class="testi-name">Samir B.</div>
+            <div class="testi-role">Électricien · Indépendant</div>
+            <div class="testi-saving">💚 +1 850 € récupérés</div>
           </div>
         </div>
       </div>
@@ -464,10 +508,10 @@ fbq('track', 'PageView');
     <div class="pricing-card">
       <div class="pricing-label">Découverte</div>
       <div class="pricing-name">Gratuit</div>
-      <div class="pricing-price">0 CHF</div>
+      <div class="pricing-price">0€</div>
       <div class="pricing-period">14 jours · puis choisis un plan</div>
       <div class="pricing-feats">
-        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Calcul IFD + cantonal temps réel</div>
+        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Calcul d'impôts temps réel</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Saisie manuelle illimitée</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Conseils personnalisés</div>
         <div class="pricing-feat disabled"><div class="pricing-feat-check">—</div>Scan de factures illimité</div>
@@ -477,29 +521,28 @@ fbq('track', 'PageView');
     </div>
     <div class="pricing-card featured">
       <div class="pricing-badge">⭐ Le plus populaire</div>
-      <div class="pricing-label">Indépendant · PME · Sàrl</div>
+      <div class="pricing-label">Artisan · AE · Indépendant · Libéral</div>
       <div class="pricing-name">Starter</div>
-      <div class="pricing-price">49 CHF <span>/mois</span></div>
+      <div class="pricing-price">59 CHF <span>/mois</span></div>
       <div class="pricing-period">Sans engagement · résilie quand tu veux</div>
       <div class="pricing-feats">
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Tout du plan Gratuit</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Scan de factures illimité</div>
-        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Devis et factures</div>
-        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Comparateur de statuts juridiques</div>
-        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Pilier 3a et LPP optimisés</div>
+        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Devis et factures PDF</div>
+        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Chat fiscal IA 24h/7j</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Support prioritaire</div>
       </div>
       <a href="app.html?pays=ch" class="btn-pricing primary">Choisir Starter →</a>
     </div>
     <div class="pricing-card">
-      <div class="pricing-label">Sàrl · SA · IMMO · Libéral</div>
+      <div class="pricing-label">Sàrl immo · Multi-activités</div>
       <div class="pricing-name">Pro</div>
-      <div class="pricing-price">99 CHF <span>/mois</span></div>
+      <div class="pricing-price">119 CHF <span>/mois</span></div>
       <div class="pricing-period">Sans engagement · résilie quand tu veux</div>
       <div class="pricing-feats">
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Tout du plan Starter</div>
+        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Sàrl immobilière</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Optimisation IS avancée</div>
-        <div class="pricing-feat"><div class="pricing-feat-check">✓</div>SCI et IMMO</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Simulation rémunération</div>
         <div class="pricing-feat"><div class="pricing-feat-check">✓</div>Support dédié</div>
       </div>
@@ -514,45 +557,45 @@ fbq('track', 'PageView');
   <h2 class="section-h2" style="margin-bottom:40px;">Tout ce que tu veux savoir.</h2>
   <div class="faq-item open">
     <button class="faq-q" onclick="toggleFaq(this)">
-      Comment Fiskai calcule mes impôts suisses ?
+      Comment Fiskai calcule mes impôts ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Tu saisis ton chiffre d'affaires et tes dépenses. Fiskai applique automatiquement les barèmes officiels 2026 — IFD fédéral, impôt cantonal selon ton canton, TVA (8.1% / 2.6% / 3.8%), AVS/AI. Tout est recalculé en temps réel à chaque nouvelle opération.</div>
+    <div class="faq-a">Tu rentres ton chiffre d'affaires et tes dépenses. Fiskai applique automatiquement les barèmes officiels 2026 — IR, IS, TVA, cotisations AVS/AFC. Tout est recalculé en temps réel à chaque nouvelle opération.</div>
   </div>
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">
-      Fiskai remplace-t-il vraiment mon fiduciaire ?
+      Fiskai remplace-t-il vraiment mon comptable ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Pour les indépendants, PME et Sàrl simples : oui, dans la grande majorité des cas. Fiskai couvre 100% des obligations fiscales courantes en Suisse. Pour les montages complexes (holding, multi-sociétés, immobilier commercial), un fiduciaire reste recommandé en complément.</div>
+    <div class="faq-a">Pour les artisans, auto-entrepreneurs, freelances et professions libérales : oui, dans la grande majorité des cas. Fiskai couvre 100% des obligations fiscales courantes. Pour les montages complexes (holding, multi-sociétés), un expert-comptable reste recommandé en complément.</div>
   </div>
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">
       Mes données financières sont-elles sécurisées ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Oui. Toutes les données sont chiffrées en transit (TLS 1.3) et au repos (AES-256). Fiskai est conforme LPD (Loi fédérale sur la protection des données) et RGPD. Tes données ne sont jamais revendues à des tiers. Tu peux exporter ou supprimer tes données à tout moment.</div>
+    <div class="faq-a">Oui. Toutes les données sont chiffrées en transit (TLS 1.3) et au repos (AES-256). Fiskai est hébergé en France, conforme RGPD, et ne revend jamais tes données à des tiers. Tu peux exporter ou supprimer tes données à tout moment.</div>
   </div>
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">
       Que se passe-t-il après les 14 jours gratuits ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Pas de CB demandée pendant l'essai. À la fin des 14 jours, tu choisis un plan payant pour continuer — ou tu arrêtes, sans frais et sans justification. Aucun prélèvement automatique surprise.</div>
+    <div class="faq-a">À la fin des 14 jours, tu choisis un plan payant pour continuer — ou tu arrêtes, sans frais et sans justification. Aucun prélèvement automatique surprise.</div>
   </div>
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">
-      Tous les cantons sont-ils bien couverts ?
+      Je suis artisan BTP, est-ce fait pour moi ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Oui. Fiskai couvre les 16 cantons francophones et alémaniques avec les barèmes IFD fédéral + impôt cantonal à jour. Vaud, Genève, Valais, Fribourg, Neuchâtel, Jura, Berne, Zurich, Bâle et plus. Les taux sont mis à jour chaque année automatiquement.</div>
+    <div class="faq-a">Absolument. Fiskai est conçu pour les artisans : van utilitaire déductible, matériel, déplacements, sous-traitance, TVA sur marge. Chaque alerte est adaptée à ton activité pour que tu ne rates aucune déduction.</div>
   </div>
   <div class="faq-item">
     <button class="faq-q" onclick="toggleFaq(this)">
-      Fiskai prend-il en compte le Pilier 3a et le LPP ?
+      Je peux créer des devis et des factures ?
       <div class="faq-icon">+</div>
     </button>
-    <div class="faq-a">Oui. Le Pilier 3a (déduction maximale 7 056 CHF en 2026 pour les salariés, 35 280 CHF pour les indépendants) et les cotisations LPP sont intégrés dans le calcul de ton revenu imposable. Fiskai te signale aussi quand tu approches du plafond déductible.</div>
+    <div class="faq-a">Oui. Tu crées un devis en 30 secondes avec tes infos client, ta prestation et ton prix. PDF prêt à envoyer, conforme facturation électronique obligatoire dès 2026.</div>
   </div>
 </section>
 
@@ -560,15 +603,14 @@ fbq('track', 'PageView');
 <div class="final-cta">
   <div class="final-cta-inner">
     <h2 class="final-h2">Essaie Fiskai.<br><em>14 jours gratuits.</em></h2>
-    <p class="final-sub">Tu vois la différence en 5 minutes.</p>
+    <p class="final-sub">Tu vois combien tu récupères en 5 minutes.</p>
     <a class="final-cta-btn" href="app.html?pays=ch">Tester gratuitement →</a>
-    <p class="final-micro">Sans engagement · Résilie quand tu veux</p>
+    <p class="final-micro">Sans engagement · Sans CB · Résilie quand tu veux</p>
     <div class="final-trust">
-      <div class="final-trust-item">🇨🇭 16 cantons couverts</div>
-      <div class="final-trust-item">📸 Scan factures</div>
-      <div class="final-trust-item">🧾 Devis &amp; Factures</div>
-      <div class="final-trust-item">🔒 Conforme LPD</div>
-      <div class="final-trust-item">Sans engagement</div>
+      <div class="final-trust-item">🇨🇭 Suisse</div>
+      <div class="final-trust-item">🔧 Artisans & AE</div>
+      <div class="final-trust-item">⚕️ Professions libérales</div>
+      <div class="final-trust-item">🏠 Sàrl immo & Immo</div>
     </div>
   </div>
 </div>
@@ -578,17 +620,17 @@ fbq('track', 'PageView');
   <div class="footer-logo">
     <div class="footer-logo-box">F</div>
     <span class="footer-logo-name">fiskai</span>
-    <span style="font-size:12px;color:#888;margin-left:8px;">· Suisse 🇨🇭</span>
+    <span style="font-size:12px;color:#444;margin-left:8px;">· Lancé en 2026</span>
   </div>
   <div class="footer-links">
     <a href="cgu.html">CGU</a>
-    <a href="confidentialite.html">Confidentialité (LPD)</a>
-    <a href="mailto:support@fiskai.fr">Contact</a>
-    <a href="https://www.fiskai.fr">fiskai.fr →</a>
+    <a href="confidentialite.html">Confidentialité</a>
+    <a href="mailto:support@fiskai.ch">Contact</a>
   </div>
   <span class="footer-copy">© 2026 Fiskai</span>
 </footer>
 
+<!-- STICKY CTA MOBILE -->
 <div class="sticky-cta">
   <a href="app.html?pays=ch">Tester gratuitement — 14 jours offerts →</a>
 </div>
