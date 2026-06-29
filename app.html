@@ -2230,15 +2230,6 @@ const html=`<html><head><meta charset="UTF-8">
     <div class="footer-text">Document généré le ${dateStr}</div>
   </div>
 
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('Fiskai PWA ready'))
-      .catch(e => console.log('SW error:', e));
-  });
-}
-</script>
 </body></html>`;
 const blob=new Blob([html],{type:'text/html'});
 const a=document.createElement('a');
@@ -2514,8 +2505,8 @@ function endTuto(){
 // ══ ONBOARDING ══
 let obPays=null,obSect=null,obStat=null;
 const OB_STATS={
-  fr:[{v:'ae',e:'🛠️',l:'Auto-entrepreneur'},{v:'sasu',e:'🏢',l:'SASU / SAS'},{v:'eurl',e:'👤',l:'EURL / SARL'},{v:'sa',e:'🏛️',l:'SA'},{v:'sci_ir',e:'🏠',l:'SCI à l\'IR'},{v:'sci_is',e:'🏠',l:'SCI à l\'IS'},{v:'sel',e:'⚕️',l:'SEL / SELARL'}],
-  ch:[{v:'sarl_ch',e:'🏔️',l:'Sàrl'},{v:'sa_ch',e:'🏛️',l:'SA'},{v:'ind_ch',e:'👤',l:'Indépendant'},{v:'sarl_immo_ch',e:'🏠',l:'Sàrl immobilière'}]
+  fr:[{v:'ae',e:'🛠️',l:'Auto-entrepreneur'},{v:'sel',e:'⚕️',l:'Profession libérale'},{v:'sci_ir',e:'🏠',l:'SCI à l\'IR'},{v:'sci_is',e:'🏠',l:'SCI à l\'IS'}],
+  ch:[{v:'ind_ch',e:'👤',l:'Indépendant'},{v:'sarl_ch',e:'🏔️',l:'Sàrl'},{v:'sa_ch',e:'🏛️',l:'SA'},{v:'sarl_immo_ch',e:'🏠',l:'Sàrl immobilière'}]
 };
 
 function obGo(step){
@@ -2565,7 +2556,7 @@ function obSelStat(v,el){
 }
 
 function obFinish(){
-  country=obPays||'fr';statut=obStat||(country==='ch'?'sarl_ch':'sasu');secteur=obSect||'autre';
+  country=obPays||'fr';statut=obStat||(country==='ch'?'ind_ch':'ae');secteur=obSect||'autre';
   const sN={ae:'Auto-entrepreneur',sasu:'SASU / SAS',eurl:'EURL / SARL',sa:'SA',sci_ir:'SCI à l\'IR',sci_is:'SCI à l\'IS',sel:'SEL/SELARL',sarl_ch:'Sàrl',sa_ch:'SA CH',ind_ch:'Indépendant',sarl_immo_ch:'Sàrl immobilière'};
   const sectN={btp:'BTP & Artisanat 🔧',tech:'Tech & Freelance 💻',commerce:'Commerce 🛒',resto:'Restauration 🍽️',sante:'Santé & Libéral ⚕️',immo:'Immobilier / SCI 🏠',transport:'Transport 🚗',creatif:'Créatif 🎨',juridique:'Juridique ⚖️',autre:'Autre ✨'};
   document.getElementById('ob-sum').innerHTML=`
@@ -3266,6 +3257,46 @@ supa.auth.getSession().then(({data:{session}})=>{
     document.getElementById('auth-screen').style.display='none';
   }
 });
+
+// ── PWA Install ──
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'flex';
+});
+
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(r => {
+      if(r.outcome === 'accepted') toast('🎉 Fiskai installé sur ton écran d\'accueil !');
+      deferredPrompt = null;
+      const btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.style.display = 'none';
+    });
+  } else {
+    // iOS fallback
+    toast('Sur iPhone : Partager → Sur l\'écran d\'accueil 📲');
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  toast('🎉 Fiskai installé !');
+  const btn = document.getElementById('pwa-install-btn');
+  if(btn) btn.style.display = 'none';
+});
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Fiskai PWA ready'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
 </script>
 
 <script>
